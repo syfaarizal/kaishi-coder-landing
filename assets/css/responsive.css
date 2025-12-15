@@ -1,63 +1,57 @@
-/* Responsive */
-@media (max-width: 1024px) {
-    .main-content {
-        flex-direction: column;
-        padding: 120px 50px;
-    }
+/* ========== RESPONSIVE STYLES ========== */
 
-    .character-display {
-        margin-top: 50px;
-    }
-
-    .sidebar {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        top: auto;
-        transform: none;
-        width: 100%;
-        border-radius: 10px 10px 0 0;
-        padding: 20px;
-        flex-direction: row;
-        overflow-x: auto;
-    }
-
-    .menu-item {
-        display: inline-flex;
-        margin: 5px;
-    }
-
-    .character-name {
-        font-size: 3.5em;
-    }
-}
-
-/* Responsive Fixes */
+/* Tablet (1024px) */
 @media (max-width: 1200px) {
     .main-content {
         flex-direction: column;
         align-items: center;
+        gap: 50px;
     }
     
     .character-info, 
     .character-display {
         max-width: 100%;
         min-width: auto;
+        width: 100%;
     }
     
     .character-display {
-        margin-top: 50px;
+        margin-top: 0;
         height: 500px;
+    }
+    
+    .screen-frame {
+        width: 350px;
+        height: 450px;
     }
 }
 
+/* Tablet (768px) */
 @media (max-width: 768px) {
+    nav {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-links {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-links a {
+        font-size: 1em;
+    }
+    
     .main-content {
-        padding: 120px 20px 50px;
+        padding: 140px 20px 50px;
+        gap: 40px;
     }
     
     .character-name {
-        font-size: 2.5em;
+        font-size: 3em;
+        letter-spacing: 3px;
     }
     
     .character-display {
@@ -65,8 +59,20 @@
     }
     
     .screen-frame {
-        width: 300px !important;
-        height: 350px !important;
+        width: 280px;
+        height: 350px;
+    }
+    
+    .status-badge {
+        font-size: 0.9em;
+        padding: 10px 20px;
+        top: 150px;
+    }
+    
+    .game-badge {
+        font-size: 1em;
+        padding: 10px 30px;
+        bottom: 80px;
     }
     
     .projects-grid {
@@ -84,14 +90,19 @@
         padding: 15px;
         display: flex;
         justify-content: space-around;
-        overflow-x: auto;
         background: rgba(0, 0, 0, 0.95);
+        border-top: 1px solid #ff0000;
+        border-right: none;
+        border-bottom: none;
+        border-left: none;
     }
     
     .menu-item {
         flex-direction: column;
-        padding: 10px;
+        padding: 8px 12px;
         font-size: 0.8em;
+        margin: 0;
+        gap: 5px;
     }
     
     .menu-icon {
@@ -100,17 +111,105 @@
     }
 }
 
+/* Mobile (480px) */
 @media (max-width: 480px) {
     .character-name {
-        font-size: 2em;
+        font-size: 2.2em;
+        letter-spacing: 2px;
+    }
+    
+    .subtitle {
+        font-size: 1em;
     }
     
     .tags {
-        flex-wrap: wrap;
+        gap: 10px;
     }
     
     .tag {
-        font-size: 0.9em;
+        font-size: 0.8em;
         padding: 8px 15px;
+    }
+    
+    .message-bubble {
+        padding: 12px 20px;
+        max-width: 100%;
+    }
+    
+    .character-display {
+        height: 350px;
+    }
+    
+    .screen-frame {
+        width: 240px;
+        height: 300px;
+    }
+    
+    .screen-left {
+        left: 10px;
+    }
+    
+    .screen-right {
+        right: 10px;
+    }
+    
+    .status-badge {
+        font-size: 0.8em;
+        padding: 8px 15px;
+        top: 120px;
+    }
+    
+    .game-badge {
+        font-size: 0.9em;
+        padding: 8px 20px;
+        bottom: 60px;
+    }
+    
+    .portfolio-section {
+        margin: 30px 0;
+    }
+    
+    .section-title {
+        font-size: 1.2em;
+    }
+    
+    .sidebar {
+        padding: 10px;
+    }
+    
+    .menu-item {
+        padding: 6px 8px;
+        font-size: 0.7em;
+    }
+    
+    .menu-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Small Mobile (360px) */
+@media (max-width: 360px) {
+    .character-name {
+        font-size: 1.8em;
+    }
+    
+    .screen-frame {
+        width: 200px;
+        height: 260px;
+    }
+    
+    .nav-links {
+        gap: 10px;
+    }
+    
+    .nav-links a {
+        font-size: 0.9em;
+        letter-spacing: 1px;
+    }
+    
+    .search-btn {
+        padding: 8px 15px;
+        font-size: 0.9em;
     }
 }
