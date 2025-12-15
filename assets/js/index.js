@@ -64,7 +64,7 @@ setInterval(() => {
     }
 }, 100);
 
-// Add smooth scrolling
+// Update smooth scrolling untuk semua link navigation
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -77,6 +77,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 top: targetElement.offsetTop - 80,
                 behavior: 'smooth'
             });
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            this.classList.add('active');
         }
     });
 });
@@ -117,3 +123,164 @@ handleResponsive();
 
 // Listen for resize
 window.addEventListener('resize', handleResponsive);
+
+// Profile Section Functionality
+
+// Counter Animation for Stats
+function animateCounter() {
+    const counters = document.querySelectorAll('.stat-number');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const increment = target / 100;
+        let current = 0;
+        
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                counter.textContent = Math.floor(current);
+                setTimeout(updateCounter, 20);
+            } else {
+                counter.textContent = target;
+            }
+        };
+        
+        // Start when in viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(counter);
+    });
+}
+
+// Animate Skill Bars
+function animateSkillBars() {
+    const skillBars = document.querySelectorAll('.skill-fill');
+    
+    skillBars.forEach(bar => {
+        const width = bar.getAttribute('data-width');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    bar.style.width = width + '%';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(bar);
+    });
+}
+
+// Gallery Filtering
+function initGallery() {
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    const modal = document.querySelector('.gallery-modal');
+    const modalImg = modal.querySelector('.modal-img');
+    const modalTitle = modal.querySelector('.modal-title');
+    const modalDesc = modal.querySelector('.modal-desc');
+    const modalTheme = modal.querySelector('.modal-theme');
+    const modalClose = modal.querySelector('.modal-close');
+    
+    // Theme Filter
+    themeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            themeButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            const selectedTheme = button.getAttribute('data-theme');
+            
+            // Filter gallery items
+            galleryItems.forEach(item => {
+                if (selectedTheme === 'all' || item.getAttribute('data-theme') === selectedTheme) {
+                    item.classList.remove('hidden');
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'scale(1)';
+                    }, 50);
+                } else {
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        item.classList.add('hidden');
+                    }, 300);
+                }
+            });
+        });
+    });
+    
+    // Gallery Image Click
+    galleryItems.forEach(item => {
+        const card = item.querySelector('.gallery-card');
+        const img = card.querySelector('.gallery-img');
+        const title = card.querySelector('h4').textContent;
+        const desc = card.querySelector('p').textContent;
+        const theme = card.querySelector('.theme-tag').textContent;
+        
+        card.addEventListener('click', () => {
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            modalTitle.textContent = title;
+            modalDesc.textContent = desc;
+            modalTheme.textContent = theme;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+    
+    // Close Modal
+    modalClose.addEventListener('click', () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    });
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+}
+
+// Initialize Profile Section
+function initProfileSection() {
+    if (document.querySelector('#profile')) {
+        animateCounter();
+        animateSkillBars();
+        initGallery();
+        
+        // Add glitch effect to equipment cards
+        document.querySelectorAll('.equipment-card').forEach(card => {
+            setInterval(() => {
+                if (Math.random() > 0.98) {
+                    card.style.transform = `translateX(${Math.random() * 4 - 2}px)`;
+                    setTimeout(() => {
+                        card.style.transform = 'translateX(0)';
+                    }, 100);
+                }
+            }, 500);
+        });
+    }
+}
+
+// Call initialization when DOM is loaded
+document.addEventListener('DOMContentLoaded', initProfileSection);
