@@ -63,3 +63,23 @@ setInterval(() => {
         }, 50);
     }
 }, 100);
+
+// Smooth scroll untuk navigation
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Project card interaction
+document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        card.style.borderColor = '#ff4444';
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.borderColor = '#ff0000';
+    });
+});
