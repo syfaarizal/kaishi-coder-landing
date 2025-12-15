@@ -64,22 +64,38 @@ setInterval(() => {
     }
 }, 100);
 
-// Smooth scroll untuk navigation
+// Add smooth scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener('click', function(e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
+        const targetId = this.getAttribute('href');
+        if(targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if(targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
     });
 });
 
 // Project card interaction
 document.querySelectorAll('.project-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
-        card.style.borderColor = '#ff4444';
+        card.style.boxShadow = '0 0 30px rgba(255, 0, 0, 0.5)';
     });
+    
     card.addEventListener('mouseleave', () => {
-        card.style.borderColor = '#ff0000';
+        card.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.2)';
+    });
+});
+
+// Image loading fallback
+document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('error', function() {
+        this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="100%" height="100%" fill="%230a0a0a"/><text x="50%" y="50%" font-family="Courier New, monospace" font-size="20" fill="%23ff0000" text-anchor="middle" dominant-baseline="middle">IMAGE NOT FOUND</text></svg>';
+        this.alt = 'Image not available';
     });
 });
