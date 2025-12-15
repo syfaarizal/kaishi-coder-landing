@@ -1,0 +1,53 @@
+/* Responsive */
+@media (max-width: 1024px) {
+    .main-content {
+        flex-direction: column;
+        padding: 120px 50px;
+    }
+
+    .character-display {
+        margin-top: 50px;
+    }
+
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        top: auto;
+        transform: none;
+        width: 100%;
+        border-radius: 10px 10px 0 0;
+        padding: 20px;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .menu-item {
+        display: inline-flex;
+        margin: 5px;
+    }
+
+    .character-name {
+        font-size: 3.5em;
+    }
+}
+
+@media (max-width: 768px) {
+    .character-name {
+        font-size: 2.5em;
+        letter-spacing: 3px;
+    }
+    
+    .main-content {
+        padding: 120px 20px 50px;
+    }
+    
+    .screen-frame {
+        width: 300px;
+        height: 400px;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+}
