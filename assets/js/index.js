@@ -99,3 +99,21 @@ document.querySelectorAll('img').forEach(img => {
         this.alt = 'Image not available';
     });
 });
+
+// Add responsive behavior
+function handleResponsive() {
+    const isMobile = window.innerWidth <= 768;
+    const parallaxEffect = document.querySelector('.parallax-effect');
+    
+    if (isMobile && parallaxEffect) {
+        parallaxEffect.style.display = 'none';
+    } else if (parallaxEffect) {
+        parallaxEffect.style.display = 'block';
+    }
+}
+
+// Initial check
+handleResponsive();
+
+// Listen for resize
+window.addEventListener('resize', handleResponsive);
