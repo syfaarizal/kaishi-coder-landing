@@ -192,13 +192,33 @@ nav {
     min-width: 300px;
 }
 
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    display: flex;
+}
+
+.avatar-img {
+    border-radius: 25%;
+    border: 1px solid #ff0000;
+    box-shadow: 0 0 10px #ff0000;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
 .username {
     background: rgba(255, 0, 0, 0.2);
     border: 1px solid #ff0000;
     display: inline-block;
     padding: 8px 20px;
     border-radius: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     font-weight: bold;
     color: #ff0000;
     text-transform: uppercase;
@@ -598,7 +618,7 @@ nav {
 
 .project-showcase h4 {
     color: #ff0000;
-    margin-bottom: 15px;
+    margin-top: 20px;
     font-size: 1.2em;
     text-align: center;
     position: relative;
