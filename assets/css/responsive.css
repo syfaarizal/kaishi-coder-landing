@@ -213,3 +213,73 @@
         font-size: 0.9em;
     }
 }
+
+/* Responsive Design for Profile */
+@media (max-width: 1024px) {
+    .profile-section {
+        padding: 60px 50px;
+    }
+    
+    .bio-card {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-section {
+        padding: 40px 20px;
+    }
+    
+    .profile-title {
+        font-size: 2.2em;
+    }
+    
+    .profile-stats {
+        gap: 30px;
+    }
+    
+    .stat-number {
+        font-size: 2.2em;
+    }
+    
+    .section-subtitle {
+        font-size: 1.5em;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .gallery-card {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-stats {
+        gap: 20px;
+    }
+    
+    .theme-filters {
+        justify-content: center;
+    }
+    
+    .theme-btn {
+        padding: 8px 15px;
+        font-size: 0.8em;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+}
