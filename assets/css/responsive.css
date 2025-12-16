@@ -283,3 +283,67 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .projects-section {
+        padding: 60px 50px;
+    }
+    
+    .projects-playground {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-section {
+        padding: 40px 20px;
+    }
+    
+    .projects-title {
+        font-size: 2.5em;
+    }
+    
+    .projects-subtitle {
+        font-size: 1em;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .projects-playground {
+        grid-template-columns: 1fr;
+    }
+    
+    .project-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .modal-stats {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .projects-title {
+        font-size: 2em;
+    }
+    
+    .project-name {
+        font-size: 1.5em;
+    }
+    
+    .modal-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
