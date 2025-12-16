@@ -204,12 +204,23 @@ nav {
 }
 
 .avatar-img {
-    border-radius: 25%;
+    border-radius: 50%;
     border: 1px solid #ff0000;
     box-shadow: 0 0 10px #ff0000;
     width: 50px;
     height: 50px;
     object-fit: cover;
+    transition: 0.2s ease;
+    animation: rotateImg 3s infinite;
+}
+
+@keyframes rotateImg {
+    0%, 50% {
+        transform: rotate(0deg);
+    }
+    50%, 100% {
+        transform: rotate(360deg);
+    }
 }
 
 .username {
