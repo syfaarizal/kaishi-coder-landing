@@ -416,9 +416,10 @@ function initProjectsPlayground() {
         });
     });
     
+    
     // Code Button Click
     codeButtons.forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
             const projectId = button.dataset.project;
             if (githubUrls[projectId]) {
                 window.open(githubUrls[projectId], '_blank');
@@ -429,6 +430,14 @@ function initProjectsPlayground() {
                     button.innerHTML = '<span class="btn-icon">{ }</span><span class="btn-text">SOURCE CODE</span>';
                 }, 1500);
             }
+        });
+    });
+
+    // Modal Code Button Click (BUTTON BARU DI HTML)
+    document.querySelectorAll('.code-modal-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const projectId = button.dataset.project;
+            openCodeModal(projectId);
         });
     });
     
@@ -599,6 +608,7 @@ function initProjectsPlayground() {
 }
 
 // Terminal typing effect for playground
+// Terminal typing effect for playground
 function initTerminalTyping() {
     const terminalLines = document.querySelectorAll('.terminal-line');
     if (terminalLines.length === 0) return;
@@ -609,6 +619,10 @@ function initTerminalTyping() {
     let isWaiting = false;
     
     function typeLine() {
+        if (lineIndex >= terminalLines.length) {
+            lineIndex = 0; // Reset ke baris pertama
+        }
+        
         const currentLine = terminalLines[lineIndex];
         const text = currentLine.dataset.text || currentLine.textContent.replace('█', '');
         
@@ -636,13 +650,14 @@ function initTerminalTyping() {
         }
     }
     
-    // Store original text
+    // Simpan teks asli dan reset
     terminalLines.forEach((line, index) => {
-        line.dataset.text = line.textContent.replace('█', '');
+        const originalText = line.textContent.replace('█', '').trim();
+        line.dataset.text = originalText;
         line.textContent = index === 0 ? '█' : '';
     });
     
-    // Start typing after delay
+    // Mulai mengetik setelah delay
     setTimeout(typeLine, 1000);
 }
 
