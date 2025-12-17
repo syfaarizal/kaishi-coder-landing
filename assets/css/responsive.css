@@ -284,7 +284,7 @@
     }
 }
 
-/* Responsive Design */
+/* Responsive Design Projects */
 @media (max-width: 1200px) {
     .projects-section {
         padding: 60px 50px;
@@ -292,6 +292,15 @@
     
     .projects-playground {
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+    
+    .project-controls {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .writeup-container, .code-container {
+        width: 95%;
+        max-width: 95%;
     }
 }
 
@@ -302,10 +311,12 @@
     
     .projects-title {
         font-size: 2.5em;
+        letter-spacing: 2px;
     }
     
     .projects-subtitle {
         font-size: 1em;
+        letter-spacing: 2px;
     }
     
     .filter-controls {
@@ -313,23 +324,52 @@
         gap: 20px;
     }
     
+    .filter-group, .sort-controls {
+        justify-content: center;
+    }
+    
     .projects-playground {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .project-tile {
+        max-width: 500px;
+        margin: 0 auto;
     }
     
     .project-controls {
         grid-template-columns: 1fr;
     }
     
-    .modal-footer {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
+    .project-metrics {
+        grid-template-columns: repeat(2, 1fr);
     }
     
-    .modal-stats {
-        flex-wrap: wrap;
+    .modal-footer, .code-footer, .writeup-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .modal-stats, .code-stats {
         justify-content: center;
+    }
+    
+    .modal-actions, .code-actions {
+        justify-content: center;
+    }
+    
+    .code-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .code-tabs {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 5px;
     }
 }
 
@@ -342,8 +382,26 @@
         font-size: 1.5em;
     }
     
-    .modal-actions {
-        flex-wrap: wrap;
-        justify-content: center;
+    .project-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-actions, .code-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .action-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .writeup-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .tech-details, .metrics-grid {
+        grid-template-columns: 1fr;
     }
 }
