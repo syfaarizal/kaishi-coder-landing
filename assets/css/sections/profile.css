@@ -1,0 +1,100 @@
+/* Profile Section */
+.profile-section {
+    padding: 80px 100px;
+    position: relative;
+    background: rgba(10, 10, 10, 0.7);
+    border-top: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.profile-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.profile-title {
+    font-size: 3em;
+    color: #ff0000;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+    margin-bottom: 30px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 3em;
+    color: #ff0000;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    color: #ff6666;
+    font-size: 0.9em;
+    letter-spacing: 2px;
+}
+
+/* Bio Section */
+.bio-section {
+    margin-bottom: 60px;
+}
+
+.section-subtitle {
+    color: #ff0000;
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    border-left: 3px solid #ff0000;
+    padding-left: 15px;
+}
+
+.bio-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.bio-text {
+    color: #ff6666;
+    line-height: 1.6;
+}
+
+.glitch-text {
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.glitch-text::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: #ff0000;
+}
+
+.bio-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
