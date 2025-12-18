@@ -4,14 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kai Shi Portfolio</title>
-    <link rel="stylesheet" href="./assets/css/base.css">
-    <link rel="stylesheet" href="./assets/css/animation.css">
-    <link rel="stylesheet" href="./assets/css/components.css">
-    <link rel="stylesheet" href="./assets/css/sections/profile.css">
-    <link rel="stylesheet" href="./assets/css/sections/gallery.css">
-    <link rel="stylesheet" href="./assets/css/sections/projects.css">
-    <link rel="stylesheet" href="./assets/css/sections/modals.css">
-    <link rel="stylesheet" href="./assets/css/responsive.css">
+    <link rel="stylesheet" href="/backups/style.css">
 </head>
 <body>
     <div class="container">
@@ -69,10 +62,10 @@
                 </div>
 
                 <div class="messages">
-                    <div class="message-bubble glitch-target">System initialized...</div>
-                    <div class="message-bubble glitch-target">Portfolio v2.0 loaded</div>
-                    <div class="message-bubble glitch-target">Ready for deployment</div>
-                    <div class="message-bubble terminal glitch-target" data-text="root@portfolio:~# sudo start_mission --now"></div>
+                    <div class="message-bubble">System initialized...</div>
+                    <div class="message-bubble">Portfolio v2.0 loaded</div>
+                    <div class="message-bubble">Ready for deployment</div>
+                    <div class="message-bubble terminal">root@portfolio:~# sudo start_mission --now</div>
                 </div>
 
                 <div class="portfolio-section">
@@ -101,10 +94,10 @@
             </div>
 
             <div class="character-display">
-                <div class="screen-frame screen-left parallax-target">
+                <div class="screen-frame screen-left">
                     <img src="./assets/img/KAISHIPose1.png" alt="Kai Shi" class="character-img">
                 </div>
-                <div class="screen-frame screen-right parallax-target">
+                <div class="screen-frame screen-right">
                     <div class="project-showcase">
                         <h4>Latest Project</h4>
                         <img src="./assets/img/KaiShiPose0.6.png" alt="Project Screenshot" class="project-img">
@@ -159,15 +152,15 @@
                 <h2 class="profile-title">// PROFILE DATA //</h2>
                 <div class="profile-stats">
                     <div class="stat-item">
-                        <span class="stat-number counter" data-count="25">0</span>
+                        <span class="stat-number" data-count="25">0</span>
                         <span class="stat-label">PROJECTS</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number counter" data-count="3">0</span>
+                        <span class="stat-number" data-count="3">0</span>
                         <span class="stat-label">YEARS</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number counter" data-count="100">0</span>
+                        <span class="stat-number" data-count="100">0</span>
                         <span class="stat-label">COMMITS</span>
                     </div>
                 </div>
@@ -304,7 +297,7 @@
                     </div>
 
                     <!-- Gallery Viewer Modal -->
-                    <div class="gallery-modal" id="gallery-modal">
+                    <div class="gallery-modal">
                         <div class="modal-content">
                             <span class="modal-close">&times;</span>
                             <img src="" alt="" class="modal-img">
@@ -366,10 +359,10 @@
                         <span class="terminal-title">bash — projects — 80×24</span>
                     </div>
                     <div class="terminal-body">
-                        <div class="terminal-line" data-text="$ loading_projects.sh"></div>
-                        <div class="terminal-line" data-text="[✓] Accessing repository..."></div>
-                        <div class="terminal-line" data-text="[✓] Initializing playground..."></div>
-                        <div class="terminal-line" data-text="[✓] Ready for experimentation!"></div>
+                        <div class="terminal-line">$ loading_projects.sh</div>
+                        <div class="terminal-line">[✓] Accessing repository...</div>
+                        <div class="terminal-line">[✓] Initializing playground...</div>
+                        <div class="terminal-line">[✓] Ready for experimentation!</div>
                         <div class="terminal-line">$ <span class="cursor">█</span></div>
                     </div>
                 </div>
@@ -405,7 +398,7 @@
             <!-- Projects Grid -->
             <div class="projects-playground">
                 <!-- Project 1: Cyber City (Deep Write-up) -->
-                <div class="project-tile" data-category="web" data-complexity="8" data-fun="9" data-has-writeup="true" data-project-id="cyber-city">
+                <div class="project-tile" data-category="web" data-complexity="8" data-fun="9" data-has-writeup="true">
                     <div class="project-header">
                         <div class="project-badge">EXPERIMENTAL</div>
                         <div class="project-stats">
@@ -460,10 +453,6 @@
                             <span class="btn-icon">{ }</span>
                             <span class="btn-text">VIEW CODE</span>
                         </button>
-                        <button class="control-btn code-modal-btn" data-project="cyber-city">
-                            <span class="btn-icon">💻</span>
-                            <span class="btn-text">CODE PREVIEW</span>
-                        </button>
                         <button class="control-btn writeup-btn" data-project="cyber-city">
                             <span class="btn-icon">📝</span>
                             <span class="btn-text">WRITE-UP</span>
@@ -472,7 +461,7 @@
                 </div>
 
                 <!-- Project 2: Neural Visualizer (Deep Write-up) -->
-                <div class="project-tile" data-category="tool" data-complexity="9" data-fun="8" data-has-writeup="true" data-project-id="neural-viz">
+                <div class="project-tile" data-category="tool" data-complexity="9" data-fun="8" data-has-writeup="true">
                     <div class="project-header">
                         <div class="project-badge">AI/ML</div>
                         <div class="project-stats">
@@ -529,10 +518,6 @@
                             <span class="btn-icon">{ }</span>
                             <span class="btn-text">VIEW CODE</span>
                         </button>
-                        <button class="control-btn code-modal-btn" data-project="neural-viz">
-                            <span class="btn-icon">💻</span>
-                            <span class="btn-text">CODE PREVIEW</span>
-                        </button>
                         <button class="control-btn writeup-btn" data-project="neural-viz">
                             <span class="btn-icon">📝</span>
                             <span class="btn-text">WRITE-UP</span>
@@ -541,7 +526,7 @@
                 </div>
 
                 <!-- Project 3: Retro Game -->
-                <div class="project-tile" data-category="game" data-complexity="6" data-fun="10" data-project-id="cyber-runner">
+                <div class="project-tile" data-category="game" data-complexity="6" data-fun="10">
                     <div class="project-header">
                         <div class="project-badge">RETRO</div>
                         <div class="project-stats">
@@ -590,15 +575,11 @@
                             <span class="btn-icon">{ }</span>
                             <span class="btn-text">SOURCE CODE</span>
                         </button>
-                        <button class="control-btn code-modal-btn" data-project="cyber-runner">
-                            <span class="btn-icon">💻</span>
-                            <span class="btn-text">CODE PREVIEW</span>
-                        </button>
                     </div>
                 </div>
 
                 <!-- Project 4: Data Dashboard -->
-                <div class="project-tile" data-category="web" data-complexity="7" data-fun="7" data-project-id="data-dashboard">
+                <div class="project-tile" data-category="web" data-complexity="7" data-fun="7">
                     <div class="project-header">
                         <div class="project-badge">REALTIME</div>
                         <div class="project-stats">
@@ -647,15 +628,11 @@
                             <span class="btn-icon">{ }</span>
                             <span class="btn-text">SOURCE CODE</span>
                         </button>
-                        <button class="control-btn code-modal-btn" data-project="data-dashboard">
-                            <span class="btn-icon">💻</span>
-                            <span class="btn-text">CODE PREVIEW</span>
-                        </button>
                     </div>
                 </div>
 
                 <!-- Project 5: Audio Visualizer -->
-                <div class="project-tile" data-category="exp" data-complexity="8" data-fun="9" data-project-id="audio-viz">
+                <div class="project-tile" data-category="exp" data-complexity="8" data-fun="9">
                     <div class="project-header">
                         <div class="project-badge">AUDIO</div>
                         <div class="project-stats">
@@ -703,15 +680,11 @@
                             <span class="btn-icon">{ }</span>
                             <span class="btn-text">SOURCE CODE</span>
                         </button>
-                        <button class="control-btn code-modal-btn" data-project="audio-viz">
-                            <span class="btn-icon">💻</span>
-                            <span class="btn-text">CODE PREVIEW</span>
-                        </button>
                     </div>
                 </div>
 
                 <!-- Project 6: Terminal Game -->
-                <div class="project-tile" data-category="game" data-complexity="5" data-fun="8" data-project-id="terminal-quest">
+                <div class="project-tile" data-category="game" data-complexity="5" data-fun="8">
                     <div class="project-header">
                         <div class="project-badge">CLI</div>
                         <div class="project-stats">
@@ -759,16 +732,12 @@
                             <span class="btn-icon">{ }</span>
                             <span class="btn-text">SOURCE CODE</span>
                         </button>
-                        <button class="control-btn code-modal-btn" data-project="terminal-quest">
-                            <span class="btn-icon">💻</span>
-                            <span class="btn-text">CODE PREVIEW</span>
-                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- Demo Modal -->
-            <div class="demo-modal" id="demo-modal">
+            <div class="demo-modal">
                 <div class="modal-container">
                     <div class="modal-header">
                         <div class="modal-title">// LIVE DEMO //</div>
@@ -796,9 +765,8 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Write-up Modal -->
-            <div class="writeup-modal" id="writeup-modal">
+            <!-- Tambahkan Write-up Modal -->
+            <div class="writeup-modal">
                 <div class="writeup-container">
                     <div class="writeup-header">
                         <div class="writeup-title">// PROJECT WRITE-UP //</div>
@@ -880,9 +848,16 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Code Modal -->
-            <div class="code-modal" id="code-modal">
+            <!-- Tambahkan All Projects Button di akhir section -->
+            <div class="all-projects-section">
+                <button class="all-projects-btn">
+                    <span class="btn-text">[ VIEW ALL PROJECTS ]</span>
+                    <span class="btn-icon">↗</span>
+                </button>
+                <p class="projects-note">Check out my GitHub for more experiments and side projects</p>
+            </div>
+            <!-- Code Preview Modal -->
+            <div class="code-modal">
                 <div class="code-container">
                     <div class="code-header">
                         <div class="code-title">// SOURCE CODE //</div>
@@ -1031,18 +1006,9 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- All Projects Button -->
-            <div class="all-projects-section">
-                <button class="all-projects-btn">
-                    <span class="btn-text">[ VIEW ALL PROJECTS ]</span>
-                    <span class="btn-icon">↗</span>
-                </button>
-                <p class="projects-note">Check out my GitHub for more experiments and side projects</p>
-            </div>
         </div>
     </section>
 
-    <script type="module" src="./assets/js/main.js"></script>
+    <script src="/backups/index.js"></script>
 </body>
 </html>
