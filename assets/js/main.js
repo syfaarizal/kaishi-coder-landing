@@ -64,7 +64,9 @@ class App {
     initEffects() {
         // Parallax effect (only on desktop)
         if (window.innerWidth > 768) {
-            this.parallaxConfig = { intensity: 8 };
+            this.components.parallax = initParallax('.parallax-target', {
+                intensity: 8
+            });
         }
         
         // Glitch effects
@@ -139,10 +141,10 @@ class App {
         // Responsive handling on resize
         this.onResize = () => {
             handleResponsive();
-            
+
             // Reinitialize parallax if needed
             if (window.innerWidth > 768 && !this.components.parallax) {
-                this.parallaxConfig = { intensity: 8 };
+                this.components.parallax = initParallax('.parallax-target', { intensity: 8 });
             } else if (window.innerWidth <= 768 && this.components.parallax) {
                 this.components.parallax.destroy();
                 this.components.parallax = null;
