@@ -77,16 +77,16 @@ class App {
         const terminalMsg = document.querySelector('.message-bubble.terminal');
         if (terminalMsg) {
             this.components.typing = initTypingEffect('.message-bubble.terminal', {
-                speed: 50,
+                speed: 150,
                 pause: 2000,
-                loop: false
+                loop: true
             });
         }
 
         // Scanline effect
         this.components.scanline = initScanline('.scanline', {
             flickerChance: 0.03,
-            speed: 1.5
+            speed: 5.5
         });
     }
     

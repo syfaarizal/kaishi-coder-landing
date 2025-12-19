@@ -205,13 +205,13 @@ export class ProjectsSection {
     
     loadDemoContent(projectId) {
         // Implementation for loading demo content
-        // This would be specific to your demo system
+        // This would be specific to demo system
     }
     
     initTerminal() {
         initMultiLineTyping('.terminal-line', {
             speed: 50,
-            deleteSpeed: 30,
+            deleteSpeed: 50,
             pause: 2000,
             loop: true
         });

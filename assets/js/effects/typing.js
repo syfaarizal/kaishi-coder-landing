@@ -81,21 +81,21 @@ export const initTypingEffect = (selector, options = {}) => {
 
 export const initMultiLineTyping = (selector = '.terminal-line', options = {}) => {
     const lines = $$(selector);
-    if (lines.length === 0) return [];
+    if (lines.length === 0) return []; // No lines found
     
     const typers = [];
-    let delay = 0;
+    let delay = 0; // Initial delay before starting first line
     
     lines.forEach((line, index) => {
         const typer = new TypingEffect(line, {
             ...options,
-            pause: index === lines.length - 1 ? options.pause || 2000 : 500
+            pause: index === lines.length - 1 ? options.pause || 1000 : 5000 // Longer pause on last line
         });
         
         setTimeout(() => typer.start(), delay);
         delay += 1000; // Stagger start times
         
-        typers.push(typer);
+        typers.push(typer); // Store reference for potential future use
     });
     
     return typers;
