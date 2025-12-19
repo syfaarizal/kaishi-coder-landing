@@ -10,28 +10,27 @@ export class ParallaxEffect {
             enabled: true,
             ...options
         };
-
-        this._active = false; // internal active flag
+        
         this.elements = $$(this.options.selector);
         this.handleMouseMove = throttle(this.handleMouseMove.bind(this), 16);
         this.isMobile = window.innerWidth <= 768;
-
+        
         this.init();
     }
-
+    
     init() {
         if (this.isMobile) {
             this.disable();
             return;
         }
-
-        if (this.options.enabled) this.enable();
-
+        
+        this.enable();
+        
         // Listen for resize
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
             this.isMobile = window.innerWidth <= 768;
-
+            
             if (wasMobile && !this.isMobile) {
                 this.enable();
             } else if (!wasMobile && this.isMobile) {
@@ -39,13 +38,13 @@ export class ParallaxEffect {
             }
         });
     }
-
+    
     handleMouseMove(e) {
-        if (!this._active || this.isMobile) return;
-
+        if (!this.options.enabled || this.isMobile) return;
+        
         const x = e.clientX / window.innerWidth;
         const y = e.clientY / window.innerHeight;
-
+        
         this.elements.forEach((element, index) => {
             const speed = (index + 1) * this.options.intensity;
             const xMove = (x - 0.5) * speed;
@@ -53,26 +52,23 @@ export class ParallaxEffect {
             element.style.transform = `translate(${xMove}px, ${yMove}px)`;
         });
     }
-
+    
     enable() {
-        if (this._active) return;         // already active
-        this._active = true;
+        if (this.options.enabled) return;
         this.options.enabled = true;
         document.addEventListener('mousemove', this.handleMouseMove);
     }
-
+    
     disable() {
-        if (!this._active) return;       // already disabled
-        this._active = false;
         this.options.enabled = false;
         document.removeEventListener('mousemove', this.handleMouseMove);
-
+        
         // Reset positions
         this.elements.forEach(element => {
             element.style.transform = '';
         });
     }
-
+    
     destroy() {
         this.disable();
         this.elements = [];
