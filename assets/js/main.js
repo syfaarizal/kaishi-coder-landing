@@ -120,7 +120,8 @@ class App {
         // Register all modals used in the app
         modalManager.registerModal('#gallery-modal');
         modalManager.registerModal('#demo-modal');
-        // Add more modals as needed
+        modalManager.registerModal('#writeup-modal');
+        modalManager.registerModal('#code-modal');
     }
     
     setupEventListeners() {
