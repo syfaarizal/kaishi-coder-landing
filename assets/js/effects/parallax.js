@@ -73,16 +73,10 @@ export class ParallaxEffect {
         });
     }
 
+    // Hapus method destroy yang berlebihan atau perbaiki:
     destroy() {
-        // existing cleanup...
-        this.filterButtons.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
-        this.sortButtons.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
-        if (this.searchInput) this.searchInput.replaceWith(this.searchInput.cloneNode(true));
-
-        // cleanup demo-specific resources and button handlers
-        if (this.demoButtons) this.demoButtons.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
-        if (this.codeButtons) this.codeButtons.forEach(btn => btn.replaceWith(btn.cloneNode(true)));
-        this.cleanupDemoModal();
+        this.disable();
+        // Hapus event listeners lain jika ada
     }
 }
 
