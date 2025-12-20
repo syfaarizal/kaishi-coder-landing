@@ -347,3 +347,106 @@
         justify-content: center;
     }
 }
+
+/* Responsive Design for Skills */
+@media (max-width: 1024px) {
+    .skills-section {
+        padding: 80px 30px;
+    }
+    
+    .skills-title {
+        font-size: 3em;
+    }
+    
+    .skills-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    
+    .weapon-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .metric:nth-child(2)::before {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .skills-section {
+        padding: 60px 20px;
+    }
+    
+    .skills-title {
+        font-size: 2.5em;
+        letter-spacing: 3px;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .card-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .weapon-icon-container {
+        margin-bottom: 15px;
+    }
+    
+    .status-indicator {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+    }
+    
+    .weapon-metrics {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .metric::before {
+        display: none;
+    }
+    
+    .arsenal-stats {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .arsenal-quote {
+        padding: 25px;
+    }
+    
+    .quote-text {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-title {
+        font-size: 2em;
+    }
+    
+    .weapon-card {
+        padding: 20px;
+    }
+    
+    .weapon-name {
+        font-size: 1.3em;
+    }
+    
+    .tech-chips {
+        justify-content: center;
+    }
+    
+    .arsenal-quote {
+        padding: 20px;
+    }
+    
+    .quote-text {
+        font-size: 1.1em;
+    }
+}

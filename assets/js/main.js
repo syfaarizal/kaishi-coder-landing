@@ -10,6 +10,7 @@ import { modalManager } from './components/modal.js';
 import { initScanline } from './effects/scanline.js';
 import { initGallery } from './sections/gallery.js';
 import { initWriteups } from './sections/writeup.js';
+import { loadSkillsSection } from './sections/skills.js';
 
 class App {
     constructor() {
@@ -22,7 +23,8 @@ class App {
             projects: null,
             navigation: null,
             gallery: null,
-            writeups: null
+            writeups: null,
+            skills: null
         };
         
         this.init();
@@ -113,6 +115,11 @@ class App {
         // Writeup section
         if (document.querySelector('.writeup-btn')) {
             this.components.writeups = initWriteups();
+        }
+
+        // Skills section
+        if (document.getElementById('skills')) {
+            this.components.skills = loadSkillsSection();
         }
     }
     
