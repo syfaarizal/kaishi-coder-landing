@@ -108,22 +108,6 @@
     position: relative;
 }
 
-.stats-terminal::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #ff0000, transparent);
-    animation: scanLine 3s linear infinite;
-}
-
-@keyframes scanLine {
-    0% { top: 0; }
-    100% { top: 100%; }
-}
-
 /* Skills Grid */
 .skills-grid {
     display: grid;

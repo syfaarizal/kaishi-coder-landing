@@ -290,6 +290,7 @@ export const initSkills = () => {
                 .expanded-content {
                     margin-top: 20px;
                     padding: 15px;
+                    color: #fff;
                     background: rgba(0, 0, 0, 0.5);
                     border-radius: 8px;
                     border: 1px solid rgba(255, 0, 0, 0.3);
