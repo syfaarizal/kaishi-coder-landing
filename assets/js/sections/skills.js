@@ -217,62 +217,6 @@ export const initSkills = () => {
         initStatusFlicker();
         initHighlightKeywords();
         initCardInteractions();
-        
-        // Add CSS for ripple animation
-        if (!document.querySelector('#skills-styles')) {
-            const style = document.createElement('style');
-            style.id = 'skills-styles';
-            style.textContent = `
-                @keyframes ripple {
-                    to {
-                        transform: scale(4);
-                        opacity: 0;
-                    }
-                }
-                
-                .chip-active {
-                    transform: translateY(-3px) scale(1.05);
-                }
-                
-                .card-expanded {
-                    transform: scale(1.05) !important;
-                    z-index: 100 !important;
-                }
-                
-                .expanded-content {
-                    margin-top: 20px;
-                    padding: 15px;
-                    color: #fff;
-                    background: rgba(0, 0, 0, 0.5);
-                    border-radius: 8px;
-                    border: 1px solid rgba(255, 0, 0, 0.3);
-                    animation: fadeIn 0.3s ease;
-                }
-                
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                
-                .close-expanded {
-                    background: rgba(255, 0, 0, 0.2);
-                    color: #ff6666;
-                    border: 1px solid rgba(255, 0, 0, 0.3);
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-family: 'Courier New', monospace;
-                    margin-top: 10px;
-                    transition: all 0.3s;
-                }
-                
-                .close-expanded:hover {
-                    background: rgba(255, 0, 0, 0.3);
-                    color: #ff0000;
-                }
-            `;
-            document.head.appendChild(style);
-        }
     };
 
     // Initialize when section is in view
