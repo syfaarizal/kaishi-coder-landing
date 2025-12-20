@@ -210,54 +210,6 @@ export const initSkills = () => {
         animate();
     };
 
-    // Card click interaction
-    const initCardInteractions = () => {
-        const weaponCards = $$('.weapon-card');
-        
-        weaponCards.forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (e.target.closest('.tech-chip') || e.target.closest('.metric')) {
-                    return; // Ignore clicks on interactive elements
-                }
-                
-                // Toggle active state
-                card.classList.toggle('card-expanded');
-                
-                if (card.classList.contains('card-expanded')) {
-                    // Expand card
-                    card.style.transform = 'scale(1.05)';
-                    card.style.zIndex = '100';
-                    
-                    // Show additional info
-                    const description = $('.weapon-description p', card);
-                    const originalText = description.textContent;
-                    
-                    // Add expanded content temporarily
-                    const expandedContent = document.createElement('div');
-                    expandedContent.className = 'expanded-content';
-                    expandedContent.innerHTML = `
-                        <div class="expanded-details">
-                            <h4>SYSTEM DETAILS</h4>
-                            <p>Advanced configuration and performance metrics available.</p>
-                            <button class="close-expanded">Collapse</button>
-                        </div>
-                    `;
-                    
-                    card.appendChild(expandedContent);
-                    
-                    // Close button
-                    $('.close-expanded', card).addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        card.classList.remove('card-expanded');
-                        card.style.transform = '';
-                        card.style.zIndex = '';
-                        expandedContent.remove();
-                    });
-                }
-            });
-        });
-    };
-
     // Initialize all effects
     const init = () => {
         animateIntensityGauges();
