@@ -75,36 +75,6 @@
     display: inline-block;
 }
 
-/* Network Terminal */
-.network-terminal {
-    max-width: 700px;
-    margin: 40px auto 0;
-    background: rgba(10, 10, 10, 0.95);
-    border: 2px solid #8a2be2;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 
-        0 0 40px rgba(138, 43, 226, 0.3),
-        inset 0 0 20px rgba(138, 43, 226, 0.1);
-    position: relative;
-}
-
-.network-terminal::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #8a2be2, transparent);
-    animation: terminalScan 3s linear infinite;
-}
-
-@keyframes terminalScan {
-    0% { top: 0; }
-    100% { top: 100%; }
-}
-
 /* Connections Grid */
 .connections-grid {
     display: grid;

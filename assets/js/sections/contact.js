@@ -8,20 +8,6 @@ export const initContact = () => {
     const contactSection = $('#contact');
     if (!contactSection) return null;
 
-    // Initialize terminal typing
-    const terminalLines = $$('.terminal-line', $('.network-terminal'));
-    if (terminalLines.length > 0) {
-        setTimeout(() => {
-            initMultiLineTyping('.network-terminal .terminal-line', {
-                speed: 45,
-                deleteSpeed: 25,
-                pause: 3000,
-                loop: false,
-                cursor: '█'
-            });
-        }, 500);
-    }
-
     // Initialize glitch effect for subtitle
     const glitch = initGlitchEffect('.contact-subtitle', {
         intensity: 0.04,
