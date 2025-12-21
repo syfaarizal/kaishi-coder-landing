@@ -8,20 +8,6 @@ export const initSkills = () => {
     const skillsSection = $('#skills');
     if (!skillsSection) return null;
 
-    // Initialize terminal typing
-    const terminalLines = $$('.terminal-line', $('.stats-terminal'));
-    if (terminalLines.length > 0) {
-        setTimeout(() => {
-            initMultiLineTyping('.stats-terminal .terminal-line', {
-                speed: 40,
-                deleteSpeed: 25,
-                pause: 3000,
-                loop: false,
-                cursor: '█'
-            });
-        }, 800);
-    }
-
     // Initialize glitch effect for subtitle
     const glitch = initGlitchEffect('.skills-subtitle', {
         intensity: 0.04,
