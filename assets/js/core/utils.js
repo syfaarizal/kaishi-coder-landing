@@ -1,4 +1,3 @@
-// js/core/utils.js
 export const debounce = (func, wait = 250) => {
     let timeout;
     return function executedFunction(...args) {

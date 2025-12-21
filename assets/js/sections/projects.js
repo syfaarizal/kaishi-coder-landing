@@ -1,4 +1,3 @@
-// js/sections/projects.js
 import { $, $$, addClass, removeClass } from '../core/dom.js';
 import { debounce } from '../core/utils.js';
 import { modalManager } from '../components/modal.js';

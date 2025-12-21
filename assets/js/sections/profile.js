@@ -1,4 +1,3 @@
-// js/sections/profile.js
 import { $$ } from '../core/dom.js';
 import { initCounters } from '../components/counter.js';
 import { initGlitchEffect } from '../effects/glitch.js';

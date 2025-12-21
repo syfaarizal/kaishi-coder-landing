@@ -1,4 +1,3 @@
-// assets/js/effects/scanline.js
 import { $ } from '../core/dom.js';
 import { randomBool } from '../core/utils.js';
 

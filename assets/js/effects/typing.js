@@ -1,4 +1,3 @@
-// js/effects/typing.js
 import { $, $$ } from '../core/dom.js';
 import { wait } from '../core/utils.js';
 

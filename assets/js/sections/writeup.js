@@ -1,4 +1,3 @@
-// assets/js/sections/writeup.js
 import { $, $$ } from '../core/dom.js';
 import { modalManager } from '../components/modal.js';
 

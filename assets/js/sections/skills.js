@@ -1,4 +1,3 @@
-// js/sections/skills.js
 import { $, $$ } from '../core/dom.js';
 import { randomBool, randomRange, wait } from '../core/utils.js';
 import { initMultiLineTyping } from '../effects/typing.js';

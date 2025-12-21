@@ -1,4 +1,3 @@
-// js/sections/navigation.js
 import { $, $$ } from '../core/dom.js';
 
 export class Navigation {

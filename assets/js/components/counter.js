@@ -1,4 +1,3 @@
-// js/components/counter.js
 import { $$ } from '../core/dom.js';
 
 export class AnimatedCounter {

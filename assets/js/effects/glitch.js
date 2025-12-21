@@ -1,4 +1,3 @@
-// js/effects/glitch.js
 import { $, $$ } from '../core/dom.js';
 import { randomBool, randomRange } from '../core/utils.js';
 

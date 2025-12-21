@@ -1,4 +1,3 @@
-// js/effects/parallax.js
 import { $$ } from '../core/dom.js';
 import { throttle } from '../core/utils.js';
 

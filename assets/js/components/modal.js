@@ -1,4 +1,3 @@
-// js/components/modal.js
 import { $, $$, addClass, removeClass, safeAddEvent } from '../core/dom.js';
 
 export class ModalSystem {

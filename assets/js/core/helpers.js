@@ -1,4 +1,3 @@
-// js/core/helpers.js
 import { $, $$ } from './dom.js';
 import { randomBool, randomRange } from './utils.js';
 

@@ -1,4 +1,3 @@
-// assets/js/sections/gallery.js
 import { $, $$, addClass, removeClass } from '../core/dom.js';
 import { modalManager } from '../components/modal.js';
 

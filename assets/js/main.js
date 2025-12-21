@@ -1,4 +1,3 @@
-// js/main.js
 import { handleResponsive, initSmoothScroll, initImageFallback, initCardHover } from './core/helpers.js';
 import { initParallax } from './effects/parallax.js';
 import { initGlitchEffect } from './effects/glitch.js';
