@@ -450,3 +450,73 @@
         font-size: 1.1em;
     }
 }
+
+/* Responsive Design Contact Page */
+@media (max-width: 1200px) {
+    .connections-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-section {
+        padding: 60px 20px;
+    }
+    
+    .contact-title {
+        font-size: 2.8em;
+    }
+    
+    .connections-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .visualization-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .viz-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    
+    .contact-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    .contact-legend {
+        justify-content: center;
+    }
+    
+    .contact-cta {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-title {
+        font-size: 2.2em;
+    }
+    
+    .node-card {
+        padding: 20px;
+    }
+    
+    .platform-name {
+        font-size: 1.3em;
+    }
+    
+    .network-canvas {
+        height: 200px;
+    }
+    
+    .viz-value {
+        font-size: 2em;
+    }
+}

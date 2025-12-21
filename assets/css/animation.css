@@ -315,3 +315,74 @@
     0% { top: 0; }
     100% { top: 100%; }
 }
+
+/* Contact Section Animations */
+@keyframes gradientFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes terminalScan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+@keyframes iconPulse {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    50% { 
+        opacity: 0.6; 
+        transform: translate(-50%, -50%) scale(1.2); 
+    }
+}
+
+@keyframes iconPulseFast {
+    0%, 100% { 
+        opacity: 0.5; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    50% { 
+        opacity: 0.8; 
+        transform: translate(-50%, -50%) scale(1.3); 
+    }
+}
+
+@keyframes nodePulse {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 20px var(--node-color, #ff0000); 
+    }
+    50% { 
+        transform: scale(1.5); 
+        box-shadow: 0 0 40px var(--node-color, #ff0000); 
+    }
+}
+
+@keyframes lineFlow {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.3; }
+}
+
+@keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes bounceIcon {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(3px); }
+}
+
+@keyframes spinIcon {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes floatBackground {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 30px) scale(0.95); }
+}

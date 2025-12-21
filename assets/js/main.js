@@ -11,6 +11,7 @@ import { initScanline } from './effects/scanline.js';
 import { initGallery } from './sections/gallery.js';
 import { initWriteups } from './sections/writeup.js';
 import { loadSkillsSection } from './sections/skills.js';
+import { loadContactSection } from './sections/contact.js';
 
 class App {
     constructor() {
@@ -24,7 +25,8 @@ class App {
             navigation: null,
             gallery: null,
             writeups: null,
-            skills: null
+            skills: null,
+            contact: null
         };
         
         this.init();
@@ -120,6 +122,11 @@ class App {
         // Skills section
         if (document.getElementById('skills')) {
             this.components.skills = loadSkillsSection();
+        }
+
+        // Contact section
+        if (document.getElementById('contact')) {
+            this.components.contact = loadContactSection();
         }
     }
     
