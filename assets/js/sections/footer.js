@@ -165,11 +165,11 @@ export const initFooter = () => {
             position: absolute;
             width: 3px;
             height: 3px;
-            background: #8a2be2;
+            background: #e22b2bff;
             border-radius: 50%;
             pointer-events: none;
             z-index: 3;
-            box-shadow: 0 0 10px #8a2be2;
+            box-shadow: 0 0 10px #e22b2bff;
         `;
         
         const rect = container.getBoundingClientRect();
