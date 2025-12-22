@@ -412,7 +412,7 @@
 }
 
 /* Connection Line */
-.connection-line {
+.connection-line-contact {
     position: absolute;
     bottom: -15px;
     left: 50%;
@@ -426,7 +426,7 @@
     transition: all 0.3s;
 }
 
-.connection-node:hover .connection-line {
+.connection-node:hover .connection-line-contact {
     height: 50px;
     opacity: 1;
     background: linear-gradient(to bottom, 
