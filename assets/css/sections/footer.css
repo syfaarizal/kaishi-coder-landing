@@ -287,13 +287,6 @@
     gap: 30px;
 }
 
-@media (max-width: 768px) {
-    .links-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
-
 .column-title {
     color: #fff;
     font-size: 1.1em;
@@ -656,69 +649,6 @@
 @keyframes footerScan {
     0% { top: 0; }
     100% { top: 100%; }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .footer-section {
-        padding: 60px 20px 20px;
-    }
-    
-    .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
-    }
-    
-    .copyright,
-    .legal-links,
-    .back-to-top {
-        min-width: 100%;
-        text-align: center;
-    }
-    
-    .legal-links {
-        justify-content: center;
-    }
-    
-    .mission-stats {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .sicoder-container {
-        width: 150px;
-        height: 50px;
-    }
-}
-
-@media (max-width: 480px) {
-    .logo-name {
-        font-size: 1.8em;
-    }
-    
-    .footer-logo {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-    
-    .logo-container {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .sicoder-container {
-        width: 120px;
-        height: 40px;
-    }
-    
-    .footer-mission,
-    .affiliation,
-    .footer-links,
-    .system-status {
-        padding: 20px;
-    }
 }
 
 /* Interactive Effects */
