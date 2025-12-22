@@ -11,6 +11,7 @@ import { initGallery } from './sections/gallery.js';
 import { initWriteups } from './sections/writeup.js';
 import { loadSkillsSection } from './sections/skills.js';
 import { loadContactSection } from './sections/contact.js';
+import { initFooter } from './sections/footer.js';
 
 class App {
     constructor() {
@@ -25,7 +26,8 @@ class App {
             gallery: null,
             writeups: null,
             skills: null,
-            contact: null
+            contact: null,
+            footer: null
         };
         
         this.init();
@@ -127,6 +129,9 @@ class App {
         if (document.getElementById('contact')) {
             this.components.contact = loadContactSection();
         }
+
+        // Footer section
+        this.components.footer = initFooter();
     }
     
     initModals() {
