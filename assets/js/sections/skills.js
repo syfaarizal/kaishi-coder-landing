@@ -201,7 +201,6 @@ export const initSkills = () => {
         initTechChipInteractions();
         initStatusFlicker();
         initHighlightKeywords();
-        initCardInteractions();
     };
 
     // Initialize when section is in view
