@@ -67,9 +67,8 @@
 /* Tablet (1024px) */
 @media (max-width: 1200px) {
     .main-content {
-        flex-direction: column;
-        align-items: center;
-        gap: 50px;
+        padding: 160px 40px 50px;
+        gap: 30px;
     }
     
     .character-info, 
@@ -83,10 +82,31 @@
         margin-top: 0;
         height: 500px;
     }
+
+    .screen-right {
+        right: -15px;
+        transition: all 0.3s ease;
+    }
+
+    .screen-right:hover {
+        z-index: 2;
+    }
     
-    .screen-frame {
-        width: 350px;
-        height: 450px;
+    .game-badge {
+        bottom: 90px;
+        font-size: 1em;
+    }
+
+    .cta-text {
+        font-size: 0.9em;
+    }
+
+    .viz-value {
+        font-size: 1.5em;
+    }
+
+    .visualization-info {
+        gap: 70px;
     }
 }
 
