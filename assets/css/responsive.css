@@ -1,4 +1,64 @@
-/* ========== RESPONSIVE STYLES ========== */
+/* Responsive Design for Home Page */
+
+/* Laptop (1440px) */
+@media (max-width: 1440px) {
+    .character-img {
+        width: 450px;
+        height: 600px;
+    }
+
+    nav {
+        padding: 15px 30px;
+        gap: 20px;
+    }
+
+    .nav-links a {
+        font-size: 1em;
+    }
+
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        top: auto;
+        transform: none;
+        width: 100%;
+        border-radius: 10px 10px 0 0;
+        padding: 5px;
+        display: flex;
+        justify-content: space-around;
+        background: rgba(0, 0, 0, 0.95);
+        border-top: 1px solid #ff0000;
+        border-right: none;
+        border-bottom: none;
+        border-left: none;
+    }
+
+    .menu-item {
+        padding: 8px 12px;
+        font-size: 1em;
+        margin: 0;
+        gap: 5px;
+    }
+
+    .status-badge {
+        top: 300px;
+    }
+
+    .game-badge {
+        bottom: 150px;
+        background-color: rgba(0, 0, 0, 0.575);
+    }
+
+    .screen-right {
+        right: -30px;
+        transition: all 0.3s ease;
+    }
+
+    .screen-right:hover {
+        z-index: 3;
+    }
+}
 
 /* Tablet (1024px) */
 @media (max-width: 1200px) {
