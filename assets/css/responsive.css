@@ -70,6 +70,7 @@
     }
     
     .game-badge {
+        display: none;
         font-size: 1em;
         padding: 10px 30px;
         bottom: 80px;
@@ -146,11 +147,11 @@
     }
     
     .screen-left {
-        left: 10px;
+        display: none;
     }
     
     .screen-right {
-        right: 10px;
+        display: none;
     }
     
     .status-badge {
@@ -236,7 +237,7 @@
     }
     
     .profile-title {
-        font-size: 2.2em;
+        font-size: 1.8em;
     }
     
     .profile-stats {
@@ -244,7 +245,7 @@
     }
     
     .stat-number {
-        font-size: 2.2em;
+        font-size: 1.8em;
     }
     
     .section-subtitle {
@@ -301,7 +302,7 @@
     }
     
     .projects-title {
-        font-size: 2.5em;
+        font-size: 1.8em;
     }
     
     .projects-subtitle {
@@ -335,7 +336,7 @@
 
 @media (max-width: 480px) {
     .projects-title {
-        font-size: 2em;
+        font-size: 1.5em;
     }
     
     .project-name {
@@ -346,6 +347,31 @@
         flex-wrap: wrap;
         justify-content: center;
     }
+
+    .search-prompt {
+        font-size: 0.7em;
+    }
+
+    .search-input {
+        font-size: 0.7em;        
+    }
+
+    .search-cursor {
+        width: 2px;
+    }
+
+    .writeup-badge {
+        text-align: center;
+    }
+
+    .all-projects-btn {
+        font-size: 0.8em;
+        padding: 10px 20px;
+    }
+
+    .projects-note {
+        font-size: 0.8em;
+    }
 }
 
 /* Responsive Design for Skills */
@@ -355,7 +381,7 @@
     }
     
     .skills-title {
-        font-size: 3em;
+        font-size: 1.8em;
     }
     
     .skills-grid {
@@ -378,8 +404,12 @@
     }
     
     .skills-title {
-        font-size: 2.5em;
+        font-size: 1.8em;
         letter-spacing: 3px;
+    }
+
+    .skills-subtitle {
+        font-size: 1em;
     }
     
     .skills-grid {
@@ -427,7 +457,7 @@
 
 @media (max-width: 480px) {
     .skills-title {
-        font-size: 2em;
+        font-size: 1.5em;
     }
     
     .weapon-card {
@@ -480,7 +510,6 @@
     
     .viz-stats {
         justify-content: center;
-        flex-wrap: wrap;
         gap: 30px;
     }
     
@@ -517,7 +546,32 @@
     }
     
     .viz-value {
-        font-size: 2em;
+        font-size: 1.5em;
+    }
+
+    .viz-label {
+        font-size: 0.7em;
+    }
+
+    .status-message {
+        font-size: 0.9em;
+    }
+
+    .last-update {
+        margin-top: 10px;
+    }
+
+    .line-5 {
+        top: 30%; left: 75%; width: 35%; transform: rotate(60deg);
+    }
+
+    .pulse-node {
+        width: 10px;
+        height: 10px;
+    }
+
+    .dynamic-connection-line {
+        display: none;
     }
 }
 
@@ -545,8 +599,12 @@
     }
     
     .mission-stats {
-        flex-direction: column;
-        gap: 20px;
+        justify-content: space-around;
+        gap: 15px;
+    }
+
+    .mission-text {
+        text-align: center;
     }
     
     .sicoder-container {

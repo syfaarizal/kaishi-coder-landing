@@ -513,7 +513,7 @@
 .line-3 { 
     --start-color: #e1306c; 
     --end-color: #00f2ea;
-    top: 55%; left: 30%; width: 40%; transform: rotate(45deg);
+    top: 55%; left: 30%; width: 40%; transform: rotate(30deg);
 }
 .line-4 { 
     --start-color: #00f2ea; 
