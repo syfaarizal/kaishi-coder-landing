@@ -222,32 +222,7 @@
     }
     
     .character-display {
-        height: 350px;
-    }
-    
-    .screen-frame {
-        width: 240px;
-        height: 300px;
-    }
-    
-    .screen-left {
         display: none;
-    }
-    
-    .screen-right {
-        display: none;
-    }
-    
-    .status-badge {
-        font-size: 0.8em;
-        padding: 8px 15px;
-        top: 120px;
-    }
-    
-    .game-badge {
-        font-size: 0.9em;
-        padding: 8px 20px;
-        bottom: 60px;
     }
     
     .portfolio-section {
@@ -271,6 +246,10 @@
         width: 18px;
         height: 18px;
     }
+
+    .footer-bottom {
+        margin-bottom: 60px;
+    }
 }
 
 /* Small Mobile (360px) */
@@ -278,12 +257,7 @@
     .character-name {
         font-size: 1.8em;
     }
-    
-    .screen-frame {
-        width: 200px;
-        height: 260px;
-    }
-    
+
     .nav-links {
         gap: 10px;
     }
