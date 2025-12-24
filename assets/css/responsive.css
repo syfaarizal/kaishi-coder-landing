@@ -778,6 +778,54 @@
     }
 }
 
+@media (max-width: 360px) {
+    .contact-title {
+        font-size: 1.8em;
+    }
+
+    .contact-subtitle {
+        font-size: 0.9em;
+    }
+
+    .platform-name {
+        font-size: 1.1em;
+    }
+
+    .viz-value {
+        font-size: 1.2em;
+    }
+
+    .viz-label {
+        font-size: 0.6em;
+    }
+
+    .network-visualization {
+        padding: 15px;
+    }
+
+    .viz-stats {
+        margin-right: 20px;
+    }
+
+    .status-message {
+        font-size: 0.8em;
+    }
+
+    .status-indicator {
+        top: 308px;
+        left: 17px;
+    }
+
+    .pulse-node {
+        width: 8px;
+        height: 8px;
+    }
+
+    .contact-legend {
+        gap: 10px;
+    }
+}
+
 /* Responsive Design for Footer */
 @media (max-width: 768px) {
     .footer-section {
