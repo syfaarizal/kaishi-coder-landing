@@ -493,6 +493,67 @@
     }
 }
 
+@media (max-width: 360px) {
+    .projects-title {
+        font-size: 1.1em;
+    }
+
+    .projects-subtitle {
+        font-size: 0.8em;
+    }
+
+    .project-header {
+        padding: 12px 10px;
+    }
+
+    .project-badge {
+        font-size: 0.7em;
+        padding: 5px;
+    }
+
+    .writeup-badge {
+        font-size: 0.5em;
+        padding: 5px;
+    }
+
+    .connection-line:nth-child(4) {
+        top: 55%;
+        left: 22%;
+        width: 100px;
+        transform: rotate(30deg);
+    }
+
+    .neuron-node:nth-child(1) {
+        top: 52%;
+    }
+
+    .obstacle:nth-child(3) {
+        right: 140px;
+    }
+
+    .obstacle:nth-child(2) {
+        right: 60px;
+    }
+
+    .coin {
+        right: 105px;
+    }
+
+    .modal-title {
+        font-size: 1.2em;
+    }
+
+    .all-projects-btn {
+        font-size: 0.6em;
+        padding: 8px 15px;
+        gap: 5px;
+    }
+
+    .projects-note {
+        font-size: 0.7em;
+    }
+}
+
 /* Responsive Design for Skills */
 @media (max-width: 1024px) {
     .skills-section {
