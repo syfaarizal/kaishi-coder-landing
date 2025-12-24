@@ -378,7 +378,33 @@
     }
 }
 
-/* Responsive Design */
+@media (max-width: 360px) {
+    .profile-title {
+        font-size: 1.5em;
+    }
+
+    .stat-number {
+        font-size: 1.5em;
+    }
+
+    .stat-label {
+        font-size: 0.9em;
+    }
+
+    .glitch-text {
+        font-size: 0.8em;
+    }
+
+    .skill-label {
+        font-size: 0.8em;
+    }
+
+    .section-subtitle {
+        font-size: 1.3em;
+    }
+}
+
+/* Responsive Design  for Projects */
 @media (max-width: 1200px) {
     .projects-section {
         padding: 60px 50px;
