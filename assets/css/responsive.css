@@ -661,6 +661,29 @@
     }
 }
 
+@media (max-width: 360px) {
+    .skills-title {
+        font-size: 1.2em;
+    }
+
+    .skills-subtitle {
+        font-size: 0.8em;
+    }
+
+    .weapon-name {
+        font-size: 1.1em;
+    }
+
+    .tech-chip {
+        font-size: 0.7em;
+        padding: 5px 10px;
+    }
+
+    .quote-text {
+        font-size: 1em;
+    }
+}
+
 /* Responsive Design Contact Page */
 @media (max-width: 1200px) {
     .connections-grid {
