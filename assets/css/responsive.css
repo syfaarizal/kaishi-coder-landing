@@ -897,3 +897,13 @@
         padding: 20px;
     }
 }
+
+@media (max-width: 360px) {
+    .copyright, .legal-links, .back-to-top {
+        font-size: 0.9em;
+    }
+
+    .footer-links {
+        display: none;
+    }
+}
