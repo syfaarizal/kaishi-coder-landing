@@ -13,18 +13,21 @@ export class Navigation {
     }
     
     initScrollSpy() {
-        const sections = $$('section[id]');
-        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    this.currentSection = entry.target.id;
-                    this.updateActiveNav();
+                this.currentSection = entry.target.id;
+                this.updateActiveNav();
                 }
             });
-        }, { threshold: 0.3 });
+        }, {
+            rootMargin: '-90px 0px -60% 0px', // Adjust the margin as needed
+            threshold: 0 // Trigger as soon as even one pixel is visible
+        });
         
-        sections.forEach(section => observer.observe(section));
+        $$('section').forEach(section => { // Adjust selector as needed
+            observer.observe(section); // Observe each section
+        }); 
     }
     
     updateActiveNav() {
