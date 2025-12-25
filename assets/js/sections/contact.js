@@ -2,6 +2,18 @@ import { $, $$ } from '../core/dom.js';
 import { randomBool, randomRange, wait } from '../core/utils.js';
 import { initMultiLineTyping } from '../effects/typing.js';
 import { initGlitchEffect } from '../effects/glitch.js';
+import { 
+    fetchGitHubStats, 
+    fetchYouTubeStats, 
+    fetchInstagramStats, 
+    fetchTikTokStats, 
+    fetchTwitterStats,
+    updateAllPlatformStats,
+    saveStatsToLocalStorage,
+    loadStatsFromLocalStorage,
+    formatNumber,
+    formatRelativeTime 
+} from './contact-api.js';
 
 export const initContact = () => {
     const contactSection = $('#contact');
@@ -13,6 +25,129 @@ export const initContact = () => {
         maxShift: 4,
         duration: 120
     });
+
+    // State untuk data platform
+    let platformStats = {
+        github: null,
+        youtube: null,
+        instagram: null,
+        tiktok: null,
+        twitter: null
+    };
+
+    // Load data awal dari localStorage
+    const loadInitialStats = () => {
+        const savedStats = loadStatsFromLocalStorage();
+        if (savedStats) {
+            platformStats = savedStats;
+            updateAllStatsDisplays();
+        }
+    };
+
+    // Update semua tampilan stats
+    const updateAllStatsDisplays = () => {
+        updatePlatformStats('github', platformStats.github);
+        updatePlatformStats('youtube', platformStats.youtube);
+        updatePlatformStats('instagram', platformStats.instagram);
+        updatePlatformStats('tiktok', platformStats.tiktok);
+        updatePlatformStats('twitter', platformStats.twitter);
+        
+        // Update network stats
+        updateNetworkStats();
+    };
+
+    // Update stats untuk platform tertentu
+    const updatePlatformStats = (platform, stats) => {
+        const node = $(`.connection-node[data-platform="${platform}"]`);
+        if (!node || !stats) return;
+
+        switch (platform) {
+            case 'github':
+                $$('.stat-value', node).forEach((el, index) => {
+                    if (index === 0) el.textContent = stats.publicRepos || '38';
+                    if (index === 1) el.textContent = stats.commits || '421';
+                });
+                break;
+                
+            case 'youtube':
+                $$('.stat-value', node).forEach((el, index) => {
+                    if (index === 0) el.textContent = stats.videoCount || '31';
+                    if (index === 1) el.textContent = formatNumber(stats.viewCount) || '1.2K';
+                });
+                break;
+                
+            case 'instagram':
+                $$('.stat-value', node).forEach((el, index) => {
+                    if (index === 0) el.textContent = stats.postCount || '35';
+                    if (index === 1) el.textContent = '24/7';
+                });
+                break;
+                
+            case 'tiktok':
+                $$('.stat-value', node).forEach((el, index) => {
+                    if (index === 0) el.textContent = stats.videoCount || '26';
+                    if (index === 1) el.textContent = '≤60s';
+                });
+                break;
+                
+            case 'twitter':
+                $$('.stat-value', node).forEach((el, index) => {
+                    if (index === 0) el.textContent = formatNumber(stats.tweetCount) || '1.5K';
+                    if (index === 1) el.textContent = '280';
+                });
+                break;
+        }
+    };
+
+    // Update network stats
+    const updateNetworkStats = () => {
+        const updateTime = $('.update-time');
+        if (updateTime) {
+            updateTime.textContent = formatRelativeTime(platformStats.lastUpdated || Date.now());
+            updateTime.style.color = '#00ff00';
+        }
+    };
+
+    // Fetch dan update semua data
+    const refreshAllStats = async () => {
+        // Tampilkan loading state
+        const scanBtn = $('.scan-network');
+        if (scanBtn) {
+            scanBtn.classList.add('scan-active');
+            scanBtn.disabled = true;
+            scanBtn.innerHTML = '<span class="button-icon">🔄</span><span class="button-text">SCANNING...</span>';
+        }
+
+        const updateTime = $('.update-time');
+        if (updateTime) {
+            updateTime.textContent = 'SCANNING...';
+            updateTime.style.color = '#ffbd2e';
+        }
+
+        try {
+            const stats = await updateAllPlatformStats();
+            if (stats) {
+                platformStats = stats;
+                saveStatsToLocalStorage(stats);
+                updateAllStatsDisplays();
+                
+                // Tampilkan notifikasi sukses
+                showNotification('Network scan complete. All stats updated.', '#00ffff');
+            }
+        } catch (error) {
+            console.error('Error refreshing stats:', error);
+            showNotification('Scan failed. Using cached data.', '#ff0000');
+        } finally {
+            // Reset button
+            if (scanBtn) {
+                setTimeout(() => {
+                    scanBtn.classList.remove('scan-active');
+                    scanBtn.disabled = false;
+                    scanBtn.innerHTML = '<span class="button-icon">📡</span><span class="button-text">RESCAN NETWORK</span>';
+                }, 1000);
+            }
+        }
+    };
 
     // Platform-specific interactions
     const initPlatformInteractions = () => {
@@ -240,22 +375,56 @@ export const initContact = () => {
         }, 3000);
     };
 
+    // General notification
+    const showNotification = (message, color = '#00ff00') => {
+        const notification = document.createElement('div');
+        notification.className = 'copy-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">📡</span>
+                <span class="notification-text">${message}</span>
+            </div>
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid ${color};
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: ${color};
+            font-family: 'Courier New', monospace;
+            z-index: 10000;
+            transition: transform 0.3s;
+            box-shadow: 0 0 30px ${color}40;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.transform = 'translateX(-50%) translateY(0)';
+        }, 10);
+        
+        setTimeout(() => {
+            notification.style.transform = 'translateX(-50%) translateY(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    };
+
     // Network scan button
     const initScanButton = () => {
         const scanBtn = $('.scan-network');
         if (!scanBtn) return;
         
         scanBtn.addEventListener('click', () => {
-            // Visual feedback
-            scanBtn.classList.add('scan-active');
-            scanBtn.disabled = true;
-            
-            // Update network visualization
-            const updateTime = $('.update-time');
-            if (updateTime) {
-                updateTime.textContent = 'SCANNING...';
-                updateTime.style.color = '#ffbd2e';
-            }
+            refreshAllStats();
             
             // Animate nodes
             const nodes = $$('.pulse-node');
@@ -263,55 +432,11 @@ export const initContact = () => {
                 node.style.animation = 'nodePulse 0.5s infinite';
             });
             
-            // Simulate scan process
+            // Reset node animation setelah scan selesai
             setTimeout(() => {
-                // Reset button
-                scanBtn.classList.remove('scan-active');
-                scanBtn.disabled = false;
-                
-                // Update time
-                if (updateTime) {
-                    updateTime.textContent = 'NOW';
-                    updateTime.style.color = '#00ff00';
-                }
-                
-                // Reset node animation
                 nodes.forEach(node => {
                     node.style.animation = 'nodePulse 3s infinite';
                 });
-                
-                // Show scan complete notification
-                const notification = document.createElement('div');
-                notification.textContent = 'Network scan complete. All nodes operational.';
-                notification.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%) translateY(100%);
-                    background: rgba(0, 0, 0, 0.9);
-                    border: 2px solid #00ffff;
-                    border-radius: 8px;
-                    padding: 12px 20px;
-                    color: #00ffff;
-                    font-family: 'Courier New', monospace;
-                    z-index: 10000;
-                    transition: transform 0.3s;
-                `;
-                
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(-50%) translateY(0)';
-                }, 10);
-                
-                setTimeout(() => {
-                    notification.style.transform = 'translateX(-50%) translateY(100%)';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 3000);
             }, 2000);
         });
     };
@@ -404,11 +529,29 @@ export const initContact = () => {
         });
     };
 
+    // Auto-refresh stats setiap 5 menit
+    const initAutoRefresh = () => {
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                refreshAllStats();
+            }
+        }, 5 * 60 * 1000); // 5 menit
+    };
+
     // Initialize all effects
     const init = () => {
+        // Load data awal
+        loadInitialStats();
+        
         initPlatformInteractions();
         initScanButton();
         initNetworkVisualization();
+        initAutoRefresh();
+        
+        // Auto-refresh saat section terlihat
+        if (document.visibilityState === 'visible') {
+            setTimeout(() => refreshAllStats(), 2000);
+        }
         
         // Add CSS for dynamic elements
         if (!document.querySelector('#contact-styles')) {
@@ -485,6 +628,11 @@ export const initContact = () => {
                     background-size: 200% auto !important;
                     animation: activeScan 1s linear infinite !important;
                 }
+                
+                @keyframes spinRefresh {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
             `;
             document.head.appendChild(style);
         }
@@ -503,6 +651,8 @@ export const initContact = () => {
     observer.observe(contactSection);
 
     return {
+        refreshStats: refreshAllStats,
+        getCurrentStats: () => platformStats,
         destroy: () => {
             glitch?.destroy();
             observer.disconnect();

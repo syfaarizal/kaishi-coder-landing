@@ -125,9 +125,12 @@ class App {
             this.components.skills = loadSkillsSection();
         }
 
-        // Contact section
+        // Contact section - dengan auto-update stats
         if (document.getElementById('contact')) {
             this.components.contact = loadContactSection();
+            
+            // window.app.components.contact.refreshStats() // Untuk manual refresh
+            // window.app.components.contact.getCurrentStats() // Untuk lihat data
         }
 
         // Footer section
@@ -177,6 +180,15 @@ class App {
         if (gridOverlay) {
             this.setupScreenFlicker(gridOverlay);
         }
+        
+        // Keyboard shortcut for manual refresh of contact stats
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r' && this.components.contact) {
+                e.preventDefault();
+                this.components.contact.refreshStats();
+                console.log('Manual refresh triggered for contact stats');
+            }
+        });
     }
     
     setupScreenFlicker(element) {
