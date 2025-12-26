@@ -911,6 +911,15 @@
         font-size: 0.9em;
     }
 
+    .terminal-title {
+        font-size: 0.7em;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+    }
+
     .footer-links {
         display: none;
     }
