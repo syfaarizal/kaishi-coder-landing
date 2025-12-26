@@ -343,6 +343,7 @@
     transition: all 0.3s;
     letter-spacing: 3px;
     text-transform: uppercase;
+    text-decoration: none;
 }
 
 .all-projects-btn:hover {

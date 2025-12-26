@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAI SHI | Digital Gallery</title>
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/animation.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="./gallery.css">
+    <link rel="stylesheet" href="/assets/css/responsive.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Cyberpunk Effects -->
+        <div class="grid-overlay"></div>
+        <div class="scanline"></div>
+        
+        <!-- Navigation -->
+        <nav class="gallery-nav">
+            <a href="/index.html" class="back-btn">
+                <span class="btn-icon">←</span>
+                <span class="btn-text">BACK TO PORTFOLIO</span>
+            </a>
+            
+            <div class="gallery-title">// DIGITAL GALLERY //</div>
+            
+            <button class="gallery-mode-toggle">
+                <span class="mode-text">GRID VIEW</span>
+                <span class="mode-icon">☰</span>
+            </button>
+        </nav>
+
+        <!-- Gallery Header -->
+        <header class="gallery-header">
+            <div class="header-content">
+                <h1 class="gallery-main-title">DIGITAL ARCHIVES</h1>
+                <p class="gallery-subtitle">Complete character gallery & visual documentation</p>
+                
+                <!-- Stats Terminal -->
+                <div class="gallery-stats">
+                    <div class="stat-terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <span class="terminal-title">bash — gallery_stats — 80×24</span>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-line">$ gallery_status.sh</div>
+                            <div class="terminal-line">[✓] Images loaded: <span class="stat-value" id="image-count">24</span></div>
+                            <div class="terminal-line">[✓] Themes detected: <span class="stat-value" id="theme-count">4</span></div>
+                            <div class="terminal-line">[✓] Total size: <span class="stat-value" id="total-size">148MB</span></div>
+                            <div class="terminal-line">[✓] Status: <span class="status-active">ACTIVE</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Gallery Controls -->
+        <div class="gallery-controls">
+            <!-- Filter Controls -->
+            <div class="filter-section">
+                <h3 class="controls-title">// FILTER THEMES //</h3>
+                <div class="theme-filters">
+                    <button class="theme-filter-btn active" data-theme="all">
+                        <span class="filter-icon">☰</span>
+                        <span class="filter-text">ALL THEMES</span>
+                        <span class="filter-count">24</span>
+                    </button>
+                    <button class="theme-filter-btn" data-theme="cyberpunk">
+                        <span class="filter-icon">⚡</span>
+                        <span class="filter-text">CYBERPUNK</span>
+                        <span class="filter-count">8</span>
+                    </button>
+                    <button class="theme-filter-btn" data-theme="neon">
+                        <span class="filter-icon">✨</span>
+                        <span class="filter-text">NEON</span>
+                        <span class="filter-count">6</span>
+                    </button>
+                    <button class="theme-filter-btn" data-theme="techno">
+                        <span class="filter-icon">🌀</span>
+                        <span class="filter-text">TECHNO</span>
+                        <span class="filter-count">5</span>
+                    </button>
+                    <button class="theme-filter-btn" data-theme="glitch">
+                        <span class="filter-icon">📱</span>
+                        <span class="filter-text">GLITCH</span>
+                        <span class="filter-count">5</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sort & View Controls -->
+            <div class="view-controls">
+                <div class="sort-controls">
+                    <h3 class="controls-title">// SORT BY //</h3>
+                    <div class="sort-buttons">
+                        <button class="sort-btn active" data-sort="newest">
+                            <span class="sort-icon">↓</span>
+                            <span class="sort-text">NEWEST</span>
+                        </button>
+                        <button class="sort-btn" data-sort="popular">
+                            <span class="sort-icon">🔥</span>
+                            <span class="sort-text">POPULAR</span>
+                        </button>
+                        <button class="sort-btn" data-sort="random">
+                            <span class="sort-icon">🎲</span>
+                            <span class="sort-text">RANDOM</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="layout-controls">
+                    <h3 class="controls-title">// LAYOUT //</h3>
+                    <div class="layout-buttons">
+                        <button class="layout-btn active" data-layout="grid">
+                            <span class="layout-icon">☰</span>
+                            <span class="layout-text">GRID</span>
+                        </button>
+                        <button class="layout-btn" data-layout="masonry">
+                            <span class="layout-icon">⏹️</span>
+                            <span class="layout-text">MASONRY</span>
+                        </button>
+                        <button class="layout-btn" data-layout="fullscreen">
+                            <span class="layout-icon">⛶</span>
+                            <span class="layout-text">FULLSCREEN</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-controls">
+                <div class="search-terminal">
+                    <span class="search-prompt">$ search_gallery --query=</span>
+                    <input type="text" class="search-input" placeholder="type_tags_or_keywords" id="gallery-search">
+                    <span class="search-cursor">█</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Gallery Grid -->
+        <main class="gallery-main">
+            <div class="gallery-container" id="gallery-container">
+                <!-- Images will be loaded dynamically -->
+            </div>
+            
+            <!-- Loading State -->
+            <div class="gallery-loading" id="gallery-loading">
+                <div class="loading-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">bash — loading_gallery — 80×24</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">$ load_images.sh</div>
+                        <div class="terminal-line">[⏳] Initializing gallery system...</div>
+                        <div class="terminal-line">[⏳] Loading high-res assets...</div>
+                        <div class="terminal-line">[⏳] Applying cyberpunk filters...</div>
+                        <div class="terminal-line">
+                            <div class="loading-bar">
+                                <div class="loading-progress" id="loading-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Gallery Info Panel -->
+        <aside class="gallery-info-panel" id="info-panel">
+            <div class="panel-header">
+                <h3 class="panel-title">// IMAGE INFO //</h3>
+                <button class="panel-close">✕</button>
+            </div>
+            
+            <div class="panel-content">
+                <div class="info-preview">
+                    <img src="" alt="" class="info-image" id="info-image">
+                    <div class="info-overlay">
+                        <button class="info-download">↓ DOWNLOAD</button>
+                        <button class="info-share">↗ SHARE</button>
+                    </div>
+                </div>
+                
+                <div class="info-details">
+                    <div class="info-section">
+                        <h4 class="info-section-title">METADATA</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">FILENAME</span>
+                                <span class="info-value" id="info-filename">kai_cyber_001.png</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">RESOLUTION</span>
+                                <span class="info-value" id="info-resolution">1920×1080</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">SIZE</span>
+                                <span class="info-value" id="info-size">4.2 MB</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">FORMAT</span>
+                                <span class="info-value" id="info-format">PNG</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4 class="info-section-title">TAGS</h4>
+                        <div class="info-tags" id="info-tags">
+                            <!-- Tags will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4 class="info-section-title">DESCRIPTION</h4>
+                        <p class="info-description" id="info-description">
+                            Loading description...
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-footer">
+                <div class="info-stats">
+                    <div class="info-stat">
+                        <span class="stat-icon">👁️</span>
+                        <span class="stat-value" id="info-views">1,247</span>
+                    </div>
+                    <div class="info-stat">
+                        <span class="stat-icon">❤️</span>
+                        <span class="stat-value" id="info-likes">356</span>
+                    </div>
+                    <div class="info-stat">
+                        <span class="stat-icon">📅</span>
+                        <span class="stat-value" id="info-date">2024-01-15</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Fullscreen Viewer -->
+        <div class="fullscreen-viewer" id="fullscreen-viewer">
+            <div class="viewer-header">
+                <button class="viewer-close">✕ CLOSE</button>
+                <div class="viewer-title" id="viewer-title"></div>
+                <div class="viewer-controls">
+                    <button class="viewer-prev">← PREV</button>
+                    <span class="viewer-counter" id="viewer-counter">1 / 24</span>
+                    <button class="viewer-next">NEXT →</button>
+                </div>
+            </div>
+            
+            <div class="viewer-content">
+                <img src="" alt="" class="viewer-image" id="viewer-image">
+                <div class="viewer-overlay">
+                    <button class="viewer-zoom">🔍</button>
+                    <button class="viewer-rotate">↻</button>
+                    <button class="viewer-download">↓</button>
+                </div>
+            </div>
+            
+            <div class="viewer-footer">
+                <div class="viewer-info">
+                    <div class="viewer-tags" id="viewer-tags"></div>
+                    <div class="viewer-description" id="viewer-description"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery Footer -->
+        <footer class="gallery-footer">
+            <div class="footer-content">
+                <div class="footer-stats">
+                    <div class="footer-stat">
+                        <span class="stat-number" id="current-count">24</span>
+                        <span class="stat-label">IMAGES LOADED</span>
+                    </div>
+                    <div class="footer-stat">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">THEMES</span>
+                    </div>
+                    <div class="footer-stat">
+                        <span class="stat-number">148MB</span>
+                        <span class="stat-label">TOTAL SIZE</span>
+                    </div>
+                </div>
+                
+                <div class="footer-actions">
+                    <button class="footer-btn load-more" id="load-more">
+                        <span class="btn-icon">↻</span>
+                        <span class="btn-text">LOAD MORE</span>
+                    </button>
+                    
+                    <a href="./index.html" class="footer-btn back-home">
+                        <span class="btn-icon">⌂</span>
+                        <span class="btn-text">BACK TO HOME</span>
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Decorative Elements -->
+        <div class="gallery-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <script type="module" src="./gallery.js"></script>
+</body>
+</html>
