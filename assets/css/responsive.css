@@ -502,6 +502,18 @@
         font-size: 1.1em;
     }
 
+    .search-terminal {
+        padding: 10px 10px;
+    }
+
+    .search-prompt {
+        font-size: 0.6em;
+    }
+
+    .search-cursor {
+        display: none;
+    }
+
     .projects-subtitle {
         font-size: 0.8em;
     }

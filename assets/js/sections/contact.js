@@ -115,7 +115,7 @@ export const initContact = () => {
         if (scanBtn) {
             scanBtn.classList.add('scan-active');
             scanBtn.disabled = true;
-            scanBtn.innerHTML = '<span class="button-icon">🔄</span><span class="button-text">SCANNING...</span>';
+            scanBtn.innerHTML = '<span class="button-icon">⟳</span><span class="button-text">SCANNING...</span>';
         }
 
         const updateTime = $('.update-time');
