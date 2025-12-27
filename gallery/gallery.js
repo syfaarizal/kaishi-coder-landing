@@ -237,27 +237,18 @@ class Gallery {
         
         // Show loading
         loadingEl.style.display = 'block';
-        loadingEl.style.opacity = '1';
         
-        // Simulate progress with random intervals for realism
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 10 + Math.random() * 20;
-            if (progress > 100) progress = 100;
-            progressEl.style.width = `${progress}%`;
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                
-                // Add completion delay for realism
-                setTimeout(() => {
-                    loadingEl.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingEl.style.display = 'none';
-                    }, 300);
-                }, 500);
-            }
-        }, 100 + Math.random() * 200);
+        // Simulate progress
+        for (let i = 0; i <= 100; i += 10) {
+            progressEl.style.width = `${i}%`;
+            await wait(100 + Math.random() * 200);
+        }
+        
+        // Hide loading
+        await wait(500);
+        loadingEl.style.opacity = '0';
+        await wait(300);
+        loadingEl.style.display = 'none';
     }
     
     renderGallery() {
@@ -312,8 +303,7 @@ class Gallery {
         card.innerHTML = `
             <div class="card-image-container">
                 <img src="${image.src}" alt="${image.title}" class="card-image" 
-                     loading="lazy"
-                     onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 300\"><rect width=\"100%\" height=\"100%\" fill=\"%230a0a0a\"/><text x=\"50%\" y=\"50%\" font-family=\"Courier New, monospace\" font-size=\"16\" fill=\"%23ff0000\" text-anchor=\"middle\" dominant-baseline=\"middle\">IMAGE NOT FOUND</text></svg>'">
+                     loading="lazy">
                 <div class="card-loading"></div>
             </div>
             <div class="card-overlay">
@@ -396,7 +386,7 @@ class Gallery {
         const card = $(`.gallery-card[data-id="${image.id}"] .stat-value`);
         if (card) {
             // This would normally come from the updated data
-            // For now, we'll just increment locally
+            // For now, i just increment locally
             const currentViews = parseInt(card.textContent.replace(/,/g, ''));
             card.textContent = (currentViews + 1).toLocaleString();
         }

@@ -1009,26 +1009,6 @@ body {
     }
 }
 
-/* Mobile Swipe Hint */
-@media (max-width: 768px) {
-    .viewer-content::after {
-        content: '← Swipe →';
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: rgba(255, 255, 255, 0.5);
-        font-family: 'Courier New', monospace;
-        font-size: 0.8em;
-        animation: swipeHint 2s infinite;
-    }
-    
-    @keyframes swipeHint {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 0.7; }
-    }
-}
-
 /* Infinite Scroll Loader */
 .infinite-scroll-loader {
     text-align: center;
@@ -1042,15 +1022,15 @@ body {
     border-color: rgba(255, 0, 0, 0.3);
 }
 
-.gallery-card[data-theme="neon"] {
+.gallery-card[data-theme="ronin"] {
     border-color: rgba(0, 255, 255, 0.3);
 }
 
-.gallery-card[data-theme="techno"] {
+.gallery-card[data-theme="fantasy"] {
     border-color: rgba(138, 43, 226, 0.3);
 }
 
-.gallery-card[data-theme="glitch"] {
+.gallery-card[data-theme="urban"] {
     border-color: rgba(255, 255, 0, 0.3);
 }
 
@@ -1059,17 +1039,17 @@ body {
     box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3);
 }
 
-.gallery-card:hover[data-theme="neon"] {
+.gallery-card:hover[data-theme="ronin"] {
     border-color: #00ffff;
     box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
 }
 
-.gallery-card:hover[data-theme="techno"] {
+.gallery-card:hover[data-theme="fantasy"] {
     border-color: #8a2be2;
     box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
 }
 
-.gallery-card:hover[data-theme="glitch"] {
+.gallery-card:hover[data-theme="urban"] {
     border-color: #ffff00;
     box-shadow: 0 20px 40px rgba(255, 255, 0, 0.3);
 }
