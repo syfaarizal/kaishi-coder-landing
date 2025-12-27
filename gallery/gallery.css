@@ -902,3 +902,174 @@ body {
         transform: translateY(0);
     }
 }
+
+/* Card Loading Animation */
+.card-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255, 0, 0, 0.1),
+        rgba(255, 68, 68, 0.2),
+        rgba(255, 0, 0, 0.1));
+    background-size: 200% 100%;
+    animation: loadingShine 1.5s infinite;
+}
+
+@keyframes loadingShine {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+}
+
+.gallery-card:hover .card-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-action {
+    flex: 1;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ff6666;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-action:hover {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff0000;
+    transform: translateY(-2px);
+}
+
+.like-action.liked {
+    background: rgba(255, 0, 0, 0.3);
+    color: #ff0000;
+    border-color: #ff0000;
+}
+
+/* Viewer Image Zoom */
+.viewer-image.zoomed {
+    cursor: zoom-out;
+    transform: scale(2);
+}
+
+/* Notification */
+.gallery-notification {
+    animation: notificationSlide 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes notificationSlide {
+    from {
+        transform: translateX(120%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Search Terminal Focus */
+.search-terminal:focus-within {
+    border-color: #00ff00 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3) !important;
+}
+
+/* Active Filter Animation */
+.theme-filter-btn.active {
+    animation: filterPulse 2s infinite;
+}
+
+@keyframes filterPulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+    }
+}
+
+/* Mobile Swipe Hint */
+@media (max-width: 768px) {
+    .viewer-content::after {
+        content: '← Swipe →';
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.5);
+        font-family: 'Courier New', monospace;
+        font-size: 0.8em;
+        animation: swipeHint 2s infinite;
+    }
+    
+    @keyframes swipeHint {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.7; }
+    }
+}
+
+/* Infinite Scroll Loader */
+.infinite-scroll-loader {
+    text-align: center;
+    padding: 20px;
+    color: #ff6666;
+    font-family: 'Courier New', monospace;
+}
+
+/* Theme-specific Card Borders */
+.gallery-card[data-theme="cyberpunk"] {
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.gallery-card[data-theme="neon"] {
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+.gallery-card[data-theme="techno"] {
+    border-color: rgba(138, 43, 226, 0.3);
+}
+
+.gallery-card[data-theme="glitch"] {
+    border-color: rgba(255, 255, 0, 0.3);
+}
+
+.gallery-card:hover[data-theme="cyberpunk"] {
+    border-color: #ff0000;
+    box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3);
+}
+
+.gallery-card:hover[data-theme="neon"] {
+    border-color: #00ffff;
+    box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+}
+
+.gallery-card:hover[data-theme="techno"] {
+    border-color: #8a2be2;
+    box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
+}
+
+.gallery-card:hover[data-theme="glitch"] {
+    border-color: #ffff00;
+    box-shadow: 0 20px 40px rgba(255, 255, 0, 0.3);
+}

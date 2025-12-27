@@ -1,6 +1,16 @@
+// assets/js/gallery.js
 import { $, $$ } from '../assets/js/core/dom.js';
 import { randomRange, wait } from '../assets/js/core/utils.js';
 import { initScanline } from '../assets/js/effects/scanline.js';
+import { 
+    galleryImages, 
+    getGalleryStats, 
+    searchImages, 
+    getImagesByTheme, 
+    sortImages,
+    incrementViews,
+    toggleLike
+} from './gallery-data.js';
 
 class Gallery {
     constructor() {
@@ -13,6 +23,9 @@ class Gallery {
         this.imagesPerPage = 12;
         this.isLoading = false;
         this.currentFullscreenIndex = 0;
+        this.viewMode = 'info'; // 'info' or 'fullscreen'
+        this.isZoomed = false;
+        this.rotation = 0;
         
         this.init();
     }
@@ -43,392 +56,12 @@ class Gallery {
     }
     
     async loadGalleryData() {
-        // This would typically come from an API
-        // For now, we'll use mock data
-        this.images = [
-            {
-                id: 1,
-                src: '/assets/img/gallery/KaiShiPose1.png',
-                title: 'URBAN RONIN',
-                theme: 'urban',
-                description: 'Kai Shi moves through the city like a modern ronin, mixing ancient warrior spirit with street survival.',
-                tags: ['cyberpunk', 'samurai', 'night city', 'streetwear', 'katana'],
-                resolution: '1920×1080',
-                size: '3.8 MB',
-                format: 'PNG',
-                views: 1247,
-                likes: 356,
-                date: '2025-12-26',
-                featured: true
-            },
-            {
-                id: 2,
-                src: '/assets/img/gallery/KaiShiPose2.png',
-                title: 'NEON HACKER',
-                theme: 'cyberpunk',
-                description: 'Kai Shi dives into layers of data, fingers moving fast as neon screens surround her.',
-                tags: ['hacker', 'cyber', 'technology', 'neon lights', 'night'],
-                resolution: '1920×1080',
-                size: '4.2 MB',
-                format: 'PNG',
-                views: 987,
-                likes: 289,
-                date: '2024-01-10',
-                featured: true
-            },
-            {
-                id: 3,
-                src: '/assets/img/gallery/KaiShiPose3.png',
-                title: 'REBEL GLITCH',
-                theme: 'cyberpunk',
-                description: 'With a teasing grin and glitchy neon details, Kai Shi shows her rebellious side without saying a word.',
-                tags: ['punk', 'rebel', 'neon', 'attitude', 'close-up'],
-                resolution: '1920×1080',
-                size: '5.1 MB',
-                format: 'PNG',
-                views: 1567,
-                likes: 421,
-                date: '2024-01-05',
-                featured: true
-            },
-            {
-                id: 4,
-                src: '/assets/img/gallery/KaiShiPose4.png',
-                title: 'NIGHT ENFORCER',
-                theme: 'ronin',
-                description: 'Kai Shi rests with her blade close, watching the city from the shadows during her night patrol.',
-                tags: ['ronin', 'street patrol', 'jacket', 'night city', 'katana'],
-                resolution: '1920×1080',
-                size: '4.5 MB',
-                format: 'PNG',
-                views: 1134,
-                likes: 312,
-                date: '2024-01-02',
-                featured: false
-            },
-            {
-                id: 5,
-                src: '/assets/img/gallery/KaiShiPose11.png',
-                title: 'VIOLET CONFESSION',
-                theme: 'fantasy',
-                description: 'Kai Shi stands quietly in the dark, her eyes glowing softly as emotions linger beneath the surface.',
-                tags: ['gothic', 'dark mood', 'night', 'soft light', 'introspective'],
-                resolution: '2560×1440',
-                size: '6.8 MB',
-                format: 'PNG',
-                views: 876,
-                likes: 234,
-                date: '2023-12-28',
-                featured: true
-            },
-            {
-                id: 6,
-                src: '/assets/img/gallery/KaiShiPose6.png',
-                title: 'SHADOW WINGS',
-                theme: 'fantasy',
-                description: 'With black wings and a cold gaze, Kai Shi feels more myth than human.',
-                tags: ['dark angel', 'wings', 'gothic', 'fantasy'],
-                resolution: '1920×1080',
-                size: '3.2 MB',
-                format: 'PNG',
-                views: 1345,
-                likes: 398,
-                date: '2023-12-25',
-                featured: true
-            },
-            {
-                id: 7,
-                src: '/assets/img/gallery/KaiShiPose7.png',
-                title: 'CONTROL ROOM',
-                theme: 'cyberpunk',
-                description: 'Surrounded by cables and screens, Kai Shi controls her digital domain deep into the night.',
-                tags: ['hacker room', 'servers', 'technology', 'night shift'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 8,
-                src: '/assets/img/gallery/KaiShiPose8.png',
-                title: 'CRIMSON FOCUS',
-                theme: 'dark portrait',
-                description: 'Kai Shi stares forward with calm intensity, the city lights reflecting in her eyes.',
-                tags: ['portrait', 'red eyes', 'night', 'serious mood'],
-                resolution: '2560×1440',
-                size: '7.2 MB',
-                format: 'PNG',
-                views: 923,
-                likes: 267,
-                date: '2023-12-15',
-                featured: false
-            },
-            {
-                id: 9,
-                src: '/assets/img/gallery/KaiShiPose9.png',
-                title: 'SUNSET WATCH',
-                theme: 'ronin',
-                description: 'Kai Shi pauses at sunset, letting the city breathe before darkness fully takes over.',
-                tags: ['sunset', 'urban', 'quiet moment', 'city view'],
-                resolution: '2560×1440',
-                size: '7.2 MB',
-                format: 'PNG',
-                views: 923,
-                likes: 267,
-                date: '2023-12-15',
-                featured: false
-            },
-            {
-                id: 10,
-                src: '/assets/img/gallery/KaiShiPose10.png',
-                title: 'NEON RIOT STAGE',
-                theme: 'fantasy',
-                description: 'Under flashing lights, Kai Shi tears through the night with raw sound and fearless energy.',
-                tags: ['music', 'guitar', 'stage', 'neon', 'performance'],
-                resolution: '2560×1440',
-                size: '7.2 MB',
-                format: 'PNG',
-                views: 923,
-                likes: 267,
-                date: '2023-12-15',
-                featured: false
-            },
-            {
-                id: 11,
-                src: '/assets/img/gallery/KaiShiPose12.png',
-                title: 'WHITE JACKET CODE',
-                theme: 'ronin',
-                description: 'Wearing her signature jacket, Kai Shi stands as a symbol of resistance in the city.',
-                tags: ['cyberpunk', 'jacket', 'urban', 'street fighter'],
-                resolution: '2560×1440',
-                size: '7.2 MB',
-                format: 'PNG',
-                views: 923,
-                likes: 267,
-                date: '2023-12-15',
-                featured: false
-            },
-            {
-                id: 12,
-                src: '/assets/img/gallery/KaiShiPose13.png',
-                title: 'BLADE PROTOCOL',
-                theme: 'ronin',
-                description: 'This is the moment before action — Kai Shi ready, focused, and deadly.',
-                tags: ['katana', 'combat stance', 'cyberpunk', 'tension'],
-                resolution: '2560×1440',
-                size: '7.2 MB',
-                format: 'PNG',
-                views: 923,
-                likes: 267,
-                date: '2023-12-15',
-                featured: false
-            },
-            {
-                id: 13,
-                src: '/assets/img/gallery/KaiShiPose14.png',
-                title: 'STEEL RESOLVE',
-                theme: 'ronin',
-                description: 'Kai Shi holds her katana with confidence, her resolve sharpened by countless battles.',
-                tags: ['samurai', 'weapon', 'urban warrior', 'discipline'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 14,
-                src: '/assets/img/gallery/KaiShiPose15.png',
-                title: 'NIGHT EXECUTIONER',
-                theme: 'ronin',
-                description: 'Blade in hand, Kai Shi prepares to strike — silent, precise, and unstoppable.',
-                tags: ['katana', 'assassin', 'dark city', 'combat'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 15,
-                src: '/assets/img/gallery/KaiShiPose16.png',
-                title: 'GRAFFITI PULSE',
-                theme: 'urban',
-                description: 'Standing against vibrant graffiti, Kai Shi blends street culture with quiet rebellion.',
-                tags: ['graffiti', 'street art', 'urban', 'rebel'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 16,
-                src: '/assets/img/gallery/KaiShiPose17.png',
-                title: 'NEON COMPANION',
-                theme: 'urban',
-                description: 'In her quiet room, Kai Shi relaxes with her loyal companion while the city glows outside.',
-                tags: ['cozy', 'wolf', 'night room', 'city lights'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 17,
-                src: '/assets/img/gallery/KaiShiPose18.png',
-                title: 'CYBER NOEL',
-                theme: 'cristmas',
-                description: 'Even in a neon future, Kai Shi finds a moment of warmth during the holiday season.',
-                tags: ['christmas', 'cyberpunk', 'festive', 'night lights'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 18,
-                src: '/assets/img/gallery/KaiShiPose19.png',
-                title: 'WINTER GUARDIAN',
-                theme: 'cristmas',
-                description: 'Wrapped in winter warmth, Kai Shi holds her companion close as soft lights glow around them.',
-                tags: ['winter', 'christmas', 'wolf', 'soft mood'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 19,
-                src: '/assets/img/gallery/KaiShiPose20.png',
-                title: 'MIDNIGHT OPERATOR',
-                theme: 'cyberpunk',
-                description: 'Alone in her command room, Kai Shi works through the night, surrounded by humming machines and red light.',
-                tags: ['hacker', 'server room', 'night shift', 'technology'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 20,
-                src: '/assets/img/gallery/KaiShiPose21.png',
-                title: 'DARK AWAKENING',
-                theme: 'fantasy',
-                description: 'Kai Shi looks back with a cold, awakened gaze, as if something dangerous has just surfaced.',
-                tags: ['gothic', 'dark mood', 'intense stare', 'night'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 21,
-                src: '/assets/img/gallery/KaiShiPose22.png',
-                title: 'ABYSS GAZE',
-                theme: 'dark portrait',
-                description: 'A close look into Kai Shi’s eyes reveals exhaustion, focus, and something deeper beneath.',
-                tags: ['close-up', 'intense eyes', 'dark mood', 'portrait'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 22,
-                src: '/assets/img/gallery/KaiShiPose23.png',
-                title: 'STREET VANGUARD',
-                theme: 'ronin',
-                description: 'Adjusting her jacket, Kai Shi stands ready — a frontline figure in the city’s quiet resistance.',
-                tags: ['cyberpunk', 'street fighter', 'jacket', 'urban'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 23,
-                src: '/assets/img/gallery/KaiShiPose24.png',
-                title: 'FALLEN HALO',
-                theme: 'fantasy',
-                description: 'Black wings spread behind her, Kai Shi walks the path of a fallen angel without regret.',
-                tags: ['fallen angel', 'wings', 'dark fantasy', 'red glow'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            {
-                id: 24,
-                src: '/assets/img/gallery/KaiShiPose25.png',
-                title: 'SILENT READER',
-                theme: 'urban',
-                description: 'With headphones resting low, Kai Shi escapes the noise of the world through quiet pages.',
-                tags: ['reading', 'glasses', 'calm', 'night routine'],
-                resolution: '1920×1080',
-                size: '4.7 MB',
-                format: 'PNG',
-                views: 765,
-                likes: 201,
-                date: '2023-12-20',
-                featured: false
-            },
-            // Continue adding until 24 images...
-        ];
-        
-        // Fill with placeholder data if needed
-        while (this.images.length < 24) {
-            this.images.push({
-                id: this.images.length + 1,
-                src: `./assets/img/placeholder-${(this.images.length % 6) + 1}.jpg`,
-                title: `CYBER ART ${this.images.length + 1}`,
-                theme: ['cyberpunk', 'neon', 'techno', 'glitch'][this.images.length % 4],
-                description: 'Advanced cybernetic design with futuristic aesthetics.',
-                tags: ['cyber', 'future', 'design', 'art'],
-                resolution: '1920×1080',
-                size: `${(3 + Math.random() * 4).toFixed(1)} MB`,
-                format: 'PNG',
-                views: Math.floor(Math.random() * 2000),
-                likes: Math.floor(Math.random() * 500),
-                date: `2023-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-                featured: Math.random() > 0.7
-            });
-        }
-        
+        // Use data from gallery-data.js
+        this.images = galleryImages;
         this.filteredImages = [...this.images];
+        
+        // Update stats
+        this.updateStats();
     }
     
     initUI() {
@@ -437,6 +70,9 @@ class Gallery {
         
         // Initialize theme filter counts
         this.updateFilterCounts();
+        
+        // Update current count
+        this.updateCurrentCount();
     }
     
     initEvents() {
@@ -459,6 +95,17 @@ class Gallery {
         const searchInput = $('#gallery-search');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+            
+            // Add search animation
+            searchInput.addEventListener('focus', () => {
+                $('.search-terminal').style.borderColor = '#00ff00';
+                $('.search-terminal').style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.3)';
+            });
+            
+            searchInput.addEventListener('blur', () => {
+                $('.search-terminal').style.borderColor = '';
+                $('.search-terminal').style.boxShadow = '';
+            });
         }
         
         // Load more button
@@ -484,6 +131,20 @@ class Gallery {
         
         // Window resize
         window.addEventListener('resize', () => this.handleResize());
+        
+        // Window scroll for load more detection
+        window.addEventListener('scroll', () => this.handleScroll());
+        
+        // Escape key for closing panels
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if ($('#fullscreen-viewer').classList.contains('active')) {
+                    this.closeFullscreen();
+                } else if ($('#info-panel').classList.contains('active')) {
+                    this.closeInfoPanel();
+                }
+            }
+        });
     }
     
     initFullscreenEvents() {
@@ -499,7 +160,7 @@ class Gallery {
         if (viewerNext) viewerNext.addEventListener('click', () => this.nextImage());
         if (viewerZoom) viewerZoom.addEventListener('click', () => this.toggleZoom());
         if (viewerRotate) viewerRotate.addEventListener('click', () => this.rotateImage());
-        if (viewerDownload) viewerDownload.addEventListener('click', () => this.downloadImage());
+        if (viewerDownload) viewerDownload.addEventListener('click', () => this.downloadCurrentImage());
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
@@ -523,8 +184,49 @@ class Gallery {
                 case 'R':
                     this.rotateImage();
                     break;
+                case 'f':
+                case 'F':
+                    this.toggleFullscreen();
+                    break;
+                case 'd':
+                case 'D':
+                    this.downloadCurrentImage();
+                    break;
             }
         });
+        
+        // Swipe gestures for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        const viewerContent = $('.viewer-content');
+        if (viewerContent) {
+            viewerContent.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            });
+            
+            viewerContent.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].screenX;
+                const touchEndY = e.changedTouches[0].screenY;
+                const diffX = touchStartX - touchEndX;
+                const diffY = touchStartY - touchEndY;
+                
+                // Horizontal swipe (prev/next)
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX > 50) {
+                        this.nextImage(); // Swipe left
+                    } else if (diffX < -50) {
+                        this.prevImage(); // Swipe right
+                    }
+                }
+                
+                // Vertical swipe (close)
+                if (diffY > 100) {
+                    this.closeFullscreen(); // Swipe down
+                }
+            });
+        }
     }
     
     async simulateLoading() {
@@ -535,46 +237,64 @@ class Gallery {
         
         // Show loading
         loadingEl.style.display = 'block';
+        loadingEl.style.opacity = '1';
         
-        // Simulate progress
-        for (let i = 0; i <= 100; i += 10) {
-            progressEl.style.width = `${i}%`;
-            await wait(100 + Math.random() * 200);
-        }
-        
-        // Hide loading
-        await wait(500);
-        loadingEl.style.opacity = '0';
-        await wait(300);
-        loadingEl.style.display = 'none';
+        // Simulate progress with random intervals for realism
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 10 + Math.random() * 20;
+            if (progress > 100) progress = 100;
+            progressEl.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                
+                // Add completion delay for realism
+                setTimeout(() => {
+                    loadingEl.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingEl.style.display = 'none';
+                    }, 300);
+                }, 500);
+            }
+        }, 100 + Math.random() * 200);
     }
     
     renderGallery() {
         const container = $('#gallery-container');
         if (!container) return;
         
-        // Clear container
-        container.innerHTML = '';
-        
-        // Calculate pagination
-        const startIndex = 0;
-        const endIndex = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
-        const currentImages = this.filteredImages.slice(startIndex, endIndex);
-        
-        // Update current count
-        const currentCountEl = $('#current-count');
-        if (currentCountEl) {
-            currentCountEl.textContent = currentImages.length;
-        }
-        
-        // Render images
-        currentImages.forEach((image, index) => {
-            const card = this.createGalleryCard(image, index);
-            container.appendChild(card);
-        });
-        
-        // Update layout
-        this.updateLayout();
+        // Clear container with fade effect
+        container.style.opacity = '0';
+        setTimeout(() => {
+            container.innerHTML = '';
+            
+            // Calculate pagination
+            const startIndex = 0;
+            const endIndex = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
+            const currentImages = this.filteredImages.slice(startIndex, endIndex);
+            
+            // Update current count
+            this.updateCurrentCount();
+            
+            // Render images with staggered animation
+            currentImages.forEach((image, index) => {
+                const card = this.createGalleryCard(image, index);
+                container.appendChild(card);
+                
+                // Stagger animation
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+            
+            // Update layout
+            this.updateLayout();
+            
+            // Fade in
+            container.style.opacity = '1';
+        }, 300);
     }
     
     createGalleryCard(image, index) {
@@ -584,31 +304,109 @@ class Gallery {
         card.dataset.theme = image.theme;
         card.dataset.index = index;
         
+        // Initial state for animation
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        
         card.innerHTML = `
-            <img src="${image.src}" alt="${image.title}" class="card-image">
+            <div class="card-image-container">
+                <img src="${image.src}" alt="${image.title}" class="card-image" 
+                     loading="lazy"
+                     onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 300\"><rect width=\"100%\" height=\"100%\" fill=\"%230a0a0a\"/><text x=\"50%\" y=\"50%\" font-family=\"Courier New, monospace\" font-size=\"16\" fill=\"%23ff0000\" text-anchor=\"middle\" dominant-baseline=\"middle\">IMAGE NOT FOUND</text></svg>'">
+                <div class="card-loading"></div>
+            </div>
             <div class="card-overlay">
-                <h3 class="card-title">${image.title}</h3>
-                <span class="card-theme">${image.theme.toUpperCase()}</span>
+                <div class="card-header">
+                    <h3 class="card-title">${image.title}</h3>
+                    <span class="card-theme">${image.theme.toUpperCase()}</span>
+                </div>
                 <div class="card-stats">
-                    <span class="stat">👁️ ${image.views.toLocaleString()}</span>
-                    <span class="stat">❤️ ${image.likes}</span>
-                    <span class="stat">📅 ${image.date}</span>
+                    <span class="stat">
+                        <span class="stat-icon">👁️</span>
+                        <span class="stat-value">${image.views.toLocaleString()}</span>
+                    </span>
+                    <span class="stat">
+                        <span class="stat-icon">❤️</span>
+                        <span class="stat-value">${image.likes}</span>
+                    </span>
+                    <span class="stat">
+                        <span class="stat-icon">📅</span>
+                        <span class="stat-value">${image.date}</span>
+                    </span>
+                </div>
+                <div class="card-actions">
+                    <button class="card-action info-action" title="View Info">
+                        <span class="action-icon">ⓘ</span>
+                    </button>
+                    <button class="card-action fullscreen-action" title="Fullscreen">
+                        <span class="action-icon">⛶</span>
+                    </button>
+                    <button class="card-action like-action" title="Like">
+                        <span class="action-icon">❤️</span>
+                    </button>
                 </div>
             </div>
         `;
         
-        // Add click event
-        card.addEventListener('click', () => this.openImage(image, index));
+        // Add click events
+        const cardImage = card.querySelector('.card-image');
+        const infoBtn = card.querySelector('.info-action');
+        const fullscreenBtn = card.querySelector('.fullscreen-action');
+        const likeBtn = card.querySelector('.like-action');
+        
+        // Whole card click for quick view
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.card-action')) {
+                this.openImage(image, index);
+            }
+        });
+        
+        // Info button
+        infoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openInfoPanel(image);
+        });
+        
+        // Fullscreen button
+        fullscreenBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openFullscreen(image, index);
+        });
+        
+        // Like button
+        likeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.handleLike(image, likeBtn);
+        });
+        
+        // Image load event
+        cardImage.addEventListener('load', () => {
+            card.querySelector('.card-loading').style.display = 'none';
+        });
         
         return card;
     }
     
     openImage(image, index) {
-        // Open info panel
-        this.openInfoPanel(image);
+        // Increment views
+        incrementViews(image.id);
         
-        // Set current fullscreen index
-        this.currentFullscreenIndex = index;
+        // Update the card view count immediately
+        const card = $(`.gallery-card[data-id="${image.id}"] .stat-value`);
+        if (card) {
+            // This would normally come from the updated data
+            // For now, we'll just increment locally
+            const currentViews = parseInt(card.textContent.replace(/,/g, ''));
+            card.textContent = (currentViews + 1).toLocaleString();
+        }
+        
+        // Open based on current view mode
+        if (this.viewMode === 'fullscreen') {
+            this.openFullscreen(image, index);
+        } else {
+            this.openInfoPanel(image);
+        }
     }
     
     openInfoPanel(image) {
@@ -638,7 +436,7 @@ class Gallery {
         image.tags.forEach(tag => {
             const tagEl = document.createElement('span');
             tagEl.className = 'info-tag';
-            tagEl.textContent = tag;
+            tagEl.textContent = `#${tag}`;
             tagsEl.appendChild(tagEl);
         });
         
@@ -650,17 +448,29 @@ class Gallery {
         // Download button
         const downloadBtn = $('.info-download');
         if (downloadBtn) {
-            downloadBtn.onclick = () => this.downloadImage(image);
+            downloadBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.downloadImage(image);
+            };
         }
         
         // Share button
         const shareBtn = $('.info-share');
         if (shareBtn) {
-            shareBtn.onclick = () => this.shareImage(image);
+            shareBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.shareImage(image);
+            };
         }
         
-        // Show panel
+        // Show panel with animation
         panel.classList.add('active');
+        
+        // Add subtle glow effect
+        panel.style.boxShadow = '-20px 0 60px rgba(255, 0, 0, 0.3)';
+        setTimeout(() => {
+            panel.style.boxShadow = '';
+        }, 1000);
     }
     
     closeInfoPanel() {
@@ -680,6 +490,9 @@ class Gallery {
         
         if (!viewer) return;
         
+        // Increment views
+        incrementViews(image.id);
+        
         // Update content
         viewerImage.src = image.src;
         viewerTitle.textContent = image.title;
@@ -690,31 +503,53 @@ class Gallery {
         image.tags.forEach(tag => {
             const tagEl = document.createElement('span');
             tagEl.className = 'viewer-tag';
-            tagEl.textContent = tag;
+            tagEl.textContent = `#${tag}`;
             viewerTags.appendChild(tagEl);
         });
         
         viewerDescription.textContent = image.description;
         
         // Reset zoom and rotation
+        this.isZoomed = false;
+        this.rotation = 0;
         viewerImage.style.transform = 'scale(1) rotate(0deg)';
+        viewerImage.classList.remove('zoomed');
         
-        // Show viewer
+        // Set current index
+        this.currentFullscreenIndex = index;
+        
+        // Show viewer with animation
         viewer.classList.add('active');
         document.body.style.overflow = 'hidden';
+        
+        // Add entry animation
+        viewer.style.opacity = '0';
+        setTimeout(() => {
+            viewer.style.transition = 'opacity 0.3s';
+            viewer.style.opacity = '1';
+        }, 10);
     }
     
     closeFullscreen() {
         const viewer = $('#fullscreen-viewer');
         if (viewer) {
-            viewer.classList.remove('active');
-            document.body.style.overflow = '';
+            viewer.style.opacity = '0';
+            setTimeout(() => {
+                viewer.classList.remove('active');
+                document.body.style.overflow = '';
+                viewer.style.opacity = '1';
+            }, 300);
         }
     }
     
     prevImage() {
         if (this.currentFullscreenIndex > 0) {
             this.currentFullscreenIndex--;
+            const image = this.filteredImages[this.currentFullscreenIndex];
+            this.openFullscreen(image, this.currentFullscreenIndex);
+        } else {
+            // Loop to last image
+            this.currentFullscreenIndex = this.filteredImages.length - 1;
             const image = this.filteredImages[this.currentFullscreenIndex];
             this.openFullscreen(image, this.currentFullscreenIndex);
         }
@@ -725,6 +560,11 @@ class Gallery {
             this.currentFullscreenIndex++;
             const image = this.filteredImages[this.currentFullscreenIndex];
             this.openFullscreen(image, this.currentFullscreenIndex);
+        } else {
+            // Loop to first image
+            this.currentFullscreenIndex = 0;
+            const image = this.filteredImages[this.currentFullscreenIndex];
+            this.openFullscreen(image, this.currentFullscreenIndex);
         }
     }
     
@@ -732,12 +572,26 @@ class Gallery {
         const viewerImage = $('#viewer-image');
         if (!viewerImage) return;
         
-        if (viewerImage.classList.contains('zoomed')) {
+        if (this.isZoomed) {
             viewerImage.classList.remove('zoomed');
-            viewerImage.style.transform = viewerImage.style.transform.replace('scale(2)', 'scale(1)');
+            viewerImage.style.cursor = 'default';
+            this.isZoomed = false;
+            
+            // Add zoom out animation
+            viewerImage.style.transition = 'transform 0.3s';
+            setTimeout(() => {
+                viewerImage.style.transition = '';
+            }, 300);
         } else {
             viewerImage.classList.add('zoomed');
-            viewerImage.style.transform += ' scale(2)';
+            viewerImage.style.cursor = 'zoom-out';
+            this.isZoomed = true;
+            
+            // Add zoom in animation
+            viewerImage.style.transition = 'transform 0.3s';
+            setTimeout(() => {
+                viewerImage.style.transition = '';
+            }, 300);
         }
     }
     
@@ -745,35 +599,98 @@ class Gallery {
         const viewerImage = $('#viewer-image');
         if (!viewerImage) return;
         
-        const currentRotation = parseInt(viewerImage.style.transform.match(/rotate\((\d+)deg\)/)?.[1] || '0');
-        const newRotation = (currentRotation + 90) % 360;
+        this.rotation = (this.rotation + 90) % 360;
         
-        viewerImage.style.transform = viewerImage.style.transform.replace(
-            /rotate\(\d+deg\)/,
-            `rotate(${newRotation}deg)`
-        );
+        // Apply rotation with animation
+        viewerImage.style.transition = 'transform 0.3s';
+        viewerImage.style.transform = `scale(${this.isZoomed ? 2 : 1}) rotate(${this.rotation}deg)`;
         
-        if (!viewerImage.style.transform.includes('rotate')) {
-            viewerImage.style.transform += ` rotate(${newRotation}deg)`;
+        setTimeout(() => {
+            viewerImage.style.transition = '';
+        }, 300);
+    }
+    
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
         }
     }
     
+    downloadCurrentImage() {
+        const currentImage = this.filteredImages[this.currentFullscreenIndex];
+        this.downloadImage(currentImage);
+    }
+    
     downloadImage(image) {
-        // For demo purposes, just show a notification
+        // Create a temporary link for download
+        const link = document.createElement('a');
+        link.href = image.src;
+        link.download = `${image.title.toLowerCase().replace(/\s+/g, '_')}.${image.format.toLowerCase()}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Show notification
         this.showNotification(`Downloading: ${image.title}`);
     }
     
     shareImage(image) {
-        // For demo purposes, just show a notification
-        this.showNotification(`Sharing: ${image.title}`);
+        if (navigator.share) {
+            navigator.share({
+                title: image.title,
+                text: image.description,
+                url: window.location.href,
+            })
+            .then(() => this.showNotification('Image shared successfully!'))
+            .catch((error) => this.showNotification('Error sharing image'));
+        } else {
+            // Fallback: Copy to clipboard
+            const shareText = `${image.title}\n${image.description}\n\nView at: ${window.location.href}`;
+            navigator.clipboard.writeText(shareText)
+                .then(() => this.showNotification('Link copied to clipboard!'))
+                .catch(() => this.showNotification('Could not share image'));
+        }
+    }
+    
+    handleLike(image, likeBtn) {
+        // Toggle like in data
+        const newLikes = toggleLike(image.id);
+        
+        // Update UI
+        const likeIcon = likeBtn.querySelector('.action-icon');
+        const likeCount = likeBtn.closest('.gallery-card').querySelector('.like-action + .stat-value');
+        
+        // Visual feedback
+        likeBtn.classList.add('liked');
+        likeIcon.style.transform = 'scale(1.3)';
+        
+        // Update count if available
+        if (likeCount) {
+            likeCount.textContent = newLikes.toLocaleString();
+        }
+        
+        // Reset animation
+        setTimeout(() => {
+            likeBtn.classList.remove('liked');
+            likeIcon.style.transform = '';
+        }, 300);
+        
+        // Show notification
+        this.showNotification('Image liked! ❤️');
     }
     
     handleFilterClick(btn) {
         // Remove active class from all buttons
         $$('.theme-filter-btn').forEach(b => b.classList.remove('active'));
         
-        // Add active class to clicked button
+        // Add active class to clicked button with animation
         btn.classList.add('active');
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            btn.style.transform = '';
+        }, 150);
         
         // Update current filter
         this.currentFilter = btn.dataset.theme;
@@ -783,6 +700,9 @@ class Gallery {
         
         // Reset pagination
         this.currentPage = 1;
+        
+        // Update load more button
+        this.updateLoadMoreButton();
         
         // Re-render gallery
         this.renderGallery();
@@ -815,40 +735,57 @@ class Gallery {
         // Update current layout
         this.currentLayout = btn.dataset.layout;
         
+        // Update view mode based on layout
+        if (this.currentLayout === 'fullscreen') {
+            this.viewMode = 'fullscreen';
+        } else {
+            this.viewMode = 'info';
+        }
+        
         // Apply layout
         this.updateLayout();
     }
     
     handleSearch(query) {
-        if (!query.trim()) {
-            this.filteredImages = [...this.images];
-        } else {
-            const searchTerm = query.toLowerCase();
-            this.filteredImages = this.images.filter(image => 
-                image.title.toLowerCase().includes(searchTerm) ||
-                image.description.toLowerCase().includes(searchTerm) ||
-                image.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
-                image.theme.toLowerCase().includes(searchTerm)
-            );
+        // Show searching indicator
+        const searchTerminal = $('.search-terminal');
+        if (searchTerminal) {
+            searchTerminal.style.borderColor = '#ffff00';
         }
         
-        // Apply current filter
-        this.applyFilter();
-        
-        // Reset pagination
-        this.currentPage = 1;
-        
-        // Re-render gallery
-        this.renderGallery();
+        // Debounce search
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+            if (!query.trim()) {
+                this.filteredImages = [...this.images];
+            } else {
+                this.filteredImages = searchImages(query);
+            }
+            
+            // Apply current filter
+            this.applyFilter();
+            
+            // Reset pagination
+            this.currentPage = 1;
+            
+            // Update load more button
+            this.updateLoadMoreButton();
+            
+            // Re-render gallery
+            this.renderGallery();
+            
+            // Reset search terminal style
+            if (searchTerminal) {
+                searchTerminal.style.borderColor = query.trim() ? '#00ff00' : '';
+            }
+        }, 300);
     }
     
     applyFilter() {
         if (this.currentFilter === 'all') {
             this.filteredImages = [...this.images];
         } else {
-            this.filteredImages = this.images.filter(image => 
-                image.theme === this.currentFilter
-            );
+            this.filteredImages = getImagesByTheme(this.currentFilter);
         }
         
         // Apply current sort
@@ -856,17 +793,7 @@ class Gallery {
     }
     
     applySort() {
-        switch(this.currentSort) {
-            case 'newest':
-                this.filteredImages.sort((a, b) => new Date(b.date) - new Date(a.date));
-                break;
-            case 'popular':
-                this.filteredImages.sort((a, b) => b.views - a.views);
-                break;
-            case 'random':
-                this.filteredImages.sort(() => Math.random() - 0.5);
-                break;
-        }
+        this.filteredImages = sortImages(this.filteredImages, this.currentSort);
     }
     
     updateLayout() {
@@ -880,6 +807,16 @@ class Gallery {
         container.classList.add(this.currentLayout);
         
         // Update mode toggle text
+        this.updateModeToggle();
+        
+        // Add transition for layout change
+        container.style.transition = 'grid-template-columns 0.3s';
+        setTimeout(() => {
+            container.style.transition = '';
+        }, 300);
+    }
+    
+    updateModeToggle() {
         const modeToggle = $('.gallery-mode-toggle');
         const modeText = $('.mode-text');
         const modeIcon = $('.mode-icon');
@@ -889,14 +826,17 @@ class Gallery {
                 case 'grid':
                     modeText.textContent = 'GRID VIEW';
                     modeIcon.textContent = '☰';
+                    modeToggle.style.borderColor = 'rgba(255, 0, 0, 0.3)';
                     break;
                 case 'masonry':
                     modeText.textContent = 'MASONRY VIEW';
                     modeIcon.textContent = '⏹️';
+                    modeToggle.style.borderColor = 'rgba(0, 255, 255, 0.3)';
                     break;
                 case 'fullscreen':
                     modeText.textContent = 'FULLSCREEN';
                     modeIcon.textContent = '⛶';
+                    modeToggle.style.borderColor = 'rgba(255, 255, 0, 0.3)';
                     break;
             }
         }
@@ -912,10 +852,22 @@ class Gallery {
         
         // Update UI
         $$('.layout-btn').forEach(btn => btn.classList.remove('active'));
-        $(`.layout-btn[data-layout="${this.currentLayout}"]`).classList.add('active');
+        const activeBtn = $(`.layout-btn[data-layout="${this.currentLayout}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
         
         // Apply layout
         this.updateLayout();
+        
+        // Visual feedback
+        const modeToggle = $('.gallery-mode-toggle');
+        if (modeToggle) {
+            modeToggle.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                modeToggle.style.transform = '';
+            }, 150);
+        }
     }
     
     async loadMore() {
@@ -927,12 +879,17 @@ class Gallery {
         const loadMoreBtn = $('#load-more');
         if (loadMoreBtn) {
             const originalText = loadMoreBtn.querySelector('.btn-text').textContent;
+            const originalIcon = loadMoreBtn.querySelector('.btn-icon').textContent;
+            
             loadMoreBtn.querySelector('.btn-text').textContent = 'LOADING...';
+            loadMoreBtn.querySelector('.btn-icon').textContent = '⏳';
             loadMoreBtn.disabled = true;
+            loadMoreBtn.style.opacity = '0.7';
         }
         
-        // Simulate API call
-        await wait(1000);
+        // Simulate API call with random delay for realism
+        const delay = 800 + Math.random() * 700;
+        await wait(delay);
         
         // Increase page
         this.currentPage++;
@@ -943,11 +900,18 @@ class Gallery {
         // Reset button
         if (loadMoreBtn) {
             loadMoreBtn.querySelector('.btn-text').textContent = 'LOAD MORE';
+            loadMoreBtn.querySelector('.btn-icon').textContent = '↻';
             loadMoreBtn.disabled = false;
+            loadMoreBtn.style.opacity = '1';
             
             // Hide button if all images loaded
             if (this.currentPage * this.imagesPerPage >= this.filteredImages.length) {
                 loadMoreBtn.style.display = 'none';
+                this.showNotification('All images loaded!');
+            } else {
+                // Show loaded count
+                const loadedCount = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
+                this.showNotification(`Loaded ${loadedCount} of ${this.filteredImages.length} images`);
             }
         }
         
@@ -955,57 +919,114 @@ class Gallery {
     }
     
     handleResize() {
-        // Re-render gallery on resize for responsive adjustments
-        this.renderGallery();
+        // Debounce resize events
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+            // Re-render gallery on resize for responsive adjustments
+            this.renderGallery();
+        }, 250);
+    }
+    
+    handleScroll() {
+        // Infinite scroll implementation (optional)
+        if (this.enableInfiniteScroll) {
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const pageHeight = document.documentElement.offsetHeight;
+            const threshold = 100; // pixels from bottom
+            
+            if (scrollPosition >= pageHeight - threshold && 
+                !this.isLoading && 
+                this.currentPage * this.imagesPerPage < this.filteredImages.length) {
+                this.loadMore();
+            }
+        }
     }
     
     updateStats() {
+        const stats = getGalleryStats();
+        
         const imageCountEl = $('#image-count');
         const themeCountEl = $('#theme-count');
         const totalSizeEl = $('#total-size');
         
-        if (imageCountEl) imageCountEl.textContent = this.images.length;
-        if (themeCountEl) themeCountEl.textContent = new Set(this.images.map(img => img.theme)).size;
-        
-        // Calculate total size (mock)
-        if (totalSizeEl) {
-            const totalSize = this.images.reduce((sum, img) => {
-                const size = parseFloat(img.size) || 0;
-                return sum + size;
-            }, 0);
-            totalSizeEl.textContent = `${totalSize.toFixed(0)}MB`;
-        }
+        if (imageCountEl) imageCountEl.textContent = stats.totalImages;
+        if (themeCountEl) themeCountEl.textContent = stats.totalThemes;
+        if (totalSizeEl) totalSizeEl.textContent = stats.totalSize;
     }
     
     updateFilterCounts() {
-        // Count images per theme
-        const counts = {
-            all: this.images.length,
-            cyberpunk: this.images.filter(img => img.theme === 'cyberpunk').length,
-            ronin: this.images.filter(img => img.theme === 'ronin').length,
-            fantasy: this.images.filter(img => img.theme === 'fantasy').length,
-            urban: this.images.filter(img => img.theme === 'urban').length
-        };
+        const stats = getGalleryStats();
         
         // Update filter buttons
-        Object.entries(counts).forEach(([theme, count]) => {
+        Object.entries(stats.themeCounts).forEach(([theme, count]) => {
             const filterBtn = $(`.theme-filter-btn[data-theme="${theme}"] .filter-count`);
             if (filterBtn) {
                 filterBtn.textContent = count;
             }
         });
+        
+        // Update "all" filter count
+        const allFilterBtn = $('.theme-filter-btn[data-theme="all"] .filter-count');
+        if (allFilterBtn) {
+            allFilterBtn.textContent = stats.totalImages;
+        }
+    }
+    
+    updateCurrentCount() {
+        const currentCount = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
+        const totalCount = this.filteredImages.length;
+        
+        const currentCountEl = $('#current-count');
+        if (currentCountEl) {
+            currentCountEl.textContent = currentCount;
+            
+            // Update footer stat
+            const footerStat = $('.footer-stat:first-child .stat-number');
+            if (footerStat) {
+                footerStat.textContent = currentCount;
+            }
+        }
+        
+        // Update title with count
+        const title = $('.gallery-title');
+        if (title) {
+            title.textContent = `// DIGITAL GALLERY (${currentCount}/${totalCount}) //`;
+        }
+    }
+    
+    updateLoadMoreButton() {
+        const loadMoreBtn = $('#load-more');
+        if (loadMoreBtn) {
+            if (this.currentPage * this.imagesPerPage >= this.filteredImages.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'flex';
+            }
+        }
     }
     
     showNotification(message) {
+        // Remove existing notification
+        const existingNotification = $('.gallery-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
         // Create notification element
         const notification = document.createElement('div');
         notification.className = 'gallery-notification';
-        notification.textContent = message;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">⚠</span>
+                <span class="notification-text">${message}</span>
+            </div>
+        `;
+        
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(10, 10, 10, 0.95);
             border: 2px solid #00ff00;
             border-radius: 8px;
             padding: 15px 20px;
@@ -1015,6 +1036,8 @@ class Gallery {
             transform: translateX(120%);
             transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            max-width: 300px;
+            backdrop-filter: blur(10px);
         `;
         
         document.body.appendChild(notification);
@@ -1040,6 +1063,15 @@ class Gallery {
         if (this.scanline) {
             this.scanline.destroy();
         }
+        
+        // Clear timeouts
+        clearTimeout(this.searchTimeout);
+        clearTimeout(this.resizeTimeout);
+        
+        // Remove event listeners
+        window.removeEventListener('resize', this.handleResize);
+        window.removeEventListener('scroll', this.handleScroll);
+        document.removeEventListener('keydown', this.handleKeydown);
     }
 }
 
