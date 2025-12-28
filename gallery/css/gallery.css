@@ -152,7 +152,7 @@ body {
     font-size: 1.1em;
     font-family: 'Courier New', monospace;
     letter-spacing: 2px;
-    margin-bottom: 15px;
+    margin: 15px 0px 15px 0px;
 }
 
 .theme-filters {
