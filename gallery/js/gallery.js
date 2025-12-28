@@ -1,7 +1,7 @@
 // assets/js/gallery.js
-import { $, $$ } from '../assets/js/core/dom.js';
-import { randomRange, wait } from '../assets/js/core/utils.js';
-import { initScanline } from '../assets/js/effects/scanline.js';
+import { $, $$ } from '../../assets/js/core/dom.js';
+import { randomRange, wait } from '../../assets/js/core/utils.js';
+import { initScanline } from '../../assets/js/effects/scanline.js';
 import { 
     galleryImages, 
     getGalleryStats, 
