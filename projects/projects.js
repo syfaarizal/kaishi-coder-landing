@@ -1,17 +1,4 @@
-// assets/js/projects.js
-import { $, $$ } from '../assets/js/core/dom.js';
-import { randomRange, wait } from '../assets/js/core/utils.js';
-import { initScanline } from '../assets/js/effects/scanline.js';
-import { 
-    projectsData, 
-    getProjectsStats, 
-    searchProjects, 
-    getProjectsByCategory, 
-    sortProjects,
-    incrementViews,
-    toggleLike 
-} from './data/projects-data.js';
-
+// Projects Page JavaScript
 class ProjectsPage {
     constructor() {
         this.projects = [];
@@ -26,17 +13,12 @@ class ProjectsPage {
         this.isFullscreen = false;
         this.isZoomed = false;
         this.rotation = 0;
+        this.searchTimeout = null;
         
         this.init();
     }
     
     async init() {
-        // Initialize scanline effect
-        this.scanline = initScanline('.scanline', {
-            flickerChance: 0.02,
-            speed: 4
-        });
-        
         // Load projects data
         await this.loadProjectsData();
         
@@ -56,12 +38,65 @@ class ProjectsPage {
     }
     
     async loadProjectsData() {
-        // Use data from projects-data.js
-        this.projects = projectsData;
-        this.filteredProjects = [...this.projects];
+        try {
+            // Try to load from projects-data.js
+            const { projectsData } = await import('./projects-data.js');
+            this.projects = projectsData;
+            this.filteredProjects = [...this.projects];
+        } catch (error) {
+            console.warn('Could not load projects-data.js, using fallback data:', error);
+            // Fallback data
+            this.projects = this.getDefaultProjects();
+            this.filteredProjects = [...this.projects];
+        }
         
         // Update stats
         this.updateStats();
+    }
+    
+    getDefaultProjects() {
+        return [
+            {
+                id: 1,
+                title: "Cyberpunk Terminal",
+                category: "web",
+                badges: ["EXPERIMENTAL", "REALTIME"],
+                shortDescription: "A futuristic web terminal with real-time effects",
+                description: "A fully interactive cyberpunk-style terminal built with modern web technologies.",
+                techStack: ["JavaScript", "Canvas API", "WebGL", "CSS3", "HTML5"],
+                complexity: 8,
+                funFactor: 9,
+                linesOfCode: 3500,
+                buildTime: "3 weeks",
+                previewText: "> system status: ONLINE\n> memory: 87%\n> cpu: 45%",
+                demoLink: "#",
+                codeLink: "#",
+                keyFeatures: ["Real-time particle system", "Interactive command line", "Dynamic data visualization"],
+                views: 1250,
+                likes: 320,
+                date: "2024-03-15"
+            },
+            {
+                id: 2,
+                title: "Neon Glitch Game",
+                category: "game",
+                badges: ["RETRO", "EXPERIMENTAL"],
+                shortDescription: "80s-inspired arcade game with glitch effects",
+                description: "A retro arcade game inspired by 80s cyberpunk aesthetics.",
+                techStack: ["Phaser 3", "WebGL", "GLSL", "Howler.js"],
+                complexity: 7,
+                funFactor: 10,
+                linesOfCode: 5200,
+                buildTime: "6 weeks",
+                previewText: "Score: 24500\nLevel: 5\nLives: 3",
+                demoLink: "#",
+                codeLink: "#",
+                keyFeatures: ["Retro pixel art graphics", "Dynamic glitch effects", "Multiple game modes"],
+                views: 2100,
+                likes: 450,
+                date: "2024-02-28"
+            }
+        ];
     }
     
     initUI() {
@@ -76,6 +111,14 @@ class ProjectsPage {
     }
     
     initEvents() {
+        // Helper function untuk selector
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
+        
+        // Store for use in methods
+        this.$ = $;
+        this.$$ = $$;
+        
         // Filter tags
         $$('.filter-tag').forEach(tag => {
             tag.addEventListener('click', () => this.handleFilterClick(tag));
@@ -123,6 +166,12 @@ class ProjectsPage {
             modalClose.addEventListener('click', () => this.closeModal());
         }
         
+        // Fullscreen open
+        const fullscreenBtn = $('#fullscreen-btn');
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', () => this.openFullscreen());
+        }
+        
         // Fullscreen close
         const fullscreenClose = $('#fullscreen-close');
         if (fullscreenClose) {
@@ -141,25 +190,25 @@ class ProjectsPage {
             clearSearchBtn.addEventListener('click', () => this.clearSearch());
         }
         
+        // Like button
+        const likeBtn = $('#modal-like');
+        if (likeBtn) {
+            likeBtn.addEventListener('click', () => this.handleLike());
+        }
+        
         // Keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if ($('#fullscreen-preview').classList.contains('active')) {
+                if ($('#fullscreen-preview')?.classList.contains('active')) {
                     this.closeFullscreen();
-                } else if ($('#project-modal').classList.contains('active')) {
+                } else if ($('#project-modal')?.classList.contains('active')) {
                     this.closeModal();
                 }
             }
             
             // Navigation in fullscreen
-            if ($('#fullscreen-preview').classList.contains('active')) {
+            if ($('#fullscreen-preview')?.classList.contains('active')) {
                 switch(e.key) {
-                    case 'ArrowLeft':
-                        // Previous project logic if needed
-                        break;
-                    case 'ArrowRight':
-                        // Next project logic if needed
-                        break;
                     case ' ':
                         e.preventDefault();
                         this.toggleZoom();
@@ -174,8 +223,8 @@ class ProjectsPage {
     }
     
     async simulateLoading() {
-        const loadingState = $('#loading-state');
-        const loadingFill = $('#loading-fill');
+        const loadingState = this.$('#loading-state');
+        const loadingFill = this.$('#loading-fill');
         
         if (!loadingState || !loadingFill) return;
         
@@ -184,28 +233,33 @@ class ProjectsPage {
         loadingState.style.opacity = '1';
         
         // Simulate loading progress
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 5 + Math.random() * 15;
-            if (progress > 100) progress = 100;
-            loadingFill.style.width = `${progress}%`;
-            
-            if (progress >= 100) {
-                clearInterval(interval);
+        return new Promise(resolve => {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5 + Math.random() * 15;
+                if (progress > 100) progress = 100;
+                if (loadingFill) {
+                    loadingFill.style.width = `${progress}%`;
+                }
                 
-                // Fade out
-                setTimeout(() => {
-                    loadingState.style.opacity = '0';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Fade out
                     setTimeout(() => {
-                        loadingState.style.display = 'none';
-                    }, 300);
-                }, 500);
-            }
-        }, 50);
+                        loadingState.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingState.style.display = 'none';
+                            resolve();
+                        }, 300);
+                    }, 500);
+                }
+            }, 50);
+        });
     }
     
     renderProjects() {
-        const gridContainer = $('#projects-grid');
+        const gridContainer = this.$('#projects-grid');
         if (!gridContainer) return;
         
         // Clear container with fade effect
@@ -323,26 +377,25 @@ class ProjectsPage {
         });
         
         // Demo button
-        demoBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // Increment views
-            incrementViews(project.id);
-            // You could add analytics here
-        });
+        if (demoBtn) {
+            demoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // You could add analytics here
+            });
+        }
         
         // Code button
-        codeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // You could add analytics here
-        });
+        if (codeBtn) {
+            codeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // You could add analytics here
+            });
+        }
         
         return card;
     }
     
     openProjectModal(project) {
-        // Increment views
-        incrementViews(project.id);
-        
         // Set selected project
         this.selectedProject = project;
         
@@ -350,184 +403,209 @@ class ProjectsPage {
         this.updateModalContent(project);
         
         // Show modal with animation
-        const modal = $('#project-modal');
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        
-        // Add entry animation
-        modal.style.animation = 'modalIn 0.4s ease forwards';
-        
-        // Update like button
-        this.updateLikeButton();
+        const modal = this.$('#project-modal');
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Add entry animation
+            modal.style.animation = 'modalIn 0.4s ease forwards';
+        }
     }
     
     updateModalContent(project) {
         // Update basic info
-        $('#modal-title').textContent = project.title;
+        this.setTextContent('#modal-title', project.title);
         
         // Update badges
-        const badgesContainer = $('#modal-badges');
-        badgesContainer.innerHTML = project.badges.map(badge => 
-            `<span class="modal-badge ${badge.toLowerCase()}">${badge}</span>`
-        ).join('');
+        const badgesContainer = this.$('#modal-badges');
+        if (badgesContainer) {
+            badgesContainer.innerHTML = project.badges.map(badge => 
+                `<span class="modal-badge ${badge.toLowerCase()}">${badge}</span>`
+            ).join('');
+        }
         
         // Update stats
-        $('#modal-complexity').textContent = `${project.complexity}/10`;
-        $('#modal-fun').textContent = `${project.funFactor}/10`;
-        $('#modal-lines').textContent = project.linesOfCode.toLocaleString();
-        $('#modal-build').textContent = project.buildTime;
+        this.setTextContent('#modal-complexity', `${project.complexity}/10`);
+        this.setTextContent('#modal-fun', `${project.funFactor}/10`);
+        this.setTextContent('#modal-lines', project.linesOfCode.toLocaleString());
+        this.setTextContent('#modal-build', project.buildTime);
         
         // Update description
-        $('#modal-description').textContent = project.description;
+        this.setTextContent('#modal-description', project.description);
         
         // Update tech stack
-        const techContainer = $('#modal-tech');
-        techContainer.innerHTML = project.techStack.map(tech => 
-            `<span class="tech-tag">${tech}</span>`
-        ).join('');
+        const techContainer = this.$('#modal-tech');
+        if (techContainer) {
+            techContainer.innerHTML = project.techStack.map(tech => 
+                `<span class="tech-tag">${tech}</span>`
+            ).join('');
+        }
         
         // Update features
-        const featuresContainer = $('#modal-features');
-        featuresContainer.innerHTML = project.keyFeatures.map(feature => 
-            `<li>${feature}</li>`
-        ).join('');
+        const featuresContainer = this.$('#modal-features');
+        if (featuresContainer) {
+            featuresContainer.innerHTML = project.keyFeatures.map(feature => 
+                `<li>${feature}</li>`
+            ).join('');
+        }
         
         // Update links
-        $('#demo-link').href = project.demoLink;
-        $('#code-link').href = project.codeLink;
+        const demoLink = this.$('#demo-link');
+        const codeLink = this.$('#code-link');
+        if (demoLink) demoLink.href = project.demoLink;
+        if (codeLink) codeLink.href = project.codeLink;
         
         // Update footer stats
-        $('#modal-views').textContent = project.views.toLocaleString();
-        $('#modal-likes').textContent = project.likes;
-        $('#modal-date').textContent = project.date;
+        this.setTextContent('#modal-views', project.views.toLocaleString());
+        this.setTextContent('#modal-likes', project.likes);
+        this.setTextContent('#modal-date', project.date);
         
         // Update preview
-        const previewContainer = $('#preview-container');
-        previewContainer.innerHTML = `
-            <div class="preview-content">
-                <div class="preview-title">${project.previewTitle || project.title}</div>
-                <div class="preview-text">${project.previewText || project.shortDescription}</div>
-                ${project.previewCode ? `<pre class="preview-code">${project.previewCode}</pre>` : ''}
-            </div>
-        `;
+        const previewContainer = this.$('#preview-container');
+        if (previewContainer) {
+            previewContainer.innerHTML = `
+                <div class="preview-content">
+                    <div class="preview-title">${project.title}</div>
+                    <div class="preview-text">${project.previewText || project.shortDescription}</div>
+                </div>
+            `;
+        }
         
         // Update fullscreen content
         this.updateFullscreenContent(project);
     }
     
-    updateFullscreenContent(project) {
-        $('#fullscreen-title').textContent = project.title;
-        $('#fullscreen-description').textContent = project.description;
-        
-        const tagsContainer = $('#fullscreen-tags');
-        tagsContainer.innerHTML = project.techStack.map(tech => 
-            `<span class="viewer-tag">${tech}</span>`
-        ).join('');
-        
-        const frame = $('#preview-frame');
-        frame.innerHTML = `
-            <div class="fullscreen-content">
-                <h3>${project.title}</h3>
-                <p>${project.description}</p>
-                ${project.previewCode ? `
-                <div class="code-preview">
-                    <pre><code>${project.previewCode}</code></pre>
-                </div>
-                ` : ''}
-                <div class="project-info">
-                    <p><strong>Tech Stack:</strong> ${project.techStack.join(', ')}</p>
-                    <p><strong>Complexity:</strong> ${project.complexity}/10</p>
-                    <p><strong>Build Time:</strong> ${project.buildTime}</p>
-                </div>
-            </div>
-        `;
+    setTextContent(selector, text) {
+        const element = this.$(selector);
+        if (element) element.textContent = text;
     }
     
-    updateLikeButton() {
+    updateFullscreenContent(project) {
+        this.setTextContent('#fullscreen-title', project.title);
+        this.setTextContent('#fullscreen-description', project.description);
+        
+        const tagsContainer = this.$('#fullscreen-tags');
+        if (tagsContainer) {
+            tagsContainer.innerHTML = project.techStack.map(tech => 
+                `<span class="viewer-tag">${tech}</span>`
+            ).join('');
+        }
+        
+        const frame = this.$('#preview-frame');
+        if (frame) {
+            frame.innerHTML = `
+                <div class="fullscreen-content">
+                    <h3>${project.title}</h3>
+                    <p>${project.description}</p>
+                    <div class="project-info">
+                        <p><strong>Tech Stack:</strong> ${project.techStack.join(', ')}</p>
+                        <p><strong>Complexity:</strong> ${project.complexity}/10</p>
+                        <p><strong>Build Time:</strong> ${project.buildTime}</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    handleLike() {
         if (!this.selectedProject) return;
         
-        const likeBtn = $('#modal-like');
+        const likeBtn = this.$('#modal-like');
         if (likeBtn) {
-            likeBtn.onclick = () => {
-                const newLikes = toggleLike(this.selectedProject.id);
-                $('#modal-likes').textContent = newLikes;
-                
-                // Visual feedback
-                likeBtn.classList.add('liked');
-                setTimeout(() => {
-                    likeBtn.classList.remove('liked');
-                }, 300);
-            };
+            // Increment likes
+            this.selectedProject.likes += 1;
+            this.setTextContent('#modal-likes', this.selectedProject.likes);
+            
+            // Visual feedback
+            likeBtn.classList.add('liked');
+            setTimeout(() => {
+                likeBtn.classList.remove('liked');
+            }, 300);
         }
     }
     
     closeModal() {
-        const modal = $('#project-modal');
-        modal.style.animation = 'modalOut 0.3s ease forwards';
-        
-        setTimeout(() => {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            modal.style.animation = '';
-        }, 300);
+        const modal = this.$('#project-modal');
+        if (modal) {
+            modal.style.animation = 'modalOut 0.3s ease forwards';
+            
+            setTimeout(() => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                modal.style.animation = '';
+            }, 300);
+        }
     }
     
     openFullscreen() {
         if (!this.selectedProject) return;
         
-        const fullscreen = $('#fullscreen-preview');
-        fullscreen.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        
-        // Reset zoom and rotation
-        this.isZoomed = false;
-        this.rotation = 0;
-        $('#preview-frame').style.transform = 'scale(1) rotate(0deg)';
-        
-        // Add entry animation
-        fullscreen.style.animation = 'fadeIn 0.3s ease forwards';
+        const fullscreen = this.$('#fullscreen-preview');
+        if (fullscreen) {
+            fullscreen.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Reset zoom and rotation
+            this.isZoomed = false;
+            this.rotation = 0;
+            const frame = this.$('#preview-frame');
+            if (frame) {
+                frame.style.transform = 'scale(1) rotate(0deg)';
+            }
+            
+            // Add entry animation
+            fullscreen.style.animation = 'fadeIn 0.3s ease forwards';
+        }
     }
     
     toggleZoom() {
         this.isZoomed = !this.isZoomed;
-        const frame = $('#preview-frame');
+        const frame = this.$('#preview-frame');
+        const zoomBtn = this.$('#zoom-btn');
         
-        if (this.isZoomed) {
-            frame.style.transform = `scale(1.5) rotate(${this.rotation}deg)`;
-            $('#zoom-btn').innerHTML = '<span class="btn-icon">⎚</span>';
-        } else {
-            frame.style.transform = `scale(1) rotate(${this.rotation}deg)`;
-            $('#zoom-btn').innerHTML = '<span class="btn-icon">🔍</span>';
+        if (frame) {
+            if (this.isZoomed) {
+                frame.style.transform = `scale(1.5) rotate(${this.rotation}deg)`;
+                if (zoomBtn) zoomBtn.innerHTML = '<span class="btn-icon">⎚</span>';
+            } else {
+                frame.style.transform = `scale(1) rotate(${this.rotation}deg)`;
+                if (zoomBtn) zoomBtn.innerHTML = '<span class="btn-icon">🔍</span>';
+            }
         }
     }
     
     rotatePreview() {
         this.rotation = (this.rotation + 90) % 360;
-        const frame = $('#preview-frame');
-        const transform = this.isZoomed ? `scale(1.5) rotate(${this.rotation}deg)` : `scale(1) rotate(${this.rotation}deg)`;
-        frame.style.transform = transform;
+        const frame = this.$('#preview-frame');
+        if (frame) {
+            const transform = this.isZoomed ? `scale(1.5) rotate(${this.rotation}deg)` : `scale(1) rotate(${this.rotation}deg)`;
+            frame.style.transform = transform;
+        }
     }
     
     closeFullscreen() {
-        const fullscreen = $('#fullscreen-preview');
-        fullscreen.style.animation = 'fadeOut 0.3s ease forwards';
-        
-        setTimeout(() => {
-            fullscreen.classList.remove('active');
-            document.body.style.overflow = '';
-            fullscreen.style.animation = '';
+        const fullscreen = this.$('#fullscreen-preview');
+        if (fullscreen) {
+            fullscreen.style.animation = 'fadeOut 0.3s ease forwards';
             
-            // Reset transforms
-            this.isZoomed = false;
-            this.rotation = 0;
-        }, 300);
+            setTimeout(() => {
+                fullscreen.classList.remove('active');
+                document.body.style.overflow = '';
+                fullscreen.style.animation = '';
+                
+                // Reset transforms
+                this.isZoomed = false;
+                this.rotation = 0;
+            }, 300);
+        }
     }
     
     handleFilterClick(tag) {
         const filter = tag.dataset.filter;
         
         // Update active filter
-        $$('.filter-tag').forEach(t => t.classList.remove('active'));
+        this.$$('.filter-tag').forEach(t => t.classList.remove('active'));
         tag.classList.add('active');
         
         // Update current filter
@@ -556,7 +634,7 @@ class ProjectsPage {
         const sort = option.dataset.sort;
         
         // Update active sort
-        $$('.sort-option').forEach(o => o.classList.remove('active'));
+        this.$$('.sort-option').forEach(o => o.classList.remove('active'));
         option.classList.add('active');
         
         // Update current sort
@@ -576,8 +654,10 @@ class ProjectsPage {
     }
     
     toggleView() {
-        const viewToggle = $('#view-toggle');
-        const gridContainer = $('#projects-grid');
+        const viewToggle = this.$('#view-toggle');
+        const gridContainer = this.$('#projects-grid');
+        
+        if (!viewToggle || !gridContainer) return;
         
         this.currentView = this.currentView === 'grid' ? 'list' : 'grid';
         
@@ -586,13 +666,13 @@ class ProjectsPage {
         const toggleIcon = viewToggle.querySelector('.toggle-icon');
         
         if (this.currentView === 'grid') {
-            toggleText.textContent = 'GRID VIEW';
-            toggleIcon.textContent = '☰';
+            if (toggleText) toggleText.textContent = 'GRID VIEW';
+            if (toggleIcon) toggleIcon.textContent = '☰';
             gridContainer.classList.remove('list-view');
             gridContainer.classList.add('grid-view');
         } else {
-            toggleText.textContent = 'LIST VIEW';
-            toggleIcon.textContent = '≡';
+            if (toggleText) toggleText.textContent = 'LIST VIEW';
+            if (toggleIcon) toggleIcon.textContent = '≡';
             gridContainer.classList.remove('grid-view');
             gridContainer.classList.add('list-view');
         }
@@ -614,14 +694,17 @@ class ProjectsPage {
             }
             
             // Show search animation
-            $('.search-terminal').style.borderColor = '#00ff00';
-            $('.search-terminal').style.boxShadow = '0 0 25px rgba(0, 255, 0, 0.3)';
+            const searchTerminal = this.$('.search-terminal');
+            if (searchTerminal) {
+                searchTerminal.style.borderColor = '#00ff00';
+                searchTerminal.style.boxShadow = '0 0 25px rgba(0, 255, 0, 0.3)';
+            }
             
             // Search projects
-            this.filteredProjects = searchProjects(query, this.currentFilter);
+            this.filteredProjects = this.searchProjects(query, this.currentFilter);
             
             // Update search query in no results
-            $('#search-query').textContent = query;
+            this.setTextContent('#search-query', query);
             
             // Reset pagination
             this.currentPage = 1;
@@ -637,18 +720,42 @@ class ProjectsPage {
         }, 300);
     }
     
+    searchProjects(query, category = 'all') {
+        const lowerQuery = query.toLowerCase();
+        
+        return this.projects.filter(project => {
+            // Filter by category first
+            if (category !== 'all' && project.category !== category) {
+                return false;
+            }
+            
+            // Search in multiple fields
+            return (
+                project.title.toLowerCase().includes(lowerQuery) ||
+                project.description.toLowerCase().includes(lowerQuery) ||
+                project.shortDescription.toLowerCase().includes(lowerQuery) ||
+                project.techStack.some(tech => tech.toLowerCase().includes(lowerQuery)) ||
+                project.keyFeatures.some(feature => feature.toLowerCase().includes(lowerQuery))
+            );
+        });
+    }
+    
     clearSearch() {
-        const searchInput = $('#project-search');
-        searchInput.value = '';
+        const searchInput = this.$('#project-search');
+        if (searchInput) searchInput.value = '';
         
         // Reset search terminal
-        $('.search-terminal').style.borderColor = '';
-        $('.search-terminal').style.boxShadow = '';
+        const searchTerminal = this.$('.search-terminal');
+        if (searchTerminal) {
+            searchTerminal.style.borderColor = '';
+            searchTerminal.style.boxShadow = '';
+        }
         
         // Reset filter
         this.currentFilter = 'all';
-        $$('.filter-tag').forEach(t => t.classList.remove('active'));
-        $$('.filter-tag[data-filter="all"]').forEach(t => t.classList.add('active'));
+        this.$$('.filter-tag').forEach(t => t.classList.remove('active'));
+        const allFilter = this.$$('.filter-tag[data-filter="all"]');
+        allFilter.forEach(t => t.classList.add('active'));
         
         // Reset to all projects
         this.filteredProjects = [...this.projects];
@@ -670,25 +777,38 @@ class ProjectsPage {
         if (this.currentFilter === 'all') {
             this.filteredProjects = [...this.projects];
         } else {
-            this.filteredProjects = getProjectsByCategory(this.currentFilter);
+            this.filteredProjects = this.projects.filter(project => project.category === this.currentFilter);
         }
     }
     
     applySorting() {
-        this.filteredProjects = sortProjects(this.filteredProjects, this.currentSort);
+        switch(this.currentSort) {
+            case 'newest':
+                this.filteredProjects.sort((a, b) => new Date(b.date) - new Date(a.date));
+                break;
+            case 'complexity':
+                this.filteredProjects.sort((a, b) => b.complexity - a.complexity);
+                break;
+            case 'popular':
+                this.filteredProjects.sort((a, b) => b.views - a.views);
+                break;
+            case 'random':
+                this.filteredProjects = [...this.filteredProjects].sort(() => Math.random() - 0.5);
+                break;
+        }
     }
     
     updateStats() {
         // Update total projects count
-        $('#total-projects').textContent = this.projects.length;
+        this.setTextContent('#total-projects', this.projects.length);
         
         // Update active projects in terminal
-        $('#active-projects').textContent = this.filteredProjects.length;
+        this.setTextContent('#active-projects', this.filteredProjects.length);
         
         // Update last deployment time
         const now = new Date();
         const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        $('#last-deploy').textContent = timeString;
+        this.setTextContent('#last-deploy', timeString);
         
         // Update filter counts
         this.updateFilterCounts();
@@ -717,22 +837,23 @@ class ProjectsPage {
         const currentCount = Math.min(this.currentPage * this.projectsPerPage, this.filteredProjects.length);
         const totalCount = this.filteredProjects.length;
         
-        // You could update a counter element here if you add one to the UI
         console.log(`Showing ${currentCount} of ${totalCount} projects`);
     }
     
     updateLoadMoreButton() {
-        const loadMoreBtn = $('#load-more');
+        const loadMoreBtn = this.$('#load-more');
         if (!loadMoreBtn) return;
         
         const hasMore = this.currentPage * this.projectsPerPage < this.filteredProjects.length;
         
         if (hasMore) {
             loadMoreBtn.style.display = 'flex';
-            loadMoreBtn.querySelector('.btn-text').textContent = 'LOAD MORE';
+            const btnText = loadMoreBtn.querySelector('.btn-text');
+            if (btnText) btnText.textContent = 'LOAD MORE';
             loadMoreBtn.disabled = false;
         } else {
-            loadMoreBtn.querySelector('.btn-text').textContent = 'NO MORE PROJECTS';
+            const btnText = loadMoreBtn.querySelector('.btn-text');
+            if (btnText) btnText.textContent = 'NO MORE PROJECTS';
             loadMoreBtn.disabled = true;
             
             // Fade out after showing message
@@ -745,9 +866,12 @@ class ProjectsPage {
     loadMore() {
         if (this.isLoading) return;
         
-        const loadMoreBtn = $('#load-more');
+        const loadMoreBtn = this.$('#load-more');
+        if (!loadMoreBtn) return;
+        
         loadMoreBtn.disabled = true;
-        loadMoreBtn.querySelector('.btn-text').textContent = 'LOADING...';
+        const btnText = loadMoreBtn.querySelector('.btn-text');
+        if (btnText) btnText.textContent = 'LOADING...';
         
         this.isLoading = true;
         this.currentPage++;
@@ -760,8 +884,10 @@ class ProjectsPage {
     }
     
     showNoResults() {
-        const noResults = $('#no-results');
-        const gridContainer = $('#projects-grid');
+        const noResults = this.$('#no-results');
+        const gridContainer = this.$('#projects-grid');
+        
+        if (!noResults || !gridContainer) return;
         
         gridContainer.style.display = 'none';
         noResults.style.display = 'block';
@@ -774,8 +900,10 @@ class ProjectsPage {
     }
     
     hideNoResults() {
-        const noResults = $('#no-results');
-        const gridContainer = $('#projects-grid');
+        const noResults = this.$('#no-results');
+        const gridContainer = this.$('#projects-grid');
+        
+        if (!noResults || !gridContainer) return;
         
         noResults.style.opacity = '0';
         noResults.style.transform = 'translateY(20px)';
@@ -816,7 +944,7 @@ class ProjectsPage {
     }
 }
 
-// Initialize when DOM is loaded
+// Inisialisasi saat DOM dimuat
 document.addEventListener('DOMContentLoaded', () => {
     // Add CSS animations
     const style = document.createElement('style');
@@ -914,7 +1042,34 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(style);
     
     // Initialize projects page
-    new ProjectsPage();
+    try {
+        new ProjectsPage();
+    } catch (error) {
+        console.error('Failed to initialize ProjectsPage:', error);
+        // Show error to user
+        const loadingState = document.getElementById('loading-state');
+        if (loadingState) {
+            loadingState.innerHTML = `
+                <div class="error-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">bash — error — 80×24</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">[✗] Failed to initialize projects system</div>
+                        <div class="terminal-line">[💡] Please check console for errors</div>
+                        <button class="terminal-btn" onclick="window.location.reload()">
+                            RETRY
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
 });
 
 // Error handling
@@ -922,7 +1077,7 @@ window.addEventListener('error', (e) => {
     console.error('Projects page error:', e.error);
     
     // Show error state to user
-    const loadingState = $('#loading-state');
+    const loadingState = document.getElementById('loading-state');
     if (loadingState && loadingState.style.display !== 'none') {
         loadingState.innerHTML = `
             <div class="error-terminal">
