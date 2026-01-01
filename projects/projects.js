@@ -1,4 +1,16 @@
-// Projects Page JavaScript
+import { $, $$ } from '../assets/js/core/dom.js';
+import { randomRange, wait } from '../assets/js/core/utils.js';
+import { initScanline } from '../assets/js/effects/scanline.js';
+import { 
+    projectsData, 
+    getProjectsStats, 
+    searchProjects, 
+    getProjectsByCategory, 
+    sortProjects,
+    incrementViews,
+    toggleLike 
+} from './projects-data.js';
+
 class ProjectsPage {
     constructor() {
         this.projects = [];
@@ -14,6 +26,10 @@ class ProjectsPage {
         this.isZoomed = false;
         this.rotation = 0;
         this.searchTimeout = null;
+        
+        // Initialize DOM helpers early
+        this.$ = (selector) => document.querySelector(selector);
+        this.$$ = (selector) => document.querySelectorAll(selector);
         
         this.init();
     }
@@ -111,14 +127,6 @@ class ProjectsPage {
     }
     
     initEvents() {
-        // Helper function untuk selector
-        const $ = (selector) => document.querySelector(selector);
-        const $$ = (selector) => document.querySelectorAll(selector);
-        
-        // Store for use in methods
-        this.$ = $;
-        this.$$ = $$;
-        
         // Filter tags
         $$('.filter-tag').forEach(tag => {
             tag.addEventListener('click', () => this.handleFilterClick(tag));
