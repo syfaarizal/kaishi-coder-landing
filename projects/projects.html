@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAI SHI | Projects Hub</title>
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/animation.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="./projects-page.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Cyberpunk Effects -->
+        <div class="grid-overlay"></div>
+        <div class="scanline"></div>
+        
+        <!-- Decorative Elements -->
+        <div class="circuit-node node-1"></div>
+        <div class="circuit-node node-2"></div>
+        <div class="circuit-node node-3"></div>
+        <div class="circuit-line line-1"></div>
+        <div class="circuit-line line-2"></div>
+        <div class="circuit-line line-3"></div>
+        
+        <!-- Floating Code Snippets -->
+        <div class="code-snippet code-1">if (project) { deploy(); }</div>
+        <div class="code-snippet code-2">const success = await build();</div>
+        <div class="code-snippet code-3">// Projects loaded successfully</div>
+
+        <!-- Navigation -->
+        <nav class="projects-nav">
+            <a href="./index.html" class="back-btn">
+                <span class="btn-icon">←</span>
+                <span class="btn-text">BACK TO PORTFOLIO</span>
+            </a>
+            
+            <div class="projects-title">// PROJECTS HUB //</div>
+            
+            <button class="view-toggle" id="view-toggle">
+                <span class="toggle-icon">☰</span>
+                <span class="toggle-text">GRID VIEW</span>
+            </button>
+        </nav>
+
+        <!-- Header -->
+        <header class="projects-header">
+            <div class="header-container">
+                <h1 class="main-title">CODE PLAYGROUND</h1>
+                <p class="subtitle glitch-target">Experimental projects & digital artifacts</p>
+                
+                <!-- Live Stats Terminal -->
+                <div class="stats-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">bash — projects_monitor — 80×24</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">$ systemctl status projects.service</div>
+                        <div class="terminal-line">
+                            <span class="line-prefix">●</span>
+                            <span class="line-text">Active projects: <span class="stat-value" id="active-projects">8</span></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="line-prefix">→</span>
+                            <span class="line-text">Last deployment: <span class="stat-value" id="last-deploy">NOW</span></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="line-prefix">↳</span>
+                            <span class="line-text">System status: <span class="status-active">OPERATIONAL</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Projects Control Panel -->
+        <section class="control-panel">
+            <div class="panel-container">
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <h3 class="panel-title">// FILTER BY //</h3>
+                    <div class="filter-tags">
+                        <button class="filter-tag active" data-filter="all">
+                            <span class="tag-icon">☰</span>
+                            <span class="tag-text">ALL</span>
+                            <span class="tag-count">8</span>
+                        </button>
+                        <button class="filter-tag" data-filter="web">
+                            <span class="tag-icon">🌐</span>
+                            <span class="tag-text">WEB APPS</span>
+                            <span class="tag-count">3</span>
+                        </button>
+                        <button class="filter-tag" data-filter="game">
+                            <span class="tag-icon">🎮</span>
+                            <span class="tag-text">GAMES</span>
+                            <span class="tag-count">2</span>
+                        </button>
+                        <button class="filter-tag" data-filter="tool">
+                            <span class="tag-icon">⚙️</span>
+                            <span class="tag-text">TOOLS</span>
+                            <span class="tag-count">2</span>
+                        </button>
+                        <button class="filter-tag" data-filter="exp">
+                            <span class="tag-icon">🌀</span>
+                            <span class="tag-text">EXPERIMENTS</span>
+                            <span class="tag-count">1</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sort Section -->
+                <div class="sort-section">
+                    <h3 class="panel-title">// SORT BY //</h3>
+                    <div class="sort-options">
+                        <button class="sort-option active" data-sort="newest">
+                            <span class="option-icon">↓</span>
+                            <span class="option-text">NEWEST</span>
+                        </button>
+                        <button class="sort-option" data-sort="complexity">
+                            <span class="option-icon">📊</span>
+                            <span class="option-text">COMPLEXITY</span>
+                        </button>
+                        <button class="sort-option" data-sort="popular">
+                            <span class="option-icon">🔥</span>
+                            <span class="option-text">POPULAR</span>
+                        </button>
+                        <button class="sort-option" data-sort="random">
+                            <span class="option-icon">🎲</span>
+                            <span class="option-text">RANDOM</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <h3 class="panel-title">// SEARCH //</h3>
+                    <div class="search-terminal">
+                        <span class="search-prompt">$ find_project --query=</span>
+                        <input type="text" class="search-input" placeholder="type_project_name" id="project-search">
+                        <span class="search-cursor">█</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Grid -->
+        <main class="projects-grid-section">
+            <div class="grid-container" id="projects-grid">
+                <!-- Projects will be loaded here dynamically -->
+            </div>
+            
+            <!-- Loading State -->
+            <div class="loading-state" id="loading-state">
+                <div class="loading-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">bash — loading_projects — 80×24</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">$ initialize_projects.sh</div>
+                        <div class="terminal-line">[⏳] Booting project system...</div>
+                        <div class="terminal-line">[⏳] Loading project data...</div>
+                        <div class="terminal-line">[⏳] Compiling interfaces...</div>
+                        <div class="terminal-line">
+                            <div class="loading-bar">
+                                <div class="loading-fill" id="loading-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- No Results State -->
+            <div class="no-results" id="no-results">
+                <div class="no-results-terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">bash — no_results — 80×24</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">$ find_project --query="<span id="search-query"></span>"</div>
+                        <div class="terminal-line">[✗] No projects found matching query</div>
+                        <div class="terminal-line">[💡] Try different keywords or filters</div>
+                        <button class="terminal-btn" id="clear-search">CLEAR SEARCH</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Project Detail Modal -->
+        <div class="project-modal" id="project-modal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <div class="modal-title-container">
+                        <h2 class="modal-title" id="modal-title"></h2>
+                        <div class="modal-badges" id="modal-badges"></div>
+                    </div>
+                    <button class="modal-close" id="modal-close">
+                        <span class="close-icon">✕</span>
+                        <span class="close-text">CLOSE</span>
+                    </button>
+                </div>
+                
+                <div class="modal-content">
+                    <!-- Left Column: Preview & Info -->
+                    <div class="modal-left">
+                        <div class="modal-preview">
+                            <div class="preview-container" id="preview-container">
+                                <!-- Preview will be loaded here -->
+                            </div>
+                            <div class="preview-overlay">
+                                <button class="preview-btn fullscreen-btn" id="fullscreen-btn">
+                                    <span class="btn-icon">⛶</span>
+                                    <span class="btn-text">FULLSCREEN</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-stats">
+                            <div class="stat-card">
+                                <div class="stat-value" id="modal-complexity"></div>
+                                <div class="stat-label">COMPLEXITY</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="modal-fun"></div>
+                                <div class="stat-label">FUN FACTOR</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="modal-lines"></div>
+                                <div class="stat-label">LINES OF CODE</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="modal-build"></div>
+                                <div class="stat-label">BUILD TIME</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Details -->
+                    <div class="modal-right">
+                        <div class="modal-description">
+                            <h3 class="section-title">// DESCRIPTION //</h3>
+                            <p class="description-text" id="modal-description"></p>
+                        </div>
+                        
+                        <div class="modal-tech">
+                            <h3 class="section-title">// TECH STACK //</h3>
+                            <div class="tech-tags" id="modal-tech"></div>
+                        </div>
+                        
+                        <div class="modal-features">
+                            <h3 class="section-title">// KEY FEATURES //</h3>
+                            <ul class="features-list" id="modal-features"></ul>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <a href="#" class="action-btn demo-btn" id="demo-link" target="_blank">
+                                <span class="btn-icon">▶</span>
+                                <span class="btn-text">LIVE DEMO</span>
+                            </a>
+                            <a href="#" class="action-btn code-btn" id="code-link" target="_blank">
+                                <span class="btn-icon">{ }</span>
+                                <span class="btn-text">VIEW CODE</span>
+                            </a>
+                            <button class="action-btn details-btn" id="details-btn">
+                                <span class="btn-icon">📖</span>
+                                <span class="btn-text">MORE DETAILS</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <div class="footer-stats">
+                        <div class="footer-stat">
+                            <span class="stat-icon">👁️</span>
+                            <span class="stat-label">Views:</span>
+                            <span class="stat-value" id="modal-views"></span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="stat-icon">❤️</span>
+                            <span class="stat-label">Likes:</span>
+                            <span class="stat-value" id="modal-likes"></span>
+                        </div>
+                        <div class="footer-stat">
+                            <span class="stat-icon">📅</span>
+                            <span class="stat-label">Created:</span>
+                            <span class="stat-value" id="modal-date"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-actions">
+                        <button class="footer-action like-btn" id="modal-like">
+                            <span class="action-icon">❤️</span>
+                            <span class="action-text">LIKE PROJECT</span>
+                        </button>
+                        <button class="footer-action share-btn" id="modal-share">
+                            <span class="action-icon">↗</span>
+                            <span class="action-text">SHARE</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fullscreen Preview -->
+        <div class="fullscreen-preview" id="fullscreen-preview">
+            <div class="fullscreen-header">
+                <button class="fullscreen-close" id="fullscreen-close">
+                    <span class="close-icon">✕</span>
+                    <span class="close-text">CLOSE</span>
+                </button>
+                <div class="fullscreen-title" id="fullscreen-title"></div>
+                <div class="fullscreen-controls">
+                    <button class="control-btn zoom-btn" id="zoom-btn">
+                        <span class="btn-icon">🔍</span>
+                    </button>
+                    <button class="control-btn rotate-btn" id="rotate-btn">
+                        <span class="btn-icon">↻</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="fullscreen-content">
+                <div class="preview-frame" id="preview-frame">
+                    <!-- Fullscreen preview content -->
+                </div>
+            </div>
+            
+            <div class="fullscreen-footer">
+                <div class="footer-info">
+                    <div class="info-text" id="fullscreen-description"></div>
+                    <div class="info-tags" id="fullscreen-tags"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Footer -->
+        <footer class="projects-footer">
+            <div class="footer-container">
+                <div class="footer-stats">
+                    <div class="footer-stat">
+                        <div class="stat-number" id="total-projects">8</div>
+                        <div class="stat-label">TOTAL PROJECTS</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">CATEGORIES</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="stat-number">15K+</div>
+                        <div class="stat-label">LINES OF CODE</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">OPERATIONAL</div>
+                    </div>
+                </div>
+                
+                <div class="footer-actions">
+                    <button class="action-btn load-more" id="load-more">
+                        <span class="btn-icon">↻</span>
+                        <span class="btn-text">LOAD MORE</span>
+                    </button>
+                    
+                    <a href="#" class="action-btn back-home">
+                        <span class="btn-icon">⌂</span>
+                        <span class="btn-text">BACK TO HOME</span>
+                    </a>
+                </div>
+                
+                <div class="footer-terminal">
+                    <div class="terminal-line">// Ready for next mission? //</div>
+                    <div class="terminal-line">$ select_project --interactive</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="./projects.js"></script>
+</body>
+</html>
