@@ -26,7 +26,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 987,
         likes: 289,
-        date: '2024-01-10',
+        date: '2025-01-10',
         featured: true
     },
     {
@@ -41,7 +41,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 1567,
         likes: 421,
-        date: '2024-01-05',
+        date: '2025-01-05',
         featured: true
     },
     {
@@ -56,7 +56,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 1134,
         likes: 312,
-        date: '2024-01-02',
+        date: '2025-01-02',
         featured: false
     },
     {
@@ -71,7 +71,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 876,
         likes: 234,
-        date: '2023-12-28',
+        date: '2025-12-28',
         featured: true
     },
     {
@@ -86,7 +86,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 1345,
         likes: 398,
-        date: '2023-12-25',
+        date: '2025-12-25',
         featured: true
     },
     {
@@ -101,7 +101,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -116,7 +116,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 923,
         likes: 267,
-        date: '2023-12-15',
+        date: '2025-12-15',
         featured: false
     },
     {
@@ -131,7 +131,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 923,
         likes: 267,
-        date: '2023-12-15',
+        date: '2025-12-15',
         featured: false
     },
     {
@@ -146,7 +146,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 923,
         likes: 267,
-        date: '2023-12-15',
+        date: '2025-12-15',
         featured: false
     },
     {
@@ -161,7 +161,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 923,
         likes: 267,
-        date: '2023-12-15',
+        date: '2025-12-15',
         featured: false
     },
     {
@@ -176,7 +176,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 923,
         likes: 267,
-        date: '2023-12-15',
+        date: '2025-12-15',
         featured: false
     },
     {
@@ -191,7 +191,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -206,7 +206,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -221,7 +221,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -236,7 +236,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -251,7 +251,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -266,7 +266,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -281,22 +281,22 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
         id: 20,
         src: '/assets/img/gallery/KaiShiPose21.png',
-        title: 'DARK AWAKENING',
-        theme: 'fantasy',
-        description: 'Kai Shi looks back with a cold, awakened gaze, as if something dangerous has just surfaced.',
-        tags: ['gothic', 'dark mood', 'intense stare', 'night'],
+        title: 'NEON NIGHT SHIFT',
+        theme: 'cyberpunk',
+        description: 'Kai Shi works late into the night, neon screens glowing as she stays locked into her digital world.',
+        tags: ['cyberpunk', 'headphones', 'night', 'neon light', 'focused'],
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -311,7 +311,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -326,7 +326,7 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
@@ -341,22 +341,37 @@ export const galleryImages = [
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2025-12-20',
         featured: false
     },
     {
         id: 24,
         src: '/assets/img/gallery/KaiShiPose25.png',
-        title: 'SILENT READER',
-        theme: 'urban',
-        description: 'With headphones resting low, Kai Shi escapes the noise of the world through quiet pages.',
-        tags: ['reading', 'glasses', 'calm', 'night routine'],
+        title: 'SOFT RED MOON',
+        theme: 'romantic dark',
+        description: 'Under a soft red glow, Kai Shi turns back with a calm and slightly distant expression.',
+        tags: ['soft lighting', 'romantic mood', 'portrait', 'red tones'],
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
         views: 765,
         likes: 201,
-        date: '2023-12-20',
+        date: '2026-01-01',
+        featured: false
+    },
+    {
+        id: 25,
+        src: '/assets/img/gallery/KaiShiPose26.png',
+        title: 'QUIET POISE',
+        theme: 'minimal dark',
+        description: 'With a subtle look and relaxed posture, Kai Shi carries quiet confidence without effort.',
+        tags: ['minimal', 'dark fashion', 'calm', 'portrait'],
+        resolution: '1920×1080',
+        size: '4.7 MB',
+        format: 'PNG',
+        views: 125,
+        likes: 20,
+        date: '2026-01-01',
         featured: false
     },
 ];
