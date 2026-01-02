@@ -1042,6 +1042,10 @@ body {
     border-color: rgba(255, 0, 212, 0.3);
 }
 
+.gallery-card[data-theme="event"] {
+    border-color: rgba(0, 255, 179, 0.3);
+}
+
 .gallery-card:hover[data-theme="cyberpunk"] {
     border-color: #ff0000;
     box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3);
@@ -1070,4 +1074,9 @@ body {
 .gallery-card:hover[data-theme="cute"] {
     border-color: #ff00d4;
     box-shadow: 0 20px 40px rgba(255, 0, 212, 0.3);
+}
+
+.gallery-card:hover[data-theme="event"] {
+    border-color: #00ffbb;
+    box-shadow: 0 20px 40px rgba(0, 255, 179, 0.3);
 }
