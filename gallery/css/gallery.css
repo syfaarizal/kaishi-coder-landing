@@ -1026,12 +1026,16 @@ body {
     border-color: rgba(0, 255, 255, 0.3);
 }
 
-.gallery-card[data-theme="fantasy"] {
+.gallery-card[data-theme="gothic"] {
     border-color: rgba(138, 43, 226, 0.3);
 }
 
 .gallery-card[data-theme="urban"] {
     border-color: rgba(255, 255, 0, 0.3);
+}
+
+.gallery-card[data-theme="portrait"] {
+    border-color: rgba(25, 0, 255, 0.3);
 }
 
 .gallery-card:hover[data-theme="cyberpunk"] {
@@ -1044,7 +1048,7 @@ body {
     box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
 }
 
-.gallery-card:hover[data-theme="fantasy"] {
+.gallery-card:hover[data-theme="gothic"] {
     border-color: #8a2be2;
     box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
 }
@@ -1052,4 +1056,9 @@ body {
 .gallery-card:hover[data-theme="urban"] {
     border-color: #ffff00;
     box-shadow: 0 20px 40px rgba(255, 255, 0, 0.3);
+}
+
+.gallery-card:hover[data-theme="portrait"] {
+    border-color: #1900ff;
+    box-shadow: 0 20px 40px rgba(25, 0, 255, 0.3);
 }
