@@ -9,8 +9,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '3.8 MB',
         format: 'PNG',
-        views: 1247,
-        likes: 356,
         date: '2025-12-26',
         featured: true
     },
@@ -24,8 +22,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.2 MB',
         format: 'PNG',
-        views: 987,
-        likes: 289,
         date: '2025-01-10',
         featured: true
     },
@@ -39,8 +35,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '5.1 MB',
         format: 'PNG',
-        views: 1567,
-        likes: 421,
         date: '2025-01-05',
         featured: true
     },
@@ -54,8 +48,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.5 MB',
         format: 'PNG',
-        views: 1134,
-        likes: 312,
         date: '2025-01-02',
         featured: false
     },
@@ -69,8 +61,6 @@ export const galleryImages = [
         resolution: '2560×1440',
         size: '6.8 MB',
         format: 'PNG',
-        views: 876,
-        likes: 234,
         date: '2025-12-28',
         featured: true
     },
@@ -84,8 +74,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '3.2 MB',
         format: 'PNG',
-        views: 1345,
-        likes: 398,
         date: '2025-12-25',
         featured: true
     },
@@ -99,8 +87,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -114,8 +100,6 @@ export const galleryImages = [
         resolution: '2560×1440',
         size: '7.2 MB',
         format: 'PNG',
-        views: 923,
-        likes: 267,
         date: '2025-12-15',
         featured: false
     },
@@ -129,8 +113,6 @@ export const galleryImages = [
         resolution: '2560×1440',
         size: '7.2 MB',
         format: 'PNG',
-        views: 923,
-        likes: 267,
         date: '2025-12-15',
         featured: false
     },
@@ -144,8 +126,6 @@ export const galleryImages = [
         resolution: '2560×1440',
         size: '7.2 MB',
         format: 'PNG',
-        views: 923,
-        likes: 267,
         date: '2025-12-15',
         featured: false
     },
@@ -159,8 +139,6 @@ export const galleryImages = [
         resolution: '2560×1440',
         size: '7.2 MB',
         format: 'PNG',
-        views: 923,
-        likes: 267,
         date: '2025-12-15',
         featured: false
     },
@@ -174,8 +152,6 @@ export const galleryImages = [
         resolution: '2560×1440',
         size: '7.2 MB',
         format: 'PNG',
-        views: 923,
-        likes: 267,
         date: '2025-12-15',
         featured: false
     },
@@ -189,8 +165,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -204,8 +178,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -219,8 +191,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -234,8 +204,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -249,8 +217,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -264,8 +230,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -279,8 +243,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -294,8 +256,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -309,8 +269,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -324,8 +282,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -339,8 +295,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2025-12-20',
         featured: false
     },
@@ -354,8 +308,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 765,
-        likes: 201,
         date: '2026-01-01',
         featured: false
     },
@@ -369,8 +321,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 125,
-        likes: 20,
         date: '2026-01-01',
         featured: false
     },
@@ -384,8 +334,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 125,
-        likes: 20,
         date: '2026-01-01',
         featured: false
     },
@@ -399,8 +347,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 155,
-        likes: 100,
         date: '2026-01-01',
         featured: false
     },
@@ -414,8 +360,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 125,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -429,8 +373,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 125,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -444,8 +386,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 125,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -459,8 +399,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 125,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -474,8 +412,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 155,
-        likes: 100,
         date: '2026-01-01',
         featured: false
     },
@@ -489,8 +425,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 155,
-        likes: 100,
         date: '2026-01-01',
         featured: false
     },
@@ -504,8 +438,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 200,
-        likes: 100,
         date: '2026-01-01',
         featured: false
     },
@@ -519,8 +451,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 300,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -534,8 +464,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 300,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -549,8 +477,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 500,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -564,8 +490,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 600,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -579,8 +503,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 600,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -594,8 +516,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 600,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -609,8 +529,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 600,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },
@@ -624,8 +542,6 @@ export const galleryImages = [
         resolution: '1920×1080',
         size: '4.7 MB',
         format: 'PNG',
-        views: 600,
-        likes: 120,
         date: '2026-01-01',
         featured: false
     },

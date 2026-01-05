@@ -313,14 +313,6 @@ class Gallery {
                 </div>
                 <div class="card-stats">
                     <span class="stat">
-                        <span class="stat-icon">👁️</span>
-                        <span class="stat-value">${image.views.toLocaleString()}</span>
-                    </span>
-                    <span class="stat">
-                        <span class="stat-icon">❤️</span>
-                        <span class="stat-value">${image.likes}</span>
-                    </span>
-                    <span class="stat">
                         <span class="stat-icon">📅</span>
                         <span class="stat-value">${image.date}</span>
                     </span>
@@ -408,8 +400,6 @@ class Gallery {
         const formatEl = $('#info-format');
         const tagsEl = $('#info-tags');
         const descriptionEl = $('#info-description');
-        const viewsEl = $('#info-views');
-        const likesEl = $('#info-likes');
         const dateEl = $('#info-date');
         
         if (!panel) return;
@@ -431,8 +421,6 @@ class Gallery {
         });
         
         descriptionEl.textContent = image.description;
-        viewsEl.textContent = image.views.toLocaleString();
-        likesEl.textContent = image.likes;
         dateEl.textContent = image.date;
         
         // Download button
