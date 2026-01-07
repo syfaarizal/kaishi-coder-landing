@@ -154,7 +154,7 @@ class App {
                 setTimeout(() => {
                     searchBtn.textContent = '[ ACCESS GRANTED ]';
                     setTimeout(() => {
-                        searchBtn.textContent = '[ SEARCH ]';
+                        searchBtn.textContent = '[ SICODER ]';
                     }, 1000);
                 }, 1000);
             });
