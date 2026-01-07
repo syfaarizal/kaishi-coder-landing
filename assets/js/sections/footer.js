@@ -213,116 +213,12 @@ export const initFooter = () => {
         animate();
     };
 
-    // Simulate live system status updates
-    const initSystemStatus = () => {
-        const terminalLines = $$('.terminal-line');
-        const indicators = $$('.indicator-fill');
-        const values = $$('.indicator-value');
-        
-        // Random minor updates every 10 seconds
-        setInterval(() => {
-            if (!document.hasFocus()) return;
-            
-            // Update memory usage randomly
-            if (Math.random() > 0.7) {
-                const memoryLine = Array.from(terminalLines).find(line => 
-                    line.textContent.includes('Memory:')
-                );
-                
-                if (memoryLine) {
-                    const currentMem = parseFloat(values[2]?.textContent || '1.2');
-                    const newMem = Math.max(0.5, Math.min(5, currentMem + (Math.random() - 0.5) * 0.3));
-                    
-                    values[2].textContent = `${newMem.toFixed(1)}%`;
-                    indicators[2].style.width = `${Math.min(100, newMem * 20)}%`;
-                    
-                    // Update terminal line
-                    const memoryText = memoryLine.querySelector('.line-text');
-                    if (memoryText) {
-                        memoryText.textContent = `Memory: ${(45.2 * (newMem / 1.2)).toFixed(1)}M (resident)`;
-                    }
-                }
-            }
-            
-            // Occasionally simulate small network spikes
-            if (Math.random() > 0.9) {
-                const networkValue = values[2];
-                const networkBar = indicators[2];
-                
-                if (networkValue && networkBar) {
-                    const originalWidth = parseFloat(networkBar.style.width);
-                    
-                    // Temporary spike
-                    networkBar.style.width = '100%';
-                    networkValue.textContent = '100%';
-                    networkValue.style.color = '#ffff00';
-                    
-                    setTimeout(() => {
-                        networkBar.style.width = `${originalWidth}%`;
-                        networkValue.textContent = `${originalWidth}%`;
-                        networkValue.style.color = '#00ff00';
-                    }, 1000);
-                }
-            }
-        }, 10000);
-        
-        // Simulate terminal typing effect for new lines occasionally
-        let lineIndex = 0;
-        const terminalBody = $('.terminal-body');
-        
-        setInterval(() => {
-            if (!document.hasFocus() || Math.random() > 0.8) return;
-            
-            // Add a new log line
-            const newLine = document.createElement('div');
-            newLine.className = 'terminal-line';
-            newLine.style.opacity = '0';
-            
-            const logs = [
-                'System check: All services normal',
-                'Security scan: No threats detected',
-                'Performance: Optimal',
-                'Connection: Stable',
-                'Update: No pending updates'
-            ];
-            
-            const randomLog = logs[Math.floor(Math.random() * logs.length)];
-            
-            newLine.innerHTML = `
-                <span class="line-prefix">[${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}]</span>
-                <span class="line-text">${randomLog}</span>
-            `;
-            
-            terminalBody.appendChild(newLine);
-            
-            // Animate in
-            setTimeout(() => {
-                newLine.style.transition = 'opacity 0.5s';
-                newLine.style.opacity = '1';
-            }, 10);
-            
-            // Remove oldest line if too many
-            const lines = $$('.terminal-line', terminalBody);
-            if (lines.length > 8) {
-                lines[1].style.opacity = '0';
-                setTimeout(() => {
-                    if (lines[1].parentNode === terminalBody) {
-                        terminalBody.removeChild(lines[1]);
-                    }
-                }, 500);
-            }
-            
-            lineIndex++;
-        }, 15000);
-    };
-
     // Initialize all effects
     const init = () => {
         animateStatusIndicators();
         initBackToTop();
         initFooterLinks();
         initSicoderLogo();
-        initSystemStatus();
         
         // Add CSS for animations
         if (!document.querySelector('#footer-styles')) {
@@ -368,9 +264,6 @@ export const initFooter = () => {
             const styles = $('#footer-styles');
             if (styles) styles.remove();
             
-            // Clean up any intervals
-            // (We're using setInterval in initSystemStatus, need to track it)
-            // For simplicity, we'll rely on page refresh
         }
     };
 };
