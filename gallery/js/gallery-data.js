@@ -457,7 +457,7 @@ export const galleryImages = [
     {
         id: 36,
         src: '/assets/img/gallery/KaiShiPose37.png',
-        title: 'gothic',
+        title: 'EMBER FALL',
         theme: 'gothic',
         description: 'Surrounded by rising flames, Kai Shi remains calm, letting fire reflect her inner resolve.',
         tags: ['fire', 'dark fantasy', 'intense mood', 'cinematic'],
