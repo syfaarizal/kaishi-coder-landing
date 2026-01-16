@@ -320,20 +320,6 @@ nav {
     white-space: nowrap;
 }
 
-/* Sidebar Menu */
-.sidebar {
-    position: fixed;
-    right: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.9);
-    padding: 30px 20px;
-    border-radius: 10px;
-    border: 1px solid #ff0000;
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
-    z-index: 100;
-}
-
 .menu-item {
     display: flex;
     align-items: center;
