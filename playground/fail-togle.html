@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Toggle Gagal</title>
+<style>
+body{font-family:Arial;padding:40px;background:#f0f0f0}.container{max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,0.1)}h1{color:#333;text-align:center;margin-bottom:10px}.subtitle{color:#666;text-align:center;margin-bottom:30px}.toggle-container{display:flex;justify-content:center;margin:40px 0}.toggle-btn{width:120px;height:60px;border-radius:30px;border:none;background:#ddd;position:relative;cursor:pointer;transition:all 0.1s;outline:none}.toggle-btn.on{background:#4CAF50}.toggle-btn.off{background:#f44336}.toggle-slider{width:50px;height:50px;background:white;border-radius:50%;position:absolute;top:5px;left:5px;transition:all 0.2s}.toggle-slider.on{left:65px}.status{text-align:center;font-size:24px;margin:20px 0;padding:10px;border-radius:5px}.status.on{background:#E8F5E9;color:#2E7D32}.status.off{background:#FFEBEE;color:#C62828}.controls{display:flex;justify-content:center;gap:10px;margin:20px 0}button{padding:10px 20px;border:none;border-radius:5px;cursor:pointer;font-weight:bold}.simulate-btn{background:#2196F3;color:white}.reset-btn{background:#9E9E9E;color:white}.log{background:#f5f5f5;padding:15px;border-radius:5px;margin-top:30px;height:200px;overflow-y:auto;font-family:monospace}.log-entry{padding:5px;border-bottom:1px solid #ddd;font-size:14px}.info-box{background:#E3F2FD;padding:15px;border-radius:5px;margin-top:20px}.code-snippet{background:#263238;color:#fff;padding:15px;border-radius:5px;margin-top:20px;font-family:monospace;font-size:14px;overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Toggle yang Gagal</h1>
+<div class="subtitle">Klik cepat untuk melihat race condition</div>
+
+<div class="toggle-container">
+<button id="toggleBtn" class="toggle-btn off">
+<div id="toggleSlider" class="toggle-slider"></div>
+</button>
+</div>
+
+<div id="statusText" class="status off">OFF</div>
+
+<div class="controls">
+<button class="simulate-btn" onclick="simulateClicks()">Klik Cepat (10x)</button>
+<button class="reset-btn" onclick="reset()">Reset</button>
+</div>
+
+<div class="info-box">
+<h3>🎯 Insight: Race Condition UI</h3>
+<p>State toggle tidak sinkron karena:</p>
+<ol>
+<li>Event handler async yang lambat (setTimeout)</li>
+<li>Update UI dan state terpisah</li>
+<li>Klik cepat menyebabkan state tertukar</li>
+</ol>
+</div>
+
+<div class="code-snippet">
+// KODE BURUK - Race Condition!<br>
+let state = false;<br>
+<br>
+async function toggle() {<br>
+&nbsp;&nbsp;// Simulasi proses async<br>
+&nbsp;&nbsp;await new Promise(r => setTimeout(r, Math.random() * 200));<br>
+&nbsp;&nbsp;state = !state;<br>
+&nbsp;&nbsp;// Update UI terlambat<br>
+&nbsp;&nbsp;updateUI();<br>
+}
+</div>
+
+<div class="log">
+<div class="log-entry">Log akan muncul di sini...</div>
+</div>
+</div>
+
+<script>
+let toggleState=false
+let isProcessing=false
+let clickCount=0
+const log=document.querySelector('.log')
+
+function updateUI(){
+const btn=document.getElementById('toggleBtn')
+const slider=document.getElementById('toggleSlider')
+const status=document.getElementById('statusText')
+
+if(toggleState){
+btn.className='toggle-btn on'
+slider.className='toggle-slider on'
+status.className='status on'
+status.textContent='ON'
+}else{
+btn.className='toggle-btn off'
+slider.className='toggle-slider off'
+status.className='status off'
+status.textContent='OFF'
+}
+}
+
+// FUNGSI TOGGLE DENGAN RACE CONDITION
+async function toggleWithRace(){
+clickCount++
+const currentClick=clickCount
+addLog(`Klik #${currentClick} diterima`)
+
+// Simulasi proses async yang bervariasi
+const delay=Math.random()*300
+await new Promise(resolve=>setTimeout(resolve,delay))
+
+// Race condition: state mungkin sudah berubah oleh klik lain
+toggleState=!toggleState
+
+// UI update delay tambahan
+setTimeout(()=>{
+updateUI()
+addLog(`Klik #${currentClick} selesai - State: ${toggleState?'ON':'OFF'}`)
+},Math.random()*100)
+}
+
+// FUNGSI TOGGLE DENGAN LOCK
+async function toggleWithLock(){
+if(isProcessing){
+addLog('⚠️ Masih memproses, klik diabaikan')
+return
+}
+
+clickCount++
+const currentClick=clickCount
+addLog(`Klik #${currentClick} diterima`)
+
+isProcessing=true
+
+// Lock visual
+document.getElementById('toggleBtn').style.opacity='0.7'
+
+// Delay acak untuk simulasi race condition
+await new Promise(resolve=>setTimeout(resolve,Math.random()*300))
+
+toggleState=!toggleState
+updateUI()
+
+// Lepas lock
+isProcessing=false
+document.getElementById('toggleBtn').style.opacity='1'
+addLog(`Klik #${currentClick} selesai - State: ${toggleState?'ON':'OFF'}`)
+}
+
+// Toggle yang dipakai (ganti antara kedua fungsi)
+let currentToggle=toggleWithRace
+
+function addLog(message){
+const entry=document.createElement('div')
+entry.className='log-entry'
+entry.textContent=`[${new Date().toLocaleTimeString()}] ${message}`
+log.appendChild(entry)
+log.scrollTop=log.scrollHeight
+}
+
+function simulateClicks(){
+addLog('=== SIMULASI KLIK CEPAT DIMULAI ===')
+for(let i=0;i<10;i++){
+setTimeout(()=>{
+currentToggle()
+},i*50) // Klik setiap 50ms
+}
+}
+
+function reset(){
+toggleState=false
+clickCount=0
+isProcessing=false
+updateUI()
+log.innerHTML='<div class="log-entry">Log direset</div>'
+addLog('Sistem direset ke state OFF')
+}
+
+// Event listener dengan masalah
+document.getElementById('toggleBtn').addEventListener('click',()=>{
+currentToggle()
+})
+
+// Tombol untuk ganti metode
+document.addEventListener('DOMContentLoaded',()=>{
+const btn=document.createElement('button')
+btn.textContent='Ganti ke Toggle dengan Lock'
+btn.style.background='#FF9800'
+btn.style.color='white'
+btn.style.marginTop='10px'
+btn.onclick=function(){
+if(currentToggle===toggleWithRace){
+currentToggle=toggleWithLock
+btn.textContent='Ganti ke Toggle dengan Race Condition'
+addLog('=== DIBERI LOCK (No Race Condition) ===')
+}else{
+currentToggle=toggleWithRace
+btn.textContent='Ganti ke Toggle dengan Lock'
+addLog('=== RACE CONDITION DIAKTIFKAN ===')
+}
+}
+document.querySelector('.controls').appendChild(btn)
+
+// Tambah penjelasan
+const info=document.createElement('div')
+info.className='info-box'
+info.innerHTML='<h3>🔧 Cara Mengeksplorasi Bug:</h3><p>1. Klik toggle dengan cepat (2-3 klik beruntun)</p><p>2. Tekan tombol "Klik Cepat" untuk simulasi</p><p>3. Perhatikan log dan state akhir toggle</p>'
+document.querySelector('.info-box').after(info)
+})
+</script>
+</body>
+</html>
