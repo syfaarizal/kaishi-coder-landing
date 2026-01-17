@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber City Sim - 3D City Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #infoPanel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 20, 40, 0.85);
+            border: 1px solid rgba(0, 200, 255, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            width: 320px;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        
+        h1 {
+            color: #0cf;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+        }
+        
+        .subtitle {
+            color: #8af;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 200, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: #0cf;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stat {
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0ff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #8af;
+        }
+        
+        .tech-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tech-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 150, 255, 0.2);
+            border-radius: 4px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0cf;
+        }
+        
+        .optimization-list {
+            list-style-type: none;
+        }
+        
+        .optimization-list li {
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .optimization-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #0cf;
+        }
+        
+        .lesson {
+            background: rgba(255, 100, 0, 0.1);
+            border-left: 3px solid #f90;
+            padding: 10px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9rem;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 20, 40, 0.85);
+            border: 1px solid rgba(0, 200, 255, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+        }
+        
+        .control-btn {
+            background: rgba(0, 40, 80, 0.8);
+            border: 1px solid rgba(0, 150, 255, 0.5);
+            color: #8af;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 80, 160, 0.8);
+            color: #0ff;
+        }
+        
+        #fpsCounter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 200, 255, 0.5);
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #0f0;
+            z-index: 100;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 150, 255, 0.3);
+            border-top: 5px solid #0cf;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #particleCount {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 200, 255, 0.5);
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #0ff;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="infoPanel">
+            <h1>CYBER CITY SIM</h1>
+            <p class="subtitle">3D City Simulation with Real-time Performance Optimization</p>
+            
+            <div class="section">
+                <div class="section-title">
+                    <span>📊 Key Metrics</span>
+                </div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="fpsValue">60</div>
+                        <div class="stat-label">FPS TARGET</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="particleValue">10K</div>
+                        <div class="stat-label">CONCURRENT PARTICLES</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">4MB</div>
+                        <div class="stat-label">BUNDLE SIZE</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">2.1s</div>
+                        <div class="stat-label">INITIAL LOAD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <button class="control-btn" id="dayNight">Toggle Day/Night</button>
+            <button class="control-btn" id="particleToggle">Particles: ON</button>
+            <button class="control-btn" id="toggleBloom">Bloom: ON</button>
+            <button class="control-btn" id="wireframe">Wireframe: OFF</button>
+        </div>
+        
+        <div id="fpsCounter">FPS: 60</div>
+        <div id="particleCount">Particles: 10,000</div>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Loading Cyber City Simulation...</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Main Application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen after 2.1 seconds (simulating initial load time)
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                init();
+            }, 2100); //
+        });
+
+        function init() {
+            // Scene setup
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x000010, 10, 300);
+            
+            // Camera setup
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(50, 30, 50);
+            
+            // Renderer setup
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Performance monitoring
+            let frameCount = 0;
+            let lastTime = performance.now();
+            let fps = 60;
+            
+            // City parameters
+            const citySize = 100;
+            const buildingCount = 200;
+            const particleCount = 10000;
+            
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0x444444);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 500;
+            directionalLight.shadow.camera.left = -100;
+            directionalLight.shadow.camera.right = 100;
+            directionalLight.shadow.camera.top = 100;
+            directionalLight.shadow.camera.bottom = -100;
+            scene.add(directionalLight);
+            
+            // Neon lights for cyberpunk effect
+            const neonLights = [];
+            const neonColors = [0xff00ff, 0x00ffff, 0xffff00, 0xff0000, 0x00ff00];
+            
+            // Ground plane
+            const groundGeometry = new THREE.PlaneGeometry(citySize * 2, citySize * 2);
+            const groundMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x111122,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Road grid
+            const roadMaterial = new THREE.LineBasicMaterial({ color: 0x333344 });
+            for (let i = -citySize; i <= citySize; i += 10) {
+                // Vertical roads
+                const verticalGeometry = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(i, 0.1, -citySize),
+                    new THREE.Vector3(i, 0.1, citySize)
+                ]);
+                const verticalRoad = new THREE.Line(verticalGeometry, roadMaterial);
+                scene.add(verticalRoad);
+                
+                // Horizontal roads
+                const horizontalGeometry = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(-citySize, 0.1, i),
+                    new THREE.Vector3(citySize, 0.1, i)
+                ]);
+                const horizontalRoad = new THREE.Line(horizontalGeometry, roadMaterial);
+                scene.add(horizontalRoad);
+            }
+            
+            // Create building geometries for instanced rendering
+            const buildingTypes = [
+                { width: 4, depth: 4, minHeight: 10, maxHeight: 30 },
+                { width: 6, depth: 6, minHeight: 20, maxHeight: 50 },
+                { width: 8, depth: 8, minHeight: 30, maxHeight: 80 }
+            ];
+            
+            const buildingMatrices = [];
+            const buildingColors = [];
+            
+            // Generate random building positions and attributes
+            for (let i = 0; i < buildingCount; i++) {
+                const type = buildingTypes[Math.floor(Math.random() * buildingTypes.length)];
+                const x = Math.floor(Math.random() * citySize * 2) - citySize;
+                const z = Math.floor(Math.random() * citySize * 2) - citySize;
+                
+                // Avoid placing buildings too close to the center
+                if (Math.abs(x) < 20 && Math.abs(z) < 20) continue;
+                
+                const height = type.minHeight + Math.random() * (type.maxHeight - type.minHeight);
+                
+                // Create matrix for instanced rendering
+                const matrix = new THREE.Matrix4();
+                matrix.makeTranslation(x, height / 2, z);
+                buildingMatrices.push(matrix);
+                
+                // Random building color
+                const color = new THREE.Color();
+                color.setHSL(Math.random() * 0.1 + 0.05, 0.5, 0.2 + Math.random() * 0.1);
+                buildingColors.push(color.r, color.g, color.b);
+                
+                // Add neon signs to some buildings
+                if (Math.random() > 0.7) {
+                    const neonColor = neonColors[Math.floor(Math.random() * neonColors.length)];
+                    const neonLight = new THREE.PointLight(neonColor, 2, 20);
+                    neonLight.position.set(x, height + 2, z);
+                    scene.add(neonLight);
+                    neonLights.push(neonLight);
+                    
+                    // Create neon sign geometry
+                    const neonGeometry = new THREE.BoxGeometry(3, 0.5, 0.2);
+                    const neonMaterial = new THREE.MeshBasicMaterial({ 
+                        color: neonColor,
+                        emissive: neonColor,
+                        emissiveIntensity: 2
+                    });
+                    const neonSign = new THREE.Mesh(neonGeometry, neonMaterial);
+                    neonSign.position.set(x, height + 2, z);
+                    scene.add(neonSign);
+                }
+            }
+            
+            // Create instanced building mesh (performance optimization)
+            const buildingGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const buildingMaterial = new THREE.MeshStandardMaterial({ 
+                vertexColors: true,
+                roughness: 0.7,
+                metalness: 0.2
+            });
+            
+            const buildingMesh = new THREE.InstancedMesh(buildingGeometry, buildingMaterial, buildingMatrices.length);
+            
+            // Set instance matrices and colors
+            const dummy = new THREE.Object3D();
+            const color = new THREE.Color();
+            
+            for (let i = 0; i < buildingMatrices.length; i++) {
+                // Set matrix
+                buildingMesh.setMatrixAt(i, buildingMatrices[i]);
+                
+                // Set color
+                const r = buildingColors[i * 3];
+                const g = buildingColors[i * 3 + 1];
+                const b = buildingColors[i * 3 + 2];
+                buildingMesh.setColorAt(i, color.setRGB(r, g, b));
+                
+                // Scale buildings to different sizes
+                dummy.scale.set(
+                    buildingTypes[Math.floor(i % buildingTypes.length)].width,
+                    buildingTypes[Math.floor(i % buildingTypes.length)].minHeight + 
+                    Math.random() * (buildingTypes[Math.floor(i % buildingTypes.length)].maxHeight - buildingTypes[Math.floor(i % buildingTypes.length)].minHeight),
+                    buildingTypes[Math.floor(i % buildingTypes.length)].depth
+                );
+                dummy.updateMatrix();
+                buildingMesh.setMatrixAt(i, dummy.matrix);
+            }
+            
+            buildingMesh.instanceMatrix.needsUpdate = true;
+            if (buildingMesh.instanceColor) buildingMesh.instanceColor.needsUpdate = true;
+            buildingMesh.castShadow = true;
+            buildingMesh.receiveShadow = true;
+            scene.add(buildingMesh);
+            
+            // Particle system for cyberpunk atmosphere (performance optimized)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = particleCount;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
+            const sizeArray = new Float32Array(particlesCount);
+            
+            for (let i = 0; i < particlesCount * 3; i += 3) {
+                // Random position in the city
+                posArray[i] = (Math.random() - 0.5) * citySize * 2;
+                posArray[i + 1] = Math.random() * 100;
+                posArray[i + 2] = (Math.random() - 0.5) * citySize * 2;
+                
+                // Random color (cyberpunk palette)
+                const colorChoice = neonColors[Math.floor(Math.random() * neonColors.length)];
+                const color = new THREE.Color(colorChoice);
+                colorArray[i] = color.r;
+                colorArray[i + 1] = color.g;
+                colorArray[i + 2] = color.b;
+                
+                // Random size
+                sizeArray[i / 3] = Math.random() * 2;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+            particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizeArray, 1));
+            
+            // Custom shader material for particles
+            const particlesMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0.0 },
+                    pixelRatio: { value: renderer.getPixelRatio() }
+                },
+                vertexShader: `
+                    attribute float size;
+                    attribute vec3 color;
+                    varying vec3 vColor;
+                    uniform float time;
+                    uniform float pixelRatio;
+                    
+                    void main() {
+                        vColor = color;
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        
+                        // Animate particles with subtle movement
+                        mvPosition.y += sin(time + position.x * 0.01) * 0.5;
+                        
+                        gl_PointSize = size * (30.0 / -mvPosition.z) * pixelRatio;
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor;
+                    
+                    void main() {
+                        // Create circular particles
+                        float strength = distance(gl_PointCoord, vec2(0.5));
+                        strength = 1.0 - strength;
+                        strength = pow(strength, 3.0);
+                        
+                        gl_FragColor = vec4(vColor, strength);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particleSystem);
+            
+            // Camera controls
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+            
+            function onDocumentMouseMove(event) {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            }
+            
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            
+            // Control buttons functionality
+            let isDay = false;
+            let particlesEnabled = true;
+            let bloomEnabled = true;
+            let wireframeEnabled = false;
+            
+            document.getElementById('dayNight').addEventListener('click', function() {
+                isDay = !isDay;
+                this.textContent = isDay ? 'Toggle Day/Night' : 'Toggle Day/Night';
+            });
+            
+            document.getElementById('particleToggle').addEventListener('click', function() {
+                particlesEnabled = !particlesEnabled;
+                particleSystem.visible = particlesEnabled;
+                this.textContent = particlesEnabled ? 'Particles: ON' : 'Particles: OFF';
+                document.getElementById('particleValue').textContent = particlesEnabled ? '10K' : '0';
+                document.getElementById('particleCount').textContent = particlesEnabled ? 'Particles: 10,000' : 'Particles: 0';
+            });
+            
+            document.getElementById('toggleBloom').addEventListener('click', function() {
+                bloomEnabled = !bloomEnabled;
+                renderer.toneMappingExposure = bloomEnabled ? 1 : 0.5;
+                this.textContent = bloomEnabled ? 'Bloom: ON' : 'Bloom: OFF';
+            });
+            
+            document.getElementById('wireframe').addEventListener('click', function() {
+                wireframeEnabled = !wireframeEnabled;
+                buildingMesh.material.wireframe = wireframeEnabled;
+                this.textContent = wireframeEnabled ? 'Wireframe: ON' : 'Wireframe: OFF';
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Update FPS counter
+                frameCount++;
+                const currentTime = performance.now();
+                if (currentTime >= lastTime + 1000) {
+                    fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                    document.getElementById('fpsCounter').textContent = `FPS: ${fps}`;
+                    document.getElementById('fpsValue').textContent = fps;
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                // Camera animation
+                targetX = mouseX * 0.001;
+                targetY = mouseY * 0.001;
+                
+                camera.position.x += (Math.cos(Date.now() * 0.0005) * 50 - camera.position.x) * 0.05;
+                camera.position.z += (Math.sin(Date.now() * 0.0005) * 50 - camera.position.z) * 0.05;
+                camera.lookAt(scene.position);
+                
+                // Day/night cycle
+                if (isDay) {
+                    directionalLight.intensity = 0.8;
+                    scene.fog.color.setHex(0x88aadd);
+                    ambientLight.intensity = 0.4;
+                } else {
+                    directionalLight.intensity = 0.1;
+                    scene.fog.color.setHex(0x000010);
+                    ambientLight.intensity = 0.2;
+                }
+                
+                // Animate particles
+                particlesMaterial.uniforms.time.value = performance.now() * 0.001;
+                
+                // Animate neon lights
+                neonLights.forEach((light, index) => {
+                    light.intensity = 1 + Math.sin(performance.now() * 0.001 + index) * 1;
+                });
+                
+                // Render scene
+                renderer.render(scene, camera);
+            }
+            
+            // Start animation
+            animate();
+        }
+    </script>
+</body>
+</html>

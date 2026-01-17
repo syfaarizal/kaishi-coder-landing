@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Bubbling Visualizer</title>
+    <style>
+        body {
+            font-family:Arial,sans-serif;
+            margin:0;padding:20px;
+            background:#f5f5f5;
+        }
+        .container {
+            max-width:1000px; 
+            margin:0 auto;
+        }
+        .title {
+            text-align:center;
+            color:#333;
+            margin-bottom:30px;
+        }
+        .control-panel{
+            background:#fff;
+            padding:15px;
+            border-radius:8px;
+            margin-bottom:20px;
+            box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+        .button{
+            background:#4CAF50;
+            color:white;
+            border:none;
+            padding:10px 15px;
+            margin-right:10px;
+            border-radius:4px;
+            cursor:pointer;
+        }
+        .button:hover{
+            background:#45a049;
+        }
+        .visualizer-container{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            margin-bottom:30px;
+        }
+        .dom-tree{
+            position:relative;
+            width:100%;
+            min-height:400px;
+            background:#fff;
+            border-radius:8px;
+            padding:20px;
+            box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+        .node{
+            position:absolute;
+            padding:12px 18px;
+            border:2px solid #ddd;
+            border-radius:6px;
+            background:#fff;
+            cursor:pointer;
+            transition:all 0.3s;
+            text-align:center;
+            min-width:100px;
+        }
+        .node:hover{
+            transform:scale(1.05)
+        }
+        .node.active{
+            background:#e3f2fd;
+            border-color:#2196F3;
+        }
+        .event-log{
+            background:#fff;
+            border-radius:8px;
+            padding:20px;
+            box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+        .log-title{
+            font-size:18px;
+            margin-bottom:15px;
+            color:#333
+        }
+        .log-content{
+            height:200px;
+            overflow-y:auto;
+            background:#f9f9f9;
+            padding:15px;
+            border-radius:4px;
+            border:1px solid #eee;
+        }
+        .log-entry{
+            padding:8px;
+            margin-bottom:5px;
+            border-left:4px solid #4CAF50;
+            background:#fff;
+        }
+        .log-entry.capturing{
+            border-left-color:#FF9800;
+        }
+        .log-entry.bubbling{
+            border-left-color:#2196F3;
+        }
+        .legend{
+            margin-top:20px;
+            display:flex;
+            justify-content:center;
+            gap:20px;
+        }
+        .legend-item{
+            display:flex;
+            align-items:center;
+        }
+        .legend-color{
+            width:20px;
+            height:20px;
+            margin-right:8px;
+        }
+        .color-capturing{
+            background:#FF9800;
+        }
+        .color-bubbling{
+            background:#2196F3;
+        }
+        .color-target{
+            background:#4CAF50;
+        }
+        .instructions{
+            background:#fff;
+            padding:15px;
+            border-radius:8px;
+            margin-top:20px;
+            box-shadow:0 2px 5px rgba(0,0,0,0.1);
+        }
+        .instructions h3{
+            margin-top:0;
+        }
+        .highlight{
+            background-color:yellow;
+            font-weight:bold;
+        }
+        .settings{
+                margin-top:15px;
+                display:flex;
+                flex-wrap:wrap;
+                gap:15px;
+        }
+        .setting-group{
+            display:flex;
+            align-items:center;
+        }
+        .setting-group label{
+            margin-right:8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Event Bubbling Visualizer</h1>
+        
+        <div class="control-panel">
+            <button class="button" id="btnReset">Reset Event Log</button>
+            <button class="button" id="btnStart">Mulai Event</button>
+            <button class="button" id="btnToggleMode">Mode: Bubbling</button>
+            <div class="settings">
+                <div class="setting-group">
+                    <label><input type="checkbox" id="chkCapturing" checked> Capturing</label>
+                </div>
+                <div class="setting-group">
+                    <label><input type="checkbox" id="chkBubbling" checked> Bubbling</label>
+                </div>
+                <div class="setting-group">
+                    <label><input type="checkbox" id="chkStopPropagation"> Stop Propagation</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="visualizer-container">
+            <div class="dom-tree" id="domTree">
+                <!-- Node DOM akan dibuat dengan JavaScript -->
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color color-capturing"></div>
+                <span>Capturing Phase</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-target"></div>
+                <span>Target Phase</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-bubbling"></div>
+                <span>Bubbling Phase</span>
+            </div>
+        </div>
+        
+        <div class="event-log">
+            <h3 class="log-title">Event Log</h3>
+            <div class="log-content" id="logContent">
+                <!-- Log event akan ditampilkan di sini -->
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>Cara Menggunakan:</h3>
+            <p>1. Klik tombol <span class="highlight">"Mulai Event"</span> untuk memicu event klik</p>
+            <p>2. Atau klik langsung pada kotak-kotak di visualizer DOM</p>
+            <p>3. Perhatikan urutan event yang muncul di log (dari capturing ke target lalu bubbling)</p>
+            <p>4. Gunakan checkbox untuk mengubah perilaku event (capturing, bubbling, stop propagation)</p>
+        </div>
+    </div>
+
+    <script>
+        // Data struktur DOM untuk visualisasi
+        const domStructure = [
+            { id: 'grandparent', label: 'Grandparent', level: 1, color: '#FFCCBC' },
+            { id: 'parent', label: 'Parent', level: 2, color: '#C8E6C9' },
+            { id: 'child', label: 'Child', level: 3, color: '#B3E5FC' },
+            { id: 'grandchild', label: 'Grandchild', level: 4, color: '#E1BEE7' }
+        ];
+
+        // Variabel global
+        let isCapturingMode = false;
+        let capturingEnabled = true;
+        let bubblingEnabled = true;
+        let stopPropagationEnabled = false;
+        let eventLog = [];
+
+        // Inisialisasi aplikasi
+        function init() {
+            createDomTree();
+            setupEventListeners();
+            updateUI();
+            logEvent('Aplikasi dimulai. Klik "Mulai Event" atau klik pada kotak DOM untuk melihat event bubbling dan capturing.', 'info');
+        }
+
+        // Membuat visualisasi pohon DOM
+        function createDomTree() {
+            const domTree = document.getElementById('domTree');
+            domTree.innerHTML = '';
+            
+            domStructure.forEach((node, index) => {
+                const nodeElement = document.createElement('div');
+                nodeElement.id = node.id;
+                nodeElement.className = 'node';
+                nodeElement.textContent = node.label;
+                nodeElement.style.backgroundColor = node.color;
+                
+                // Posisi node
+                const top = 50 + (index * 80);
+                const left = 50 + (index * 40);
+                nodeElement.style.top = `${top}px`;
+                nodeElement.style.left = `${left}px`;
+                nodeElement.style.zIndex = domStructure.length - index;
+                
+                domTree.appendChild(nodeElement);
+            });
+            
+            // Tambahkan event listener ke setiap node
+            domStructure.forEach(node => {
+                const nodeElement = document.getElementById(node.id);
+                
+                // Event listener untuk capturing phase (gunakan true)
+                nodeElement.addEventListener('click', function(e) {
+                    handleEvent(e, 'capturing');
+                }, true);
+                
+                // Event listener untuk bubbling phase (gunakan false/default)
+                nodeElement.addEventListener('click', function(e) {
+                    handleEvent(e, 'bubbling');
+                }, false);
+            });
+        }
+
+        // Menangani event yang terjadi
+        function handleEvent(event, phase) {
+            const targetId = event.currentTarget.id;
+            const targetLabel = domStructure.find(n => n.id === targetId).label;
+            
+            // Tandai node yang sedang aktif
+            highlightNode(targetId);
+            
+            // Log event
+            if ((phase === 'capturing' && capturingEnabled) || 
+                (phase === 'bubbling' && bubblingEnabled) ||
+                phase === 'target') {
+                
+                const phaseText = phase === 'capturing' ? 'CAPTURING' : 
+                                 phase === 'bubbling' ? 'BUBBLING' : 'TARGET';
+                const phaseClass = phase === 'capturing' ? 'capturing' : 
+                                  phase === 'bubbling' ? 'bubbling' : 'target';
+                
+                logEvent(`${phaseText}: Event mencapai ${targetLabel} (${targetId})`, phaseClass);
+                
+                // Jika stop propagation diaktifkan, hentikan propagasi
+                if (stopPropagationEnabled && phase === 'bubbling') {
+                    event.stopPropagation();
+                    logEvent(`Propagasi dihentikan di ${targetLabel}`, 'info');
+                }
+                
+                // Jika ini adalah target phase dan kita dalam capturing mode, 
+                // kita perlu memicu event capturing lagi
+                if (phase === 'target' && isCapturingMode) {
+                    setTimeout(() => {
+                        const simulatedEvent = new Event('click', { bubbles: false });
+                        event.currentTarget.dispatchEvent(simulatedEvent);
+                    }, 300);
+                }
+            }
+            
+            // Hapus highlight setelah delay
+            setTimeout(() => {
+                removeHighlight(targetId);
+            }, 500);
+        }
+
+        // Menyoroti node yang aktif
+        function highlightNode(nodeId) {
+            const node = document.getElementById(nodeId);
+            if (node) {
+                node.classList.add('active');
+            }
+        }
+
+        // Menghapus sorotan dari node
+        function removeHighlight(nodeId) {
+            const node = document.getElementById(nodeId);
+            if (node) {
+                node.classList.remove('active');
+            }
+        }
+
+        // Mencatat event ke log
+        function logEvent(message, className) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${className}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            const logContent = document.getElementById('logContent');
+            logContent.appendChild(logEntry);
+            
+            // Simpan ke array log
+            eventLog.push({ time: timestamp, message, className });
+            
+            // Scroll ke bawah
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+
+        // Mengatur event listener untuk kontrol
+        function setupEventListeners() {
+            // Tombol reset log
+            document.getElementById('btnReset').addEventListener('click', function() {
+                document.getElementById('logContent').innerHTML = '';
+                eventLog = [];
+                logEvent('Log event direset.', 'info');
+            });
+            
+            // Tombol mulai event
+            document.getElementById('btnStart').addEventListener('click', function() {
+                logEvent('Memulai event simulasi...', 'info');
+                
+                // Tentukan target berdasarkan mode
+                const targetId = isCapturingMode ? 'grandchild' : 'grandparent';
+                const target = document.getElementById(targetId);
+                
+                if (target) {
+                    // Buat event simulasi
+                    const simulatedEvent = new Event('click', { 
+                        bubbles: !isCapturingMode 
+                    });
+                    
+                    // Kirim event
+                    target.dispatchEvent(simulatedEvent);
+                }
+            });
+            
+            // Tombol toggle mode
+            document.getElementById('btnToggleMode').addEventListener('click', function() {
+                isCapturingMode = !isCapturingMode;
+                updateUI();
+                logEvent(`Mode diubah ke: ${isCapturingMode ? 'Capturing' : 'Bubbling'}`, 'info');
+            });
+            
+            // Checkbox capturing
+            document.getElementById('chkCapturing').addEventListener('change', function(e) {
+                capturingEnabled = e.target.checked;
+                logEvent(`Capturing ${capturingEnabled ? 'diaktifkan' : 'dinonaktifkan'}`, 'info');
+            });
+            
+            // Checkbox bubbling
+            document.getElementById('chkBubbling').addEventListener('change', function(e) {
+                bubblingEnabled = e.target.checked;
+                logEvent(`Bubbling ${bubblingEnabled ? 'diaktifkan' : 'dinonaktifkan'}`, 'info');
+            });
+            
+            // Checkbox stop propagation
+            document.getElementById('chkStopPropagation').addEventListener('change', function(e) {
+                stopPropagationEnabled = e.target.checked;
+                logEvent(`Stop Propagation ${stopPropagationEnabled ? 'diaktifkan' : 'dinonaktifkan'}`, 'info');
+            });
+            
+            // Event listener untuk klik langsung pada node (akan memicu siklus event lengkap)
+            domStructure.forEach(node => {
+                const nodeElement = document.getElementById(node.id);
+                nodeElement.addEventListener('click', function(e) {
+                    // Untuk klik langsung, kita perlu menangani target phase secara manual
+                    if (e.eventPhase === Event.AT_TARGET) {
+                        handleEvent(e, 'target');
+                    }
+                });
+            });
+        }
+
+        // Memperbarui UI berdasarkan state
+        function updateUI() {
+            const btnToggleMode = document.getElementById('btnToggleMode');
+            btnToggleMode.textContent = `Mode: ${isCapturingMode ? 'Capturing' : 'Bubbling'}`;
+            
+            // Update posisi node berdasarkan mode
+            const nodes = document.querySelectorAll('.node');
+            nodes.forEach((node, index) => {
+                const top = 50 + (index * 80);
+                // Jika dalam mode capturing, balik urutan horizontal
+                const left = isCapturingMode ? 
+                    50 + ((domStructure.length - 1 - index) * 40) : 
+                    50 + (index * 40);
+                
+                node.style.top = `${top}px`;
+                node.style.left = `${left}px`;
+            });
+        }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
