@@ -198,7 +198,7 @@
             // Ground plane
             const groundGeometry = new THREE.PlaneGeometry(citySize * 2, citySize * 2);
             const groundMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x2A0D01,
+                color: 0x111122,
                 roughness: 0.8,
                 metalness: 0.2
             });
@@ -269,9 +269,9 @@
                     // Create neon sign geometry
                     const neonGeometry = new THREE.BoxGeometry(3, 0.5, 0.2);
                     const neonMaterial = new THREE.MeshBasicMaterial({ 
-                        color: neonColor,
-                        emissive: neonColor,
-                        emissiveIntensity: 2
+                        color: 0x00ff00, 
+                        emissive: 0x0000ff, 
+                        emissiveIntensity: 0.5 // ✅ valid here emissiveIntensity: 0.5
                     });
                     const neonSign = new THREE.Mesh(neonGeometry, neonMaterial);
                     neonSign.position.set(x, height + 2, z);

@@ -199,11 +199,9 @@ export class ProjectsSection {
     }
     
     openDemoModal(projectId) {
-        console.log('Opening modal for project:', projectId); // Debug
         this.currentProjectId = projectId;
         
         addClass(this.demoModal, 'active');
-        console.log('Modal class added:', this.demoModal.classList);
         
         // Show modal
         document.body.style.overflow = 'hidden';
