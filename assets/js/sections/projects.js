@@ -28,6 +28,16 @@ export class ProjectsSection {
         this.currentProjectId = null;
         
         this.projectCache = this.cacheProjectData();
+
+        // Demo modal GitHub link
+        this.demoGithubLinks = {
+            'cyber-city': '../../../playground/cyber-city-sim.html',
+            'neural-viz': 'https://github.com/kaishiscd/neural-visualizer',
+            'cyber-runner': 'https://github.com/kaishiscd/cyber-runner',
+            'data-dashboard': 'https://github.com/kaishiscd/data-dashboard',
+            'audio-viz': 'https://github.com/kaishiscd/audio-reactive-art',
+            'terminal-quest': 'https://github.com/kaishiscd/terminal-quest'
+        };
         
         // GitHub URLs
         this.githubUrls = {
@@ -189,7 +199,11 @@ export class ProjectsSection {
     }
     
     openDemoModal(projectId) {
+        console.log('Opening modal for project:', projectId); // Debug
         this.currentProjectId = projectId;
+        
+        addClass(this.demoModal, 'active');
+        console.log('Modal class added:', this.demoModal.classList);
         
         // Show modal
         addClass(this.demoModal, 'active');
@@ -244,15 +258,7 @@ export class ProjectsSection {
         switch(projectId) {
             case 'cyber-city':
                 frame.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0505)';
-                frame.innerHTML = `
-                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ff0000;font-family:'Courier New',monospace;text-align:center;">
-                        <h3 style="margin-bottom:20px;">CYBER CITY SIMULATION</h3>
-                        <p style="color:#ff6666;">3D City rendering in progress...</p>
-                        <div style="margin-top:30px;width:200px;height:2px;background:#ff0000;position:relative;overflow:hidden;">
-                            <div style="position:absolute;top:0;left:0;height:100%;width:70%;background:#ff4444;animation:progress 2s infinite;"></div>
-                        </div>
-                    </div>
-                `;
+                this.demoGithubLinks['cyber-city'];
                 break;
                 
             case 'neural-viz':
