@@ -41,7 +41,7 @@ export class ProjectsSection {
         
         // GitHub URLs
         this.githubUrls = {
-            'cyber-city': 'https://github.com/kaishiscd/cyber-city-sim',
+            'cyber-city': 'https://github.com/syfaarizal/kaishi-coder-landing/blob/main/playground/cyber-city-sim.html',
             'neural-viz': 'https://github.com/kaishiscd/neural-visualizer',
             'cyber-runner': 'https://github.com/kaishiscd/cyber-runner',
             'data-dashboard': 'https://github.com/kaishiscd/data-dashboard',
@@ -254,32 +254,33 @@ export class ProjectsSection {
         
         switch(projectId) {
             case 'cyber-city':
-            frame.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0505)';
-            frame.innerHTML = `
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:90%;">
-                    <div style="background:rgba(0,0,0,0.8);padding:40px;border:2px solid #00ffff;border-radius:10px;">
-                        <h3 style="color:#00ffff;margin-bottom:20px;">CYBER CITY SIM</h3>
-                        <p style="color:#88ffff;margin-bottom:30px;">Interactive 3D city with real-time particle effects</p>
+                frame.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0505)';
+                frame.innerHTML = `
+                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#00ffff;font-family:'Courier New',monospace;text-align:center;width:90%;">
+                        <h3 style="margin-bottom:20px;color:#ff0000;text-shadow:0 0 10px #ff0000;">CYBER CITY SIM</h3>
+                        <p style="color:#ffffff;margin-bottom:30px;">Interactive 3D city with real-time particle effects</p>
                         
-                        <div style="margin:40px 0;padding:20px;background:rgba(0,255,255,0.1);border-radius:10px;">
-                            <p style="color:#ffffff;margin-bottom:15px;">🚀 This demo opens in a new tab</p>
-                            <a href="../../../playground/cyber-city-sim.html" 
-                            target="_blank"
-                            style="display:inline-block;padding:15px 40px;
-                                    background:linear-gradient(45deg, #00ffff, #0088ff);
-                                    color:#000;text-decoration:none;font-weight:bold;
-                                    border-radius:5px;font-size:1.2em;margin-top:10px;">
-                            LAUNCH DEMO
-                            </a>
+                        <a href="../../../playground/cyber-city-sim.html" 
+                        target="_blank"
+                        style="display:inline-block;padding:15px 30px;background:rgba(0,255,255,0.2);border:2px solid #ff0000;color:#ff0000;text-decoration:none;border-radius:5px;margin:20px 0;transition:all 0.3s;">
+                            <span style="display:block;margin-bottom:5px;">OPEN FULL DEMO</span>
+                            <span style="font-size:0.9em;color:#ffffff;">(Opens in new tab)</span>
+                        </a>
+                        
+                        <div style="margin-top:40px;padding:20px;background:rgba(0,255,255,0.1);border:1px solid #ff0000;border-radius:10px;">
+                            <p style="color:#ffffff;margin-bottom:15px;">Preview simulation running...</p>
+                            <div style="width:100%;height:10px;background:rgba(0,0,0,0.5);border-radius:5px;overflow:hidden;">
+                                <div style="width:75%;height:100%;background:linear-gradient(90deg, #ff0000, #4b0000);animation:progress 3s infinite;"></div>
+                            </div>
+                            <div style="display:flex;justify-content:center;gap:15px;margin-top:20px;">
+                                <div style="width:20px;height:20px;background:#ff0000;border-radius:50%;animation:pulse 1.5s infinite;"></div>
+                                <div style="width:20px;height:20px;background:#ffffff;border-radius:50%;animation:pulse 1.5s infinite 0.3s;"></div>
+                                <div style="width:20px;height:20px;background:#ff0000;border-radius:50%;animation:pulse 1.5s infinite 0.6s;"></div>
+                            </div>
                         </div>
-                        
-                        <p style="color:#888;font-size:0.9em;margin-top:30px;">
-                            (The full interactive experience requires a separate window)
-                        </p>
                     </div>
-                </div>
-            `;
-            break;
+                `;
+                break;
                 
             case 'neural-viz':
                 frame.style.background = 'linear-gradient(135deg, #0a0a0a, #05051a)';
