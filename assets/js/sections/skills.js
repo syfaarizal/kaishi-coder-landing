@@ -1,230 +1,184 @@
 import { $, $$ } from '../core/dom.js';
-import { randomBool, randomRange, wait } from '../core/utils.js';
-import { initMultiLineTyping } from '../effects/typing.js';
-import { initGlitchEffect } from '../effects/glitch.js';
+import { randomBool } from '../core/utils.js';
 
 export const initSkills = () => {
     const skillsSection = $('#skills');
     if (!skillsSection) return null;
 
-    // Initialize glitch effect for subtitle
-    const glitch = initGlitchEffect('.skills-subtitle', {
-        intensity: 0.04,
-        maxShift: 4,
-        duration: 120
-    });
+    // Debounce function for performance
+    const debounce = (func, wait) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    };
 
-    // Animate intensity gauges with interactive effects
+    // Optimized intensity gauge animation
     const animateIntensityGauges = () => {
         const skillWeapons = $$('.skill-weapon');
         
-        skillWeapons.forEach(weapon => {
-            const fill = $('.gauge-fill', weapon);
-            const gaugeValue = $('.gauge-value', weapon);
-            if (!fill) return;
-            
-            const intensity = parseInt(weapon.dataset.intensity) || 80;
-            
-            // Reset to 0
-            fill.style.width = '0%';
-            
-            // Set CSS variable for animation
-            fill.style.setProperty('--target-width', `${intensity}%`);
-            
-            // Animate on scroll into view
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            fill.classList.add('animating');
-                            
-                            // Animate metric numbers
-                            const metrics = $$('.metric-value', weapon);
-                            metrics.forEach(metric => {
-                                const finalValue = metric.textContent;
-                                metric.textContent = '0';
-                                
-                                let current = 0;
-                                const increment = parseInt(finalValue.replace(/[^\d]/g, '')) / 30;
-                                const timer = setInterval(() => {
-                                    current += increment;
-                                    if (current >= parseInt(finalValue.replace(/[^\d]/g, ''))) {
-                                        metric.textContent = finalValue;
-                                        clearInterval(timer);
-                                    } else {
-                                        metric.textContent = Math.floor(current).toLocaleString();
-                                    }
-                                }, 50);
-                            });
-                        }, 300);
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const weapon = entry.target;
+                    const fill = $('.gauge-fill', weapon);
+                    if (!fill) return;
+                    
+                    const intensity = parseInt(weapon.dataset.intensity) || 80;
+                    
+                    // Use CSS animation instead of JS animation
+                    fill.style.setProperty('--target-width', `${intensity}%`);
+                    fill.classList.add('animating');
+                    
+                    // Animate metric numbers with optimized intervals
+                    const metrics = $$('.metric-value', weapon);
+                    metrics.forEach(metric => {
+                        const finalValue = metric.textContent.replace(/[^\d]/g, '');
+                        const numValue = parseInt(finalValue) || 0;
                         
-                        observer.unobserve(weapon);
-                    }
-                });
-            }, { threshold: 0.3, rootMargin: '50px' });
-            
-            observer.observe(weapon);
-        });
+                        if (numValue > 1000) {
+                            // For large numbers, jump directly
+                            metric.textContent = finalValue;
+                        } else {
+                            // For small numbers, animate quickly
+                            let current = 0;
+                            const increment = Math.ceil(numValue / 10);
+                            const timer = setInterval(() => {
+                                current += increment;
+                                if (current >= numValue) {
+                                    metric.textContent = finalValue;
+                                    clearInterval(timer);
+                                } else {
+                                    metric.textContent = current;
+                                }
+                            }, 30);
+                        }
+                    });
+                    
+                    observer.unobserve(weapon);
+                }
+            });
+        }, { threshold: 0.2, rootMargin: '50px' });
+        
+        skillWeapons.forEach(weapon => observer.observe(weapon));
     };
 
-    // Interactive hover effects for tech chips
+    // Simplified tech chip interactions
     const initTechChipInteractions = () => {
         const techChips = $$('.tech-chip');
         
         techChips.forEach(chip => {
-            chip.addEventListener('mouseenter', () => {
-                // Create ripple effect
-                const ripple = document.createElement('span');
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
-                ripple.style.transform = 'scale(0)';
-                ripple.style.animation = 'ripple 0.6s linear';
-                
-                const size = chip.offsetWidth;
-                const pos = chip.getBoundingClientRect();
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = 0 + 'px';
-                ripple.style.top = 0 + 'px';
-                
-                chip.style.position = 'relative';
-                chip.style.overflow = 'hidden';
-                chip.appendChild(ripple);
-                
-                // Add sound effect class
+            const handleMouseEnter = debounce(() => {
                 chip.classList.add('chip-active');
-            });
+            }, 50);
             
-            chip.addEventListener('mouseleave', () => {
+            const handleMouseLeave = debounce(() => {
                 chip.classList.remove('chip-active');
-            });
+            }, 50);
+            
+            chip.addEventListener('mouseenter', handleMouseEnter);
+            chip.addEventListener('mouseleave', handleMouseLeave);
+            
+            // Clean up on destroy
+            chip._handlers = { mouseenter: handleMouseEnter, mouseleave: handleMouseLeave };
         });
     };
 
-    // Random flicker effects for status indicators
+    // Optimized status flicker - less frequent
     const initStatusFlicker = () => {
         const statusIndicators = $$('.status-indicator');
+        let flickerTimer = null;
         
-        statusIndicators.forEach(indicator => {
-            // Random occasional flicker
-            setInterval(() => {
-                if (randomBool(0.005) && document.hasFocus()) {
-                    indicator.style.animation = 'none';
+        const flicker = () => {
+            if (!document.hasFocus()) return;
+            
+            statusIndicators.forEach(indicator => {
+                if (randomBool(0.002)) { // Reduced probability
                     indicator.style.backgroundColor = '#ff0000';
-                    indicator.style.boxShadow = '0 0 15px #ff0000';
+                    indicator.style.boxShadow = '0 0 12px #ff0000';
                     
                     setTimeout(() => {
-                        indicator.style.animation = '';
                         indicator.style.backgroundColor = '#28ca42';
-                        indicator.style.boxShadow = '0 0 10px #28ca42';
-                    }, 100);
+                        indicator.style.boxShadow = '0 0 8px #28ca42';
+                    }, 80);
                 }
-            }, 1000);
-        });
+            });
+        };
+        
+        flickerTimer = setInterval(flicker, 2000); // Increased interval
+        
+        return flickerTimer;
     };
 
-    // Interactive highlight keywords
+    // Simplified highlight keywords
     const initHighlightKeywords = () => {
         const keywords = $$('.highlight-keyword');
         
         keywords.forEach(keyword => {
-            keyword.addEventListener('mouseenter', () => {
-                keyword.style.transform = 'scale(1.05)';
-                keyword.style.textShadow = '0 0 20px rgba(255, 0, 0, 0.5)';
-                
-                // Create particle effect
-                for (let i = 0; i < 3; i++) {
-                    createParticle(keyword);
-                }
-            });
+            const handleMouseEnter = debounce(() => {
+                keyword.style.textShadow = '0 0 15px rgba(255, 0, 0, 0.5)';
+            }, 50);
             
-            keyword.addEventListener('mouseleave', () => {
-                keyword.style.transform = 'scale(1)';
-                keyword.style.textShadow = '0 0 10px rgba(255, 0, 0, 0.3)';
-            });
+            const handleMouseLeave = debounce(() => {
+                keyword.style.textShadow = '0 0 8px rgba(255, 0, 0, 0.3)';
+            }, 50);
+            
+            keyword.addEventListener('mouseenter', handleMouseEnter);
+            keyword.addEventListener('mouseleave', handleMouseLeave);
+            
+            // Store for cleanup
+            keyword._handlers = { mouseenter: handleMouseEnter, mouseleave: handleMouseLeave };
         });
     };
 
-    // Particle effect helper
-    const createParticle = (element) => {
-        const particle = document.createElement('div');
-        particle.style.position = 'absolute';
-        particle.style.width = '4px';
-        particle.style.height = '4px';
-        particle.style.backgroundColor = '#ff0000';
-        particle.style.borderRadius = '50%';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '1000';
-        
-        const rect = element.getBoundingClientRect();
-        particle.style.left = (rect.left + rect.width / 2) + 'px';
-        particle.style.top = (rect.top + rect.height / 2) + 'px';
-        
-        document.body.appendChild(particle);
-        
-        // Animate
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 2 + Math.random() * 3;
-        const duration = 800 + Math.random() * 400;
-        
-        let startX = rect.left + rect.width / 2;
-        let startY = rect.top + rect.height / 2;
-        
-        const startTime = Date.now();
-        
-        const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = elapsed / duration;
-            
-            if (progress >= 1) {
-                document.body.removeChild(particle);
-                return;
-            }
-            
-            const x = startX + Math.cos(angle) * speed * elapsed;
-            const y = startY + Math.sin(angle) * speed * elapsed;
-            
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
-            particle.style.opacity = 1 - progress;
-            particle.style.transform = `scale(${1 - progress * 0.5})`;
-            
-            requestAnimationFrame(animate);
-        };
-        
-        animate();
-    };
-
-    // Initialize all effects
+    // Optimized initialization
     const init = () => {
+        const flickerTimer = initStatusFlicker();
         animateIntensityGauges();
         initTechChipInteractions();
-        initStatusFlicker();
         initHighlightKeywords();
+        
+        return flickerTimer;
     };
 
     // Initialize when section is in view
-    const observer = new IntersectionObserver((entries) => {
+    let flickerTimer = null;
+    let sectionObserver = null;
+    
+    sectionObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                init();
-                observer.unobserve(skillsSection);
+                flickerTimer = init();
+                sectionObserver.unobserve(skillsSection);
             }
         });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.1, rootMargin: '100px' });
 
-    observer.observe(skillsSection);
+    sectionObserver.observe(skillsSection);
 
-    return {
-        destroy: () => {
-            glitch?.destroy();
-            observer.disconnect();
-            
-            // Remove added styles
-            const styles = $('#skills-styles');
-            if (styles) styles.remove();
-        }
+    // Clean up function
+    const destroy = () => {
+        if (flickerTimer) clearInterval(flickerTimer);
+        if (sectionObserver) sectionObserver.disconnect();
+        
+        // Remove event listeners
+        $$('.tech-chip').forEach(chip => {
+            if (chip._handlers) {
+                chip.removeEventListener('mouseenter', chip._handlers.mouseenter);
+                chip.removeEventListener('mouseleave', chip._handlers.mouseleave);
+            }
+        });
+        
+        $$('.highlight-keyword').forEach(keyword => {
+            if (keyword._handlers) {
+                keyword.removeEventListener('mouseenter', keyword._handlers.mouseenter);
+                keyword.removeEventListener('mouseleave', keyword._handlers.mouseleave);
+            }
+        });
     };
+
+    return { destroy };
 };
 
 // Export convenience function
