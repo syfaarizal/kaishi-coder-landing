@@ -206,7 +206,6 @@ export class ProjectsSection {
         console.log('Modal class added:', this.demoModal.classList);
         
         // Show modal
-        addClass(this.demoModal, 'active');
         document.body.style.overflow = 'hidden';
         
         // Update GitHub button link
@@ -257,9 +256,32 @@ export class ProjectsSection {
         
         switch(projectId) {
             case 'cyber-city':
-                frame.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0505)';
-                this.demoGithubLinks['cyber-city'];
-                break;
+            frame.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0505)';
+            frame.innerHTML = `
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:90%;">
+                    <div style="background:rgba(0,0,0,0.8);padding:40px;border:2px solid #00ffff;border-radius:10px;">
+                        <h3 style="color:#00ffff;margin-bottom:20px;">CYBER CITY SIM</h3>
+                        <p style="color:#88ffff;margin-bottom:30px;">Interactive 3D city with real-time particle effects</p>
+                        
+                        <div style="margin:40px 0;padding:20px;background:rgba(0,255,255,0.1);border-radius:10px;">
+                            <p style="color:#ffffff;margin-bottom:15px;">🚀 This demo opens in a new tab</p>
+                            <a href="../../../playground/cyber-city-sim.html" 
+                            target="_blank"
+                            style="display:inline-block;padding:15px 40px;
+                                    background:linear-gradient(45deg, #00ffff, #0088ff);
+                                    color:#000;text-decoration:none;font-weight:bold;
+                                    border-radius:5px;font-size:1.2em;margin-top:10px;">
+                            LAUNCH DEMO
+                            </a>
+                        </div>
+                        
+                        <p style="color:#888;font-size:0.9em;margin-top:30px;">
+                            (The full interactive experience requires a separate window)
+                        </p>
+                    </div>
+                </div>
+            `;
+            break;
                 
             case 'neural-viz':
                 frame.style.background = 'linear-gradient(135deg, #0a0a0a, #05051a)';

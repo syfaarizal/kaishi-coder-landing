@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000;
+            background: #313131;
             color: #fff;
             overflow: hidden;
             line-height: 1.6;
@@ -25,120 +25,8 @@
             height: 100vh;
         }
         
-        #infoPanel {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 20, 40, 0.85);
-            border: 1px solid rgba(0, 200, 255, 0.5);
-            border-radius: 8px;
-            padding: 20px;
-            width: 320px;
-            z-index: 100;
-            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
-            backdrop-filter: blur(5px);
-        }
-        
-        h1 {
-            color: #0cf;
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
-        }
-        
-        .subtitle {
-            color: #8af;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 200, 255, 0.3);
-            padding-bottom: 10px;
-        }
-        
         .section {
             margin-bottom: 20px;
-        }
-        
-        .section-title {
-            color: #0cf;
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .section-title i {
-            margin-right: 8px;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .stat {
-            background: rgba(0, 30, 60, 0.7);
-            border-radius: 6px;
-            padding: 10px;
-            text-align: center;
-            border: 1px solid rgba(0, 150, 255, 0.2);
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #0ff;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: #8af;
-        }
-        
-        .tech-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .tech-icon {
-            width: 24px;
-            height: 24px;
-            background: rgba(0, 150, 255, 0.2);
-            border-radius: 4px;
-            margin-right: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0cf;
-        }
-        
-        .optimization-list {
-            list-style-type: none;
-        }
-        
-        .optimization-list li {
-            margin-bottom: 6px;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .optimization-list li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #0cf;
-        }
-        
-        .lesson {
-            background: rgba(255, 100, 0, 0.1);
-            border-left: 3px solid #f90;
-            padding: 10px;
-            border-radius: 0 4px 4px 0;
-            font-size: 0.9rem;
         }
         
         #controls {
@@ -229,36 +117,7 @@
     </style>
 </head>
 <body>
-    <div id="container">
-        <div id="infoPanel">
-            <h1>CYBER CITY SIM</h1>
-            <p class="subtitle">3D City Simulation with Real-time Performance Optimization</p>
-            
-            <div class="section">
-                <div class="section-title">
-                    <span>📊 Key Metrics</span>
-                </div>
-                <div class="stats">
-                    <div class="stat">
-                        <div class="stat-value" id="fpsValue">60</div>
-                        <div class="stat-label">FPS TARGET</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value" id="particleValue">10K</div>
-                        <div class="stat-label">CONCURRENT PARTICLES</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">4MB</div>
-                        <div class="stat-label">BUNDLE SIZE</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">2.1s</div>
-                        <div class="stat-label">INITIAL LOAD</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+    <div id="container">        
         <div id="controls">
             <button class="control-btn" id="dayNight">Toggle Day/Night</button>
             <button class="control-btn" id="particleToggle">Particles: ON</button>
@@ -339,7 +198,7 @@
             // Ground plane
             const groundGeometry = new THREE.PlaneGeometry(citySize * 2, citySize * 2);
             const groundMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x111122,
+                color: 0x2A0D01,
                 roughness: 0.8,
                 metalness: 0.2
             });
@@ -563,7 +422,6 @@
                 particlesEnabled = !particlesEnabled;
                 particleSystem.visible = particlesEnabled;
                 this.textContent = particlesEnabled ? 'Particles: ON' : 'Particles: OFF';
-                document.getElementById('particleValue').textContent = particlesEnabled ? '10K' : '0';
                 document.getElementById('particleCount').textContent = particlesEnabled ? 'Particles: 10,000' : 'Particles: 0';
             });
             
@@ -596,7 +454,6 @@
                 if (currentTime >= lastTime + 1000) {
                     fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
                     document.getElementById('fpsCounter').textContent = `FPS: ${fps}`;
-                    document.getElementById('fpsValue').textContent = fps;
                     frameCount = 0;
                     lastTime = currentTime;
                 }
