@@ -531,6 +531,12 @@
 }
 
 /* Responsive Design for Skills */
+@media (max-width: 1280px) {
+    .weapon-card {
+        height: 62vh;
+    }
+}
+
 @media (max-width: 1024px) {
     .skills-section {
         padding: 80px 30px;
@@ -538,6 +544,10 @@
     
     .skills-title {
         font-size: 1.8em;
+    }
+
+    .weapon-card {
+        height: auto;
     }
     
     .skills-grid {
@@ -618,6 +628,7 @@
     
     .weapon-card {
         padding: 20px;
+        height: auto;
     }
     
     .weapon-name {
