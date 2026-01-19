@@ -165,9 +165,9 @@
             let fps = 60;
             
             // REDUCED City parameters
-            const citySize = 60;
-            const buildingCount = 100; // Reduced from 200
-            const particleCount = 2000; // Drastically reduced from 10,000
+            const citySize = 65;
+            const buildingCount = 120; 
+            const particleCount = 1000; 
             
             // Simplified lighting
             const ambientLight = new THREE.AmbientLight(0x444444);
@@ -245,8 +245,8 @@
             const posArray = new Float32Array(particlesCount * 3);
             
             for (let i = 0; i < particlesCount * 3; i += 3) {
-                posArray[i] = (Math.random() - 0.5) * citySize * 2;
-                posArray[i + 1] = Math.random() * 50;
+                posArray[i] = (Math.random() - 0.5) * citySize * 2; 
+                posArray[i + 1] = Math.random() * 50; 
                 posArray[i + 2] = (Math.random() - 0.5) * citySize * 2;
             }
             
