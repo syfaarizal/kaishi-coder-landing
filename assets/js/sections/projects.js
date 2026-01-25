@@ -1,6 +1,5 @@
 import { $, $$, addClass, removeClass } from '../core/dom.js';
 import { debounce } from '../core/utils.js';
-import { modalManager } from '../components/modal.js';
 import { initMultiLineTyping } from '../effects/typing.js';
 
 export class ProjectsSection {
@@ -12,42 +11,13 @@ export class ProjectsSection {
         this.filterButtons = $$('.filter-btn');
         this.sortButtons = $$('.sort-btn');
         this.searchInput = $('.search-input');
-        this.demoButtons = $$('.demo-btn');
         this.codeButtons = $$('.code-btn');
         this.writeupButtons = $$('.writeup-btn');
         
-        // Tambahkan selector untuk modal
-        this.demoModal = $('#demo-modal');
-        this.modalClose = this.demoModal ? $('.modal-close', this.demoModal) : null;
-        this.fullscreenBtn = this.demoModal ? $('.fullscreen-btn', this.demoModal) : null;
-        this.restartBtn = this.demoModal ? $('.restart-btn', this.demoModal) : null;
-        this.githubBtn = this.demoModal ? $('.github-btn', this.demoModal) : null;
-        
         this.currentFilter = 'all';
         this.currentSort = 'newest';
-        this.currentProjectId = null;
         
         this.projectCache = this.cacheProjectData();
-
-        // Demo modal GitHub link
-        this.demoGithubLinks = {
-            'cyber-city': '../../../playground/cyber-city-sim.html',
-            'neural-viz': 'https://github.com/kaishiscd/neural-visualizer',
-            'cyber-runner': 'https://github.com/kaishiscd/cyber-runner',
-            'data-dashboard': 'https://github.com/kaishiscd/data-dashboard',
-            'audio-viz': 'https://github.com/kaishiscd/audio-reactive-art',
-            'terminal-quest': 'https://github.com/kaishiscd/terminal-quest'
-        };
-        
-        // GitHub URLs
-        this.githubUrls = {
-            'cyber-city': 'https://github.com/syfaarizal/kaishi-coder-landing/blob/main/playground/cyber-city-sim.html',
-            'neural-viz': 'https://github.com/kaishiscd/neural-visualizer',
-            'cyber-runner': 'https://github.com/kaishiscd/cyber-runner',
-            'data-dashboard': 'https://github.com/kaishiscd/data-dashboard',
-            'audio-viz': 'https://github.com/kaishiscd/audio-reactive-art',
-            'terminal-quest': 'https://github.com/kaishiscd/terminal-quest'
-        };
         
         this.init();
     }
@@ -69,13 +39,10 @@ export class ProjectsSection {
         this.initFilters();
         this.initSorting();
         this.initSearch();
-        this.initDemoButtons();
         this.initCodeButtons();
         this.initWriteupButtons();
         this.initTerminal();
         this.initTileEffects();
-        this.initModalHandlers();
-        this.initKeyboardShortcuts();
     }
     
     initFilters() {
@@ -108,15 +75,6 @@ export class ProjectsSection {
         this.searchInput.addEventListener('input', debouncedSearch);
     }
     
-    initDemoButtons() {
-        this.demoButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const projectId = button.dataset.project;
-                this.openDemoModal(projectId);
-            });
-        });
-    }
-    
     initCodeButtons() {
         this.codeButtons.forEach(button => {
             button.addEventListener('click', (e) => {
@@ -144,187 +102,9 @@ export class ProjectsSection {
         this.writeupButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const projectId = button.dataset.project;
-                // Anda bisa menambahkan fungsi untuk modal write-up di sini
                 console.log('Write-up untuk project:', projectId);
             });
         });
-    }
-    
-    initModalHandlers() {
-        if (!this.demoModal || !this.modalClose) return;
-        
-        // Close modal
-        this.modalClose.addEventListener('click', () => this.closeDemoModal());
-        
-        // Close on outside click
-        this.demoModal.addEventListener('click', (e) => {
-            if (e.target === this.demoModal) this.closeDemoModal();
-        });
-        
-        // Fullscreen toggle
-        if (this.fullscreenBtn) {
-            this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
-        }
-        
-        // Restart demo
-        if (this.restartBtn) {
-            this.restartBtn.addEventListener('click', () => {
-                if (this.currentProjectId) {
-                    this.openDemoModal(this.currentProjectId);
-                }
-            });
-        }
-    }
-    
-    initKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            if (!this.demoModal || !this.demoModal.classList.contains('active')) return;
-            
-            switch(e.key) {
-                case 'Escape':
-                    this.closeDemoModal();
-                    break;
-                case 'f':
-                case 'F':
-                    if (this.fullscreenBtn) this.toggleFullscreen();
-                    break;
-                case 'r':
-                case 'R':
-                    if (this.restartBtn && this.currentProjectId) {
-                        this.openDemoModal(this.currentProjectId);
-                    }
-                    break;
-            }
-        });
-    }
-    
-    openDemoModal(projectId) {
-        this.currentProjectId = projectId;
-        
-        addClass(this.demoModal, 'active');
-        
-        // Show modal
-        document.body.style.overflow = 'hidden';
-        
-        // Update GitHub button link
-        if (this.githubBtn && this.githubUrls[projectId]) {
-            this.githubBtn.href = this.githubUrls[projectId];
-        }
-        
-        // Show loading
-        const loading = $('.demo-loading', this.demoModal);
-        const frame = $('.demo-frame', this.demoModal);
-        
-        if (loading) loading.style.display = 'block';
-        if (frame) {
-            frame.style.background = '#000';
-            frame.innerHTML = '<div class="demo-loading"><div class="loading-spinner"></div><div class="loading-text">INITIALIZING PLAYGROUND...</div></div>';
-        }
-        
-        // Simulate demo after 2 seconds
-        setTimeout(() => {
-            this.simulateDemo(projectId);
-        }, 2000);
-    }
-    
-    simulateDemo(projectId) {
-        const frame = $('.demo-frame', this.demoModal);
-        if (!frame) return;
-        
-        const loading = $('.demo-loading', this.demoModal);
-        if (loading) loading.style.display = 'none';
-        
-        // Add demo styles
-        const styleId = 'demo-styles';
-        if (!$(`#${styleId}`)) {
-            const style = document.createElement('style');
-            style.id = styleId;
-            style.textContent = `
-                @keyframes progress {
-                    0% { width: 0%; }
-                    100% { width: 100%; }
-                }
-                @keyframes pulse {
-                    0%, 100% { transform: scale(1); opacity: 0.7; }
-                    50% { transform: scale(1.2); opacity: 1; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        switch(projectId) {
-            case 'cyber-city':
-                frame.style.background = 'linear-gradient(45deg, #0a0a0a, #1a0505)';
-                frame.innerHTML = `
-                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#00ffff;font-family:'Courier New',monospace;text-align:center;width:90%;">
-                        <h3 style="margin-bottom:20px;color:#ff0000;text-shadow:0 0 10px #ff0000;">CYBER CITY SIM</h3>
-                        <p style="color:#ffffff;margin-bottom:30px;">Interactive 3D city with real-time particle effects</p>
-                        
-                        <a href="../../../playground/cyber-city-sim.html" 
-                        target="_blank"
-                        style="display:inline-block;padding:15px 30px;background:rgba(0,255,255,0.2);border:2px solid #ff0000;color:#ff0000;text-decoration:none;border-radius:5px;margin:20px 0;transition:all 0.3s;">
-                            <span style="display:block;margin-bottom:5px;">OPEN FULL DEMO</span>
-                            <span style="font-size:0.9em;color:#ffffff;">(Opens in new tab)</span>
-                        </a>
-                        
-                        <div style="margin-top:40px;padding:20px;background:rgba(0,255,255,0.1);border:1px solid #ff0000;border-radius:10px;">
-                            <p style="color:#ffffff;margin-bottom:15px;">Preview simulation running...</p>
-                            <div style="width:100%;height:10px;background:rgba(0,0,0,0.5);border-radius:5px;overflow:hidden;">
-                                <div style="width:75%;height:100%;background:linear-gradient(90deg, #ff0000, #4b0000);animation:progress 3s infinite;"></div>
-                            </div>
-                            <div style="display:flex;justify-content:center;gap:15px;margin-top:20px;">
-                                <div style="width:20px;height:20px;background:#ff0000;border-radius:50%;animation:pulse 1.5s infinite;"></div>
-                                <div style="width:20px;height:20px;background:#ffffff;border-radius:50%;animation:pulse 1.5s infinite 0.3s;"></div>
-                                <div style="width:20px;height:20px;background:#ff0000;border-radius:50%;animation:pulse 1.5s infinite 0.6s;"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                break;
-                
-            case 'neural-viz':
-                frame.style.background = 'linear-gradient(135deg, #0a0a0a, #05051a)';
-                frame.innerHTML = `
-                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#00ff00;font-family:'Courier New',monospace;text-align:center;">
-                        <h3 style="margin-bottom:20px;">NEURAL NETWORK VISUALIZER</h3>
-                        <p style="color:#66ff66;">Processing neural connections...</p>
-                        <div style="margin-top:30px;display:flex;justify-content:center;gap:20px;">
-                            <div style="width:20px;height:20px;background:#00ff00;border-radius:50%;animation:pulse 1s infinite;"></div>
-                            <div style="width:20px;height:20px;background:#00ff00;border-radius:50%;animation:pulse 1s infinite 0.2s;"></div>
-                            <div style="width:20px;height:20px;background:#00ff00;border-radius:50%;animation:pulse 1s infinite 0.4s;"></div>
-                        </div>
-                    </div>
-                `;
-                break;
-                
-            default:
-                frame.innerHTML = `
-                    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ff0000;font-family:'Courier New',monospace;text-align:center;">
-                        <h3 style="margin-bottom:20px;">DEMO PLAYGROUND</h3>
-                        <p style="color:#ff6666;">Interactive demo would run here</p>
-                        <p style="margin-top:20px;font-size:0.9em;">(This is a simulation - real demo would connect to actual project)</p>
-                    </div>
-                `;
-        }
-    }
-    
-    closeDemoModal() {
-        removeClass(this.demoModal, 'active');
-        document.body.style.overflow = '';
-        this.currentProjectId = null;
-    }
-    
-    toggleFullscreen() {
-        const container = $('.modal-container', this.demoModal);
-        if (!container) return;
-        
-        if (!document.fullscreenElement) {
-            container.requestFullscreen().catch(err => {
-                console.log(`Error attempting to enable fullscreen: ${err.message}`);
-            });
-        } else {
-            document.exitFullscreen();
-        }
     }
     
     updateProjects() {
@@ -406,19 +186,13 @@ export class ProjectsSection {
     }
     
     activateTileEffects(tile) {
-        // Start effects for this tile
         tile.dataset.effectsActive = 'true';
-        
-        // Add hover effects
         tile.addEventListener('mouseenter', this.handleTileHover);
         tile.addEventListener('mouseleave', this.handleTileLeave);
     }
     
     deactivateTileEffects(tile) {
-        // Stop effects for this tile
         tile.dataset.effectsActive = 'false';
-        
-        // Remove hover effects
         tile.removeEventListener('mouseenter', this.handleTileHover);
         tile.removeEventListener('mouseleave', this.handleTileLeave);
     }
@@ -434,20 +208,6 @@ export class ProjectsSection {
     }
     
     destroy() {
-        // Cleanup all event listeners
-        if (this.demoModal) {
-            removeClass(this.demoModal, 'active');
-        }
-        
-        // Remove keyboard listeners
-        document.removeEventListener('keydown', this.handleKeydown);
-        
-        // Remove modal handlers
-        if (this.modalClose) {
-            this.modalClose.removeEventListener('click', this.closeDemoModal);
-        }
-        
-        // Reset body overflow
         document.body.style.overflow = '';
     }
 }

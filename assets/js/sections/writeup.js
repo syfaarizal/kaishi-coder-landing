@@ -104,7 +104,41 @@ export class WriteupSection {
                     { value: '2.8KB', label: 'MODEL SIZE' }
                 ],
                 lessons: 'Real-time visualization requires balancing detail with performance. Found that simplifying neuron representations after 200 nodes maintained smooth FPS.'
-            }
+            },
+            'cyber-runner': {
+                title: 'CYBER RUNNER',
+                buildTime: '5 WEEKS',
+                loc: '8,567',
+                difficulty: 'ADVANCED',
+                challenge: 'Creating a performant 3D racing game in the browser that maintains 60fps while rendering thousands of particles and dynamic lighting.',
+                techStack: [
+                    {
+                        name: 'BABYLON.JS',
+                        description: 'Used for 3D rendering, camera controls, and scene management. Implemented custom shaders for neon effects.'
+                    },
+                    {
+                        name: 'WEBGL SHADERS',
+                        description: 'Custom GLSL shaders for particle systems, bloom effects, and real-time reflections.'
+                    },
+                    {
+                        name: 'WEB WORKERS',
+                        description: 'Offloaded physics calculations to prevent main thread blocking.'
+                    }
+                ],
+                optimizations: [
+                    'Instanced rendering for identical buildings (90% reduction in draw calls)',
+                    'Level of Detail (LOD) system for distant objects',
+                    'Frustum culling to avoid rendering off-screen objects',
+                    'Texture atlas for all materials'
+                ],
+                metrics: [
+                    { value: '60', label: 'FPS TARGET' },
+                    { value: '10K', label: 'CONCURRENT PARTICLES' },
+                    { value: '4MB', label: 'BUNDLE SIZE' },
+                    { value: '2.1s', label: 'INITIAL LOAD' }
+                ],
+                lessons: 'WebGL requires careful memory management. Found that pooling object instances significantly improved garbage collection performance.' 
+            },
         };
         
         const data = writeupData[projectId] || writeupData['cyber-city'];
