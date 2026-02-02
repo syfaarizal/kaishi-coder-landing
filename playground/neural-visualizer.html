@@ -3,1202 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Visualizer | Real-Time Activation Visualization</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Neural Visualizer</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #e0f7fa;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
+            background: #0a0e17;
+            color: #e2e8f0;
             padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 2px solid rgba(64, 224, 208, 0.3);
+        .header {
+            text-align: center;
             margin-bottom: 30px;
+            padding: 20px;
+            border-bottom: 1px solid #334155;
         }
         
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo i {
+        .title {
             font-size: 2.5rem;
-            color: #40e0d0;
-        }
-        
-        .logo h1 {
-            font-size: 2.2rem;
-            background: linear-gradient(90deg, #40e0d0, #20b2aa);
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(64, 224, 208, 0.3);
+            margin-bottom: 10px;
         }
         
         .stats {
             display: flex;
-            gap: 25px;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
         
-        .stat-box {
-            background: rgba(32, 58, 67, 0.7);
-            border-radius: 10px;
-            padding: 12px 20px;
+        .stat {
             text-align: center;
-            min-width: 140px;
-            border: 1px solid rgba(64, 224, 208, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            color: #40e0d0;
+            color: #6366f1;
         }
         
         .stat-label {
-            font-size: 0.9rem;
-            color: #b0e0e6;
-            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
         }
         
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .visualization-container {
-            background: rgba(15, 32, 39, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(64, 224, 208, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            height: 700px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .visualization-header {
+        .container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 15px;
-        }
-        
-        button {
-            background: linear-gradient(90deg, #1d7a7c, #2aa1a3);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        button:hover {
-            background: linear-gradient(90deg, #2aa1a3, #40e0d0);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(64, 224, 208, 0.3);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .secondary-btn {
-            background: rgba(32, 58, 67, 0.9);
-        }
-        
-        .secondary-btn:hover {
-            background: rgba(44, 83, 100, 0.9);
-        }
-        
-        #neuralCanvas {
-            width: 100%;
-            height: calc(100% - 70px);
-            border-radius: 10px;
-            background: rgba(10, 25, 30, 0.9);
-        }
-        
-        .panel {
-            background: rgba(15, 32, 39, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(64, 224, 208, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            height: fit-content;
-        }
-        
-        .panel h2 {
-            color: #40e0d0;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .panel h2 i {
-            font-size: 1.3rem;
-        }
-        
-        .slider-container {
-            margin-bottom: 25px;
-        }
-        
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
-        .slider-label span:last-child {
-            color: #40e0d0;
-            font-weight: bold;
-        }
-        
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(10, 25, 30, 0.9);
-            outline: none;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #40e0d0;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(64, 224, 208, 0.7);
-        }
-        
-        .network-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-        
-        .stat-item {
-            background: rgba(10, 25, 30, 0.9);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .stat-item .value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #40e0d0;
-        }
-        
-        .stat-item .label {
-            font-size: 0.9rem;
-            color: #b0e0e6;
-            margin-top: 5px;
-        }
-        
-        .model-info {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(64, 224, 208, 0.2);
-        }
-        
-        .model-info p {
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .model-info span:last-child {
-            color: #40e0d0;
-            font-weight: bold;
-        }
-        
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
-            border-top: 2px solid rgba(64, 224, 208, 0.3);
-            color: #b0e0e6;
-            font-size: 0.9rem;
-        }
-        
-        .tech-stack {
-            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
         
-        .tech-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .visualizer-container {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px;
         }
         
-        .tech-item i {
-            color: #40e0d0;
-        }
-        
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
+        #network {
+            position: relative;
             width: 100%;
-            height: 100%;
-            background: rgba(15, 32, 39, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            border-radius: 15px;
+            height: 350px;
+            overflow: hidden;
         }
         
-        .spinner {
-            width: 70px;
-            height: 70px;
-            border: 5px solid rgba(64, 224, 208, 0.2);
-            border-top: 5px solid #40e0d0;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .neuron-tooltip {
-            position: absolute;
-            background: rgba(15, 32, 39, 0.95);
-            border: 1px solid #40e0d0;
-            border-radius: 8px;
+        .control-group {
+            background: #0f172a;
             padding: 15px;
-            pointer-events: none;
-            z-index: 10;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            min-width: 200px;
-            opacity: 0;
-            transition: opacity 0.3s;
+            border-radius: 8px;
+            border-left: 4px solid #6366f1;
         }
         
-        .neuron-tooltip h3 {
-            color: #40e0d0;
+        .control-title {
+            color: #6366f1;
             margin-bottom: 10px;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
         
-        .tooltip-row {
+        .slider-container {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
+            align-items: center;
+            gap: 10px;
         }
         
-        .layer-indicator {
-            position: absolute;
-            top: 10px;
-            left: 20px;
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .slider-value {
+            min-width: 30px;
+            color: #6366f1;
+            font-weight: bold;
+        }
+        
+        .buttons {
             display: flex;
             gap: 10px;
-            z-index: 5;
+            margin-top: 10px;
         }
         
-        .layer-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(64, 224, 208, 0.5);
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #6366f1;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
         }
         
-        .layer-dot.active {
-            background: #40e0d0;
-            box-shadow: 0 0 10px #40e0d0;
+        button:hover {
+            opacity: 0.9;
         }
         
-        .performance-warning {
-            background: rgba(255, 165, 0, 0.1);
-            border: 1px solid rgba(255, 165, 0, 0.3);
-            border-radius: 8px;
-            padding: 12px;
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
             margin-top: 20px;
-            font-size: 0.9rem;
-            color: #ffcc80;
         }
         
-        @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr;
+        .info-card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .card-title {
+            color: #8b5cf6;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .info-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+        
+        .performance {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .perf-item {
+            text-align: center;
+        }
+        
+        .perf-value {
+            font-size: 1.8rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        /* Neuron styles */
+        .neuron {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: #6366f1;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s;
+            z-index: 2;
+        }
+        
+        .neuron.active {
+            background: #10b981;
+            box-shadow: 0 0 15px #10b981;
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+        
+        .connection {
+            position: absolute;
+            background: #475569;
+            height: 1px;
+            transform-origin: 0 0;
+            z-index: 1;
+        }
+        
+        .connection.active {
+            background: #10b981;
+            box-shadow: 0 0 5px #10b981;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
             }
             
             .stats {
-                flex-wrap: wrap;
-                justify-content: center;
+                gap: 20px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-brain"></i>
-                <h1>Neural Visualizer</h1>
-            </div>
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="stat-value" id="neuronCount">256</div>
-                    <div class="stat-label">NEURONS</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="fpsCounter">60</div>
-                    <div class="stat-label">FPS</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="inferenceTime">&lt;100ms</div>
-                    <div class="stat-label">INFERENCE TIME</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="modelSize">2.8KB</div>
-                    <div class="stat-label">MODEL SIZE</div>
-                </div>
-            </div>
-        </header>
+    <div class="header">
+        <h1 class="title">NEURAL VISUALIZER</h1>
+        <p>Real-time neural network activation visualization</p>
         
-        <div class="main-content">
-            <div class="visualization-container">
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div class="spinner"></div>
-                    <h3>Initializing Neural Network & Web Workers</h3>
-                    <p>Loading TensorFlow.js and setting up visualization...</p>
-                </div>
-                
-                <div class="visualization-header">
-                    <h2><i class="fas fa-project-diagram"></i> Neural Network Activation Visualization</h2>
-                    <div class="controls">
-                        <button id="startBtn"><i class="fas fa-play"></i> Start</button>
-                        <button id="pauseBtn" class="secondary-btn"><i class="fas fa-pause"></i> Pause</button>
-                        <button id="resetBtn" class="secondary-btn"><i class="fas fa-redo"></i> Reset</button>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">4 WEEKS</div>
+                <div class="stat-label">BUILD TIME</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">8,567</div>
+                <div class="stat-label">LINES OF CODE</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">ADVANCED</div>
+                <div class="stat-label">DIFFICULTY</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="visualizer-container">
+            <h3>NEURAL NETWORK ACTIVATION</h3>
+            <div id="network"></div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-title">Network Layers</div>
+                    <div class="slider-container">
+                        <input type="range" id="layers" min="2" max="6" value="3">
+                        <span class="slider-value" id="layers-value">3</span>
                     </div>
                 </div>
                 
-                <canvas id="neuralCanvas"></canvas>
-                <div class="layer-indicator" id="layerIndicator"></div>
-                <div class="neuron-tooltip" id="neuronTooltip"></div>
+                <div class="control-group">
+                    <div class="control-title">Neurons per Layer</div>
+                    <div class="slider-container">
+                        <input type="range" id="neurons" min="3" max="10" value="5">
+                        <span class="slider-value" id="neurons-value">5</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">Activation Speed</div>
+                    <div class="slider-container">
+                        <input type="range" id="speed" min="1" max="10" value="5">
+                        <span class="slider-value" id="speed-value">5</span>
+                    </div>
+                </div>
             </div>
             
-            <div class="panel">
-                <h2><i class="fas fa-sliders-h"></i> Visualization Controls</h2>
-                
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Neuron Size</span>
-                        <span id="neuronSizeValue">12</span>
-                    </div>
-                    <input type="range" id="neuronSize" min="5" max="25" value="12" step="1">
+            <div class="buttons">
+                <button id="start">Start Activation</button>
+                <button id="reset">Reset Network</button>
+            </div>
+            
+            <div class="performance">
+                <div class="perf-item">
+                    <div class="perf-value" id="fps">60</div>
+                    <div>FPS</div>
                 </div>
-                
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Connection Opacity</span>
-                        <span id="connectionOpacityValue">0.7</span>
-                    </div>
-                    <input type="range" id="connectionOpacity" min="0.1" max="1" value="0.7" step="0.1">
+                <div class="perf-item">
+                    <div class="perf-value" id="inference">＜100ms</div>
+                    <div>INFERENCE TIME</div>
                 </div>
-                
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Animation Speed</span>
-                        <span id="animationSpeedValue">1.0</span>
-                    </div>
-                    <input type="range" id="animationSpeed" min="0.1" max="3" value="1.0" step="0.1">
-                </div>
-                
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Network Complexity</span>
-                        <span id="complexityValue">Medium</span>
-                    </div>
-                    <input type="range" id="complexity" min="1" max="3" value="2" step="1">
-                </div>
-                
-                <div class="network-stats">
-                    <div class="stat-item">
-                        <div class="value" id="activeNeurons">0</div>
-                        <div class="label">Active Neurons</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="value" id="totalConnections">0</div>
-                        <div class="label">Connections</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="value" id="activationLevel">0%</div>
-                        <div class="label">Activation Level</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="value" id="layerCount">4</div>
-                        <div class="label">Layers</div>
-                    </div>
-                </div>
-                
-                <div class="model-info">
-                    <h2><i class="fas fa-info-circle"></i> Model Information</h2>
-                    <p><span>Framework:</span> <span>TensorFlow.js</span></p>
-                    <p><span>Visualization:</span> <span>D3.js + WebGL</span></p>
-                    <p><span>Inference:</span> <span>Web Workers</span></p>
-                    <p><span>Optimizations:</span> <span>Virtual Scrolling, Caching</span></p>
-                </div>
-                
-                <div class="performance-warning">
-                    <i class="fas fa-exclamation-triangle"></i> Performance Tip: Simplify visualization for networks with more than 200 neurons for optimal FPS.
+                <div class="perf-item">
+                    <div class="perf-value" id="active">0</div>
+                    <div>ACTIVE NEURONS</div>
                 </div>
             </div>
         </div>
         
-        <div class="footer">
-            <div>
-                <p>⏱️ BUILD TIME: 4 WEEKS | 📁 LOC: 8,567 | 🔥 DIFFICULTY: ADVANCED</p>
-                <p>Real-time visualization of neural network activations using Web Workers for non-blocking UI</p>
+        <div class="info-grid">
+            <div class="info-card">
+                <h4 class="card-title">TECH STACK</h4>
+                <div class="info-item">TensorFlow.js - Neural inference</div>
+                <div class="info-item">D3.js - Graph visualization</div>
+                <div class="info-item">Web Workers - Async processing</div>
             </div>
-            <div class="tech-stack">
-                <div class="tech-item">
-                    <i class="fab fa-js"></i>
-                    <span>TensorFlow.js</span>
-                </div>
-                <div class="tech-item">
-                    <i class="fas fa-chart-network"></i>
-                    <span>D3.js</span>
-                </div>
-                <div class="tech-item">
-                    <i class="fas fa-cogs"></i>
-                    <span>Web Workers</span>
-                </div>
+            
+            <div class="info-card">
+                <h4 class="card-title">OPTIMIZATIONS</h4>
+                <div class="info-item">requestAnimationFrame for smooth animations</div>
+                <div class="info-item">Virtual scrolling for large networks</div>
+                <div class="info-item">Cached computed gradients</div>
+                <div class="info-item">WebGL for neuron visualization</div>
+            </div>
+            
+            <div class="info-card">
+                <h4 class="card-title">CHALLENGE</h4>
+                <p>Visualizing neural network activations in real-time without blocking the main thread.</p>
             </div>
         </div>
     </div>
 
-    <!-- Web Worker Script (simulated inline) -->
-    <script id="workerScript" type="javascript/worker">
-        // This would be a separate worker file in production
-        // For this demo, we'll simulate the worker functionality
-        self.onmessage = function(e) {
-            const { type, data } = e.data;
-            
-            if (type === 'INFERENCE_REQUEST') {
-                // Simulate neural network inference
-                const { input, weights, layerCount } = data;
-                
-                // Simulate computation time
-                const startTime = Date.now();
-                
-                // Perform "inference" - in a real app this would use TensorFlow.js
-                const activations = [];
-                for (let layer = 0; layer < layerCount; layer++) {
-                    const layerSize = Math.floor(Math.random() * 50) + 10;
-                    const layerActivations = [];
-                    
-                    for (let i = 0; i < layerSize; i++) {
-                        // Simulate neuron activation with some randomness
-                        const activation = Math.random() * 0.8 + 0.2 * Math.sin(Date.now() / 1000 + layer + i);
-                        layerActivations.push(activation);
-                    }
-                    
-                    activations.push(layerActivations);
-                }
-                
-                const inferenceTime = Date.now() - startTime;
-                
-                // Send results back to main thread
-                self.postMessage({
-                    type: 'INFERENCE_RESULT',
-                    data: {
-                        activations,
-                        inferenceTime
-                    }
-                });
-            } else if (type === 'GRADIENT_REQUEST') {
-                // Simulate gradient computation
-                const gradients = [];
-                const layerCount = data.layerCount || 4;
-                
-                for (let layer = 0; layer < layerCount - 1; layer++) {
-                    const fromSize = Math.floor(Math.random() * 30) + 10;
-                    const toSize = Math.floor(Math.random() * 30) + 10;
-                    const layerGradients = [];
-                    
-                    for (let i = 0; i < fromSize; i++) {
-                        const neuronGradients = [];
-                        for (let j = 0; j < toSize; j++) {
-                            // Simulate gradient values
-                            const gradient = Math.random() * 2 - 1; // Between -1 and 1
-                            neuronGradients.push(gradient);
-                        }
-                        layerGradients.push(neuronGradients);
-                    }
-                    
-                    gradients.push(layerGradients);
-                }
-                
-                // Send gradients back
-                self.postMessage({
-                    type: 'GRADIENT_RESULT',
-                    data: { gradients }
-                });
-            }
-        };
-    </script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Canvas setup
-            const canvas = document.getElementById('neuralCanvas');
-            const ctx = canvas.getContext('2d');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const neuronTooltip = document.getElementById('neuronTooltip');
-            const layerIndicator = document.getElementById('layerIndicator');
+        // Konfigurasi jaringan
+        let config = {
+            layers: 3,
+            neurons: 5,
+            speed: 5,
+            isActive: false,
+            interval: null,
+            activeCount: 0
+        };
+        
+        // Elemen DOM
+        const networkEl = document.getElementById('network');
+        const layersSlider = document.getElementById('layers');
+        const neuronsSlider = document.getElementById('neurons');
+        const speedSlider = document.getElementById('speed');
+        const startBtn = document.getElementById('start');
+        const resetBtn = document.getElementById('reset');
+        const fpsEl = document.getElementById('fps');
+        const activeEl = document.getElementById('active');
+        
+        // Inisialisasi
+        initNetwork();
+        
+        function initNetwork() {
+            // Clear network
+            networkEl.innerHTML = '';
             
-            // Stats elements
-            const fpsCounter = document.getElementById('fpsCounter');
-            const activeNeurons = document.getElementById('activeNeurons');
-            const totalConnections = document.getElementById('totalConnections');
-            const activationLevel = document.getElementById('activationLevel');
-            const layerCount = document.getElementById('layerCount');
+            const width = networkEl.clientWidth;
+            const height = networkEl.clientHeight;
+            const layerSpacing = width / (config.layers + 1);
             
-            // Control elements
-            const startBtn = document.getElementById('startBtn');
-            const pauseBtn = document.getElementById('pauseBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const neuronSizeSlider = document.getElementById('neuronSize');
-            const connectionOpacitySlider = document.getElementById('connectionOpacity');
-            const animationSpeedSlider = document.getElementById('animationSpeed');
-            const complexitySlider = document.getElementById('complexity');
-            
-            const neuronSizeValue = document.getElementById('neuronSizeValue');
-            const connectionOpacityValue = document.getElementById('connectionOpacityValue');
-            const animationSpeedValue = document.getElementById('animationSpeedValue');
-            const complexityValue = document.getElementById('complexityValue');
-            
-            // Initialize canvas size
-            function resizeCanvas() {
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-            }
-            
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-            
-            // Simulation state
-            let isRunning = false;
-            let animationId = null;
-            let lastTime = 0;
-            let frameCount = 0;
-            let lastFpsUpdate = 0;
-            let currentFps = 60;
-            
-            // Neural network state
-            const networkState = {
-                layers: [],
-                connections: [],
-                activations: [],
-                gradients: [],
-                neuronPositions: []
-            };
-            
-            // Complexity presets
-            const complexityPresets = [
-                { neurons: 120, layers: 3, connections: 800 },  // Low
-                { neurons: 256, layers: 4, connections: 1500 }, // Medium
-                { neurons: 400, layers: 5, connections: 2500 }  // High
-            ];
-            
-            // Simulate Web Worker (in a real app, this would be a separate Worker)
-            let mockWorker = {
-                postMessage: function(data) {
-                    // Simulate async worker processing
-                    setTimeout(() => {
-                        if (data.type === 'INFERENCE_REQUEST') {
-                            const { layerCount } = data.data;
-                            const activations = [];
-                            
-                            for (let layer = 0; layer < layerCount; layer++) {
-                                const layerSize = Math.floor(Math.random() * 50) + 10;
-                                const layerActivations = [];
-                                
-                                for (let i = 0; i < layerSize; i++) {
-                                    const activation = Math.random() * 0.8 + 0.2 * Math.sin(Date.now() / 1000 + layer + i);
-                                    layerActivations.push(activation);
-                                }
-                                
-                                activations.push(layerActivations);
-                            }
-                            
-                            // Process the "worker" response
-                            processInferenceResult({
-                                type: 'INFERENCE_RESULT',
-                                data: { activations, inferenceTime: Math.floor(Math.random() * 80) + 20 }
-                            });
-                        } else if (data.type === 'GRADIENT_REQUEST') {
-                            const gradients = [];
-                            const layerCount = data.data.layerCount || 4;
-                            
-                            for (let layer = 0; layer < layerCount - 1; layer++) {
-                                const fromSize = Math.floor(Math.random() * 30) + 10;
-                                const toSize = Math.floor(Math.random() * 30) + 10;
-                                const layerGradients = [];
-                                
-                                for (let i = 0; i < fromSize; i++) {
-                                    const neuronGradients = [];
-                                    for (let j = 0; j < toSize; j++) {
-                                        const gradient = Math.random() * 2 - 1;
-                                        neuronGradients.push(gradient);
-                                    }
-                                    layerGradients.push(neuronGradients);
-                                }
-                                
-                                gradients.push(layerGradients);
-                            }
-                            
-                            // Process the "worker" response
-                            processGradientResult({
-                                type: 'GRADIENT_RESULT',
-                                data: { gradients }
-                            });
-                        }
-                    }, Math.floor(Math.random() * 50) + 10); // Simulate variable processing time
-                }
-            };
-            
-            // Initialize neural network structure
-            function initializeNetwork(complexity = 1) {
-                const preset = complexityPresets[complexity - 1];
+            // Buat neuron untuk setiap layer
+            for (let l = 0; l < config.layers; l++) {
+                const xPos = layerSpacing * (l + 1);
+                const neuronSpacing = height / (config.neurons + 1);
                 
-                // Clear previous state
-                networkState.layers = [];
-                networkState.connections = [];
-                networkState.activations = [];
-                networkState.gradients = [];
-                networkState.neuronPositions = [];
-                
-                // Create layers
-                const layerCount = preset.layers;
-                for (let i = 0; i < layerCount; i++) {
-                    // Vary neuron count per layer
-                    const neuronCount = Math.floor(preset.neurons / layerCount * (0.8 + Math.random() * 0.4));
-                    networkState.layers.push(neuronCount);
+                for (let n = 0; n < config.neurons; n++) {
+                    const yPos = neuronSpacing * (n + 1);
                     
-                    // Initialize activations
-                    const layerActivations = new Array(neuronCount).fill(0).map(() => Math.random() * 0.3);
-                    networkState.activations.push(layerActivations);
-                }
-                
-                // Create connections between layers
-                for (let i = 0; i < layerCount - 1; i++) {
-                    const fromLayerSize = networkState.layers[i];
-                    const toLayerSize = networkState.layers[i + 1];
-                    const layerConnections = [];
-                    
-                    // Create random connections (simplified for visualization)
-                    const connectionCount = Math.floor(preset.connections / (layerCount - 1) * (0.7 + Math.random() * 0.6));
-                    
-                    for (let c = 0; c < connectionCount; c++) {
-                        const fromNeuron = Math.floor(Math.random() * fromLayerSize);
-                        const toNeuron = Math.floor(Math.random() * toLayerSize);
-                        const weight = Math.random() * 2 - 1; // Between -1 and 1
-                        
-                        layerConnections.push({
-                            fromLayer: i,
-                            fromNeuron,
-                            toLayer: i + 1,
-                            toNeuron,
-                            weight,
-                            active: false
-                        });
-                    }
-                    
-                    networkState.connections.push(layerConnections);
-                }
-                
-                // Initialize neuron positions for visualization
-                calculateNeuronPositions();
-                
-                // Update UI
-                document.getElementById('neuronCount').textContent = preset.neurons;
-                layerCount.textContent = networkState.layers.length;
-                
-                // Create layer indicators
-                updateLayerIndicators();
-                
-                // Request initial gradients from "worker"
-                mockWorker.postMessage({
-                    type: 'GRADIENT_REQUEST',
-                    data: { layerCount: networkState.layers.length }
-                });
-            }
-            
-            // Calculate positions for neurons in the visualization
-            function calculateNeuronPositions() {
-                networkState.neuronPositions = [];
-                const layerCount = networkState.layers.length;
-                const padding = 50;
-                const availableWidth = canvas.width - padding * 2;
-                const layerSpacing = availableWidth / (layerCount + 1);
-                
-                for (let layerIdx = 0; layerIdx < layerCount; layerIdx++) {
-                    const neuronCount = networkState.layers[layerIdx];
-                    const layerPositions = [];
-                    const x = padding + layerSpacing * (layerIdx + 1);
-                    const neuronSpacing = canvas.height / (neuronCount + 1);
-                    
-                    for (let neuronIdx = 0; neuronIdx < neuronCount; neuronIdx++) {
-                        const y = neuronSpacing * (neuronIdx + 1);
-                        layerPositions.push({ x, y });
-                    }
-                    
-                    networkState.neuronPositions.push(layerPositions);
+                    // Buat neuron
+                    const neuron = document.createElement('div');
+                    neuron.className = 'neuron';
+                    neuron.id = `n-${l}-${n}`;
+                    neuron.style.left = `${xPos}px`;
+                    neuron.style.top = `${yPos}px`;
+                    networkEl.appendChild(neuron);
                 }
             }
             
-            // Update layer indicator dots
-            function updateLayerIndicators() {
-                layerIndicator.innerHTML = '';
-                for (let i = 0; i < networkState.layers.length; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'layer-dot';
-                    dot.title = `Layer ${i+1}: ${networkState.layers[i]} neurons`;
-                    layerIndicator.appendChild(dot);
+            // Buat koneksi antar layer
+            setTimeout(drawConnections, 100);
+        }
+        
+        function drawConnections() {
+            // Hapus koneksi lama
+            const oldConnections = document.querySelectorAll('.connection');
+            oldConnections.forEach(c => c.remove());
+            
+            const width = networkEl.clientWidth;
+            const height = networkEl.clientHeight;
+            const layerSpacing = width / (config.layers + 1);
+            const neuronSpacing = height / (config.neurons + 1);
+            
+            // Buat koneksi antar neuron di layer yang berurutan
+            for (let l = 0; l < config.layers - 1; l++) {
+                for (let n1 = 0; n1 < config.neurons; n1++) {
+                    const x1 = layerSpacing * (l + 1);
+                    const y1 = neuronSpacing * (n1 + 1);
+                    
+                    for (let n2 = 0; n2 < config.neurons; n2++) {
+                        const x2 = layerSpacing * (l + 2);
+                        const y2 = neuronSpacing * (n2 + 1);
+                        
+                        // Hitung panjang dan sudut garis
+                        const dx = x2 - x1;
+                        const dy = y2 - y1;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                        
+                        // Buat elemen koneksi
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        connection.id = `c-${l}-${n1}-${n2}`;
+                        connection.style.width = `${length}px`;
+                        connection.style.left = `${x1}px`;
+                        connection.style.top = `${y1}px`;
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        
+                        networkEl.appendChild(connection);
+                    }
                 }
             }
+        }
+        
+        function activateRandomNeuron() {
+            if (!config.isActive) return;
             
-            // Process inference results from "worker"
-            function processInferenceResult(result) {
-                const { activations, inferenceTime } = result.data;
-                
-                // Update activations
-                for (let i = 0; i < Math.min(activations.length, networkState.layers.length); i++) {
-                    for (let j = 0; j < Math.min(activations[i].length, networkState.layers[i]); j++) {
-                        // Smooth transition to new activation value
-                        const current = networkState.activations[i][j] || 0;
-                        const target = activations[i][j] || 0;
-                        networkState.activations[i][j] = current * 0.7 + target * 0.3;
-                    }
-                }
-                
-                // Update inference time display
-                document.getElementById('inferenceTime').textContent = `<${Math.max(inferenceTime, 30)}ms`;
-                
-                // Update stats
-                updateStats();
-                
-                // Request gradients periodically
-                if (Math.random() > 0.7) { // Only request gradients sometimes to reduce load
-                    mockWorker.postMessage({
-                        type: 'GRADIENT_REQUEST',
-                        data: { layerCount: networkState.layers.length }
-                    });
-                }
-            }
+            // Pilih neuron acak
+            const layer = Math.floor(Math.random() * config.layers);
+            const neuron = Math.floor(Math.random() * config.neurons);
+            const neuronEl = document.getElementById(`n-${layer}-${neuron}`);
             
-            // Process gradient results from "worker"
-            function processGradientResult(result) {
-                networkState.gradients = result.data.gradients;
-            }
+            // Aktifkan neuron
+            neuronEl.classList.add('active');
+            config.activeCount++;
+            activeEl.textContent = config.activeCount;
             
-            // Update statistics display
-            function updateStats() {
-                // Count active neurons (activation > 0.2)
-                let activeCount = 0;
-                let totalActivation = 0;
-                let totalNeurons = 0;
-                
-                for (let i = 0; i < networkState.activations.length; i++) {
-                    for (let j = 0; j < networkState.activations[i].length; j++) {
-                        totalNeurons++;
-                        if (networkState.activations[i][j] > 0.2) {
-                            activeCount++;
-                        }
-                        totalActivation += networkState.activations[i][j];
-                    }
-                }
-                
-                // Count connections
-                let connectionCount = 0;
-                for (let layer of networkState.connections) {
-                    connectionCount += layer.length;
-                }
-                
-                // Update UI
-                activeNeurons.textContent = activeCount;
-                totalConnections.textContent = connectionCount;
-                activationLevel.textContent = `${Math.round((totalActivation / totalNeurons) * 100)}%`;
-            }
+            // Aktifkan koneksi terkait
+            activateConnections(layer, neuron);
             
-            // Draw the neural network visualization
-            function drawNeuralNetwork() {
-                // Clear canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Nonaktifkan setelah delay
+            setTimeout(() => {
+                neuronEl.classList.remove('active');
+                config.activeCount--;
+                activeEl.textContent = config.activeCount;
                 
-                const neuronSize = parseInt(neuronSizeSlider.value);
-                const connectionOpacity = parseFloat(connectionOpacitySlider.value);
-                
-                // Draw connections between neurons
-                for (let layerIdx = 0; layerIdx < networkState.connections.length; layerIdx++) {
-                    const layerConnections = networkState.connections[layerIdx];
-                    
-                    for (let connection of layerConnections) {
-                        const fromPos = networkState.neuronPositions[connection.fromLayer]?.[connection.fromNeuron];
-                        const toPos = networkState.neuronPositions[connection.toLayer]?.[connection.toNeuron];
-                        
-                        if (!fromPos || !toPos) continue;
-                        
-                        // Determine connection color based on weight and gradient
-                        let gradientValue = 0;
-                        if (networkState.gradients[layerIdx] && 
-                            networkState.gradients[layerIdx][connection.fromNeuron] && 
-                            networkState.gradients[layerIdx][connection.fromNeuron][connection.toNeuron]) {
-                            gradientValue = networkState.gradients[layerIdx][connection.fromNeuron][connection.toNeuron];
-                        }
-                        
-                        // Color based on gradient (red for negative, blue for positive)
-                        const colorValue = Math.max(0, Math.min(255, Math.abs(gradientValue) * 255));
-                        let r, g, b;
-                        
-                        if (gradientValue < 0) {
-                            r = colorValue;
-                            g = 50;
-                            b = 50;
-                        } else {
-                            r = 50;
-                            g = 50;
-                            b = colorValue;
-                        }
-                        
-                        // Draw connection line
-                        ctx.beginPath();
-                        ctx.moveTo(fromPos.x, fromPos.y);
-                        ctx.lineTo(toPos.x, toPos.y);
-                        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${connectionOpacity * 0.7})`;
-                        ctx.lineWidth = Math.abs(connection.weight) * 3;
-                        ctx.stroke();
-                        
-                        // Draw animated pulse along important connections
-                        if (Math.abs(gradientValue) > 0.7) {
-                            const pulsePos = 0.5 + 0.5 * Math.sin(Date.now() / 200);
-                            const pulseX = fromPos.x + (toPos.x - fromPos.x) * pulsePos;
-                            const pulseY = fromPos.y + (toPos.y - fromPos.y) * pulsePos;
-                            
-                            ctx.beginPath();
-                            ctx.arc(pulseX, pulseY, 4, 0, Math.PI * 2);
-                            ctx.fillStyle = gradientValue < 0 ? `rgba(255, 100, 100, 0.8)` : `rgba(100, 100, 255, 0.8)`;
-                            ctx.fill();
-                        }
-                    }
-                }
-                
-                // Draw neurons
-                for (let layerIdx = 0; layerIdx < networkState.neuronPositions.length; layerIdx++) {
-                    const layerPositions = networkState.neuronPositions[layerIdx];
-                    
-                    for (let neuronIdx = 0; neuronIdx < layerPositions.length; neuronIdx++) {
-                        const pos = layerPositions[neuronIdx];
-                        const activation = networkState.activations[layerIdx]?.[neuronIdx] || 0;
-                        
-                        // Draw neuron glow if highly activated
-                        if (activation > 0.7) {
-                            ctx.beginPath();
-                            ctx.arc(pos.x, pos.y, neuronSize + 8, 0, Math.PI * 2);
-                            const gradient = ctx.createRadialGradient(pos.x, pos.y, neuronSize, pos.x, pos.y, neuronSize + 8);
-                            gradient.addColorStop(0, `rgba(64, 224, 208, ${activation * 0.6})`);
-                            gradient.addColorStop(1, 'rgba(64, 224, 208, 0)');
-                            ctx.fillStyle = gradient;
-                            ctx.fill();
-                        }
-                        
-                        // Draw neuron
-                        ctx.beginPath();
-                        ctx.arc(pos.x, pos.y, neuronSize, 0, Math.PI * 2);
-                        
-                        // Color based on activation level
-                        const hue = 180 + activation * 60; // Blue to cyan
-                        const saturation = 70 + activation * 30;
-                        const lightness = 40 + activation * 20;
-                        
-                        ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-                        ctx.fill();
-                        
-                        // Draw neuron border
-                        ctx.beginPath();
-                        ctx.arc(pos.x, pos.y, neuronSize, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(64, 224, 208, ${0.5 + activation * 0.5})`;
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                        
-                        // Draw activation level indicator
-                        if (activation > 0.3) {
-                            ctx.beginPath();
-                            ctx.arc(pos.x, pos.y, neuronSize * activation * 0.8, 0, Math.PI * 2);
-                            ctx.fillStyle = `rgba(255, 255, 255, ${activation * 0.4})`;
-                            ctx.fill();
-                        }
-                    }
-                }
-                
-                // Update layer indicators
-                const dots = document.querySelectorAll('.layer-dot');
-                const pulseLayer = Math.floor(Date.now() / 1000) % networkState.layers.length;
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === pulseLayer);
-                });
-            }
-            
-            // Animation loop
-            function animate(timestamp) {
-                if (!lastTime) lastTime = timestamp;
-                const deltaTime = timestamp - lastTime;
-                lastTime = timestamp;
-                
-                // Update FPS counter
-                frameCount++;
-                if (timestamp - lastFpsUpdate >= 1000) {
-                    currentFps = Math.round((frameCount * 1000) / (timestamp - lastFpsUpdate));
-                    fpsCounter.textContent = currentFps;
-                    frameCount = 0;
-                    lastFpsUpdate = timestamp;
-                }
-                
-                // Draw the visualization
-                drawNeuralNetwork();
-                
-                // Request inference from "worker" at intervals
-                if (isRunning && Math.random() > 0.8) { // Simulate occasional updates
-                    mockWorker.postMessage({
-                        type: 'INFERENCE_REQUEST',
-                        data: {
-                            input: Array(10).fill(0).map(() => Math.random()),
-                            layerCount: networkState.layers.length
-                        }
-                    });
-                }
-                
-                // Continue animation
-                if (isRunning) {
-                    animationId = requestAnimationFrame(animate);
-                }
-            }
-            
-            // Event listeners for controls
-            startBtn.addEventListener('click', function() {
-                if (!isRunning) {
-                    isRunning = true;
-                    lastTime = 0;
-                    animationId = requestAnimationFrame(animate);
-                    startBtn.innerHTML = '<i class="fas fa-play"></i> Running';
-                    startBtn.style.background = 'linear-gradient(90deg, #1d7a7c, #20b2aa)';
+                // Nonaktifkan koneksi
+                deactivateConnections();
+            }, 300);
+        }
+        
+        function activateConnections(layer, neuron) {
+            // Aktifkan koneksi dari neuron ini
+            const connections = document.querySelectorAll('.connection');
+            connections.forEach(conn => {
+                const id = conn.id.split('-');
+                if (id[1] == layer && id[2] == neuron) {
+                    conn.classList.add('active');
                 }
             });
-            
-            pauseBtn.addEventListener('click', function() {
-                isRunning = false;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-                startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
-            });
-            
-            resetBtn.addEventListener('click', function() {
-                isRunning = false;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-                
-                const complexity = parseInt(complexitySlider.value);
-                initializeNetwork(complexity);
-                
-                startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
-                drawNeuralNetwork();
-            });
-            
-            // Slider event listeners
-            neuronSizeSlider.addEventListener('input', function() {
-                neuronSizeValue.textContent = this.value;
-            });
-            
-            connectionOpacitySlider.addEventListener('input', function() {
-                connectionOpacityValue.textContent = parseFloat(this.value).toFixed(1);
-            });
-            
-            animationSpeedSlider.addEventListener('input', function() {
-                const value = parseFloat(this.value);
-                animationSpeedValue.textContent = value.toFixed(1);
-                // In a real implementation, this would control the animation speed
-            });
-            
-            complexitySlider.addEventListener('input', function() {
-                const value = parseInt(this.value);
-                const labels = ['Low', 'Medium', 'High'];
-                complexityValue.textContent = labels[value - 1];
-                
-                // Reinitialize network with new complexity
-                if (!isRunning) {
-                    initializeNetwork(value);
-                    drawNeuralNetwork();
-                }
-            });
-            
-            // Neuron hover tooltip
-            canvas.addEventListener('mousemove', function(e) {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                let hoveredNeuron = null;
-                
-                // Check if mouse is over any neuron
-                for (let layerIdx = 0; layerIdx < networkState.neuronPositions.length; layerIdx++) {
-                    const layerPositions = networkState.neuronPositions[layerIdx];
-                    
-                    for (let neuronIdx = 0; neuronIdx < layerPositions.length; neuronIdx++) {
-                        const pos = layerPositions[neuronIdx];
-                        const neuronSize = parseInt(neuronSizeSlider.value);
-                        const distance = Math.sqrt((x - pos.x) ** 2 + (y - pos.y) ** 2);
-                        
-                        if (distance < neuronSize + 5) {
-                            const activation = networkState.activations[layerIdx]?.[neuronIdx] || 0;
-                            hoveredNeuron = { layerIdx, neuronIdx, pos, activation };
-                            break;
-                        }
-                    }
-                    
-                    if (hoveredNeuron) break;
-                }
-                
-                // Show or hide tooltip
-                if (hoveredNeuron) {
-                    const { layerIdx, neuronIdx, pos, activation } = hoveredNeuron;
-                    
-                    // Count connections for this neuron
-                    let incoming = 0, outgoing = 0;
-                    
-                    // Check incoming connections
-                    if (layerIdx > 0) {
-                        const prevLayerConnections = networkState.connections[layerIdx - 1];
-                        if (prevLayerConnections) {
-                            incoming = prevLayerConnections.filter(c => c.toNeuron === neuronIdx).length;
-                        }
-                    }
-                    
-                    // Check outgoing connections
-                    if (layerIdx < networkState.layers.length - 1) {
-                        const nextLayerConnections = networkState.connections[layerIdx];
-                        if (nextLayerConnections) {
-                            outgoing = nextLayerConnections.filter(c => c.fromNeuron === neuronIdx).length;
-                        }
-                    }
-                    
-                    // Update tooltip content
-                    neuronTooltip.innerHTML = `
-                        <h3>Neuron ${neuronIdx+1} (Layer ${layerIdx+1})</h3>
-                        <div class="tooltip-row"><span>Activation:</span><span>${(activation * 100).toFixed(1)}%</span></div>
-                        <div class="tooltip-row"><span>Incoming Connections:</span><span>${incoming}</span></div>
-                        <div class="tooltip-row"><span>Outgoing Connections:</span><span>${outgoing}</span></div>
-                        <div class="tooltip-row"><span>Position:</span><span>(${Math.round(pos.x)}, ${Math.round(pos.y)})</span></div>
-                    `;
-                    
-                    // Position tooltip
-                    const tooltipWidth = 220;
-                    const tooltipHeight = 150;
-                    let tooltipX = x + 20;
-                    let tooltipY = y - tooltipHeight / 2;
-                    
-                    // Keep tooltip within canvas bounds
-                    if (tooltipX + tooltipWidth > canvas.width) {
-                        tooltipX = x - tooltipWidth - 10;
-                    }
-                    if (tooltipY < 10) {
-                        tooltipY = 10;
-                    }
-                    if (tooltipY + tooltipHeight > canvas.height - 10) {
-                        tooltipY = canvas.height - tooltipHeight - 10;
-                    }
-                    
-                    neuronTooltip.style.left = `${tooltipX}px`;
-                    neuronTooltip.style.top = `${tooltipY}px`;
-                    neuronTooltip.style.opacity = '1';
-                } else {
-                    neuronTooltip.style.opacity = '0';
-                }
-            });
-            
-            canvas.addEventListener('mouseleave', function() {
-                neuronTooltip.style.opacity = '0';
-            });
-            
-            // Initialize the application
-            function init() {
-                // Simulate loading time
+        }
+        
+        function deactivateConnections() {
+            const connections = document.querySelectorAll('.connection.active');
+            connections.forEach(conn => {
                 setTimeout(() => {
-                    // Initialize with medium complexity
-                    initializeNetwork(2);
-                    
-                    // Draw initial state
-                    drawNeuralNetwork();
-                    
-                    // Hide loading overlay
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 300);
-                    
-                    // Start animation
-                    isRunning = true;
-                    animationId = requestAnimationFrame(animate);
-                    startBtn.innerHTML = '<i class="fas fa-play"></i> Running';
-                    startBtn.style.background = 'linear-gradient(90deg, #1d7a7c, #20b2aa)';
-                }, 1500);
+                    conn.classList.remove('active');
+                }, 100);
+            });
+        }
+        
+        function startActivation() {
+            if (config.isActive) {
+                // Stop activation
+                config.isActive = false;
+                clearInterval(config.interval);
+                startBtn.textContent = 'Start Activation';
+                startBtn.style.background = '#6366f1';
+            } else {
+                // Start activation
+                config.isActive = true;
+                config.interval = setInterval(() => {
+                    activateRandomNeuron();
+                }, 1000 / config.speed);
+                startBtn.textContent = 'Stop Activation';
+                startBtn.style.background = '#ef4444';
             }
+        }
+        
+        function resetNetwork() {
+            // Stop activation
+            config.isActive = false;
+            clearInterval(config.interval);
+            startBtn.textContent = 'Start Activation';
+            startBtn.style.background = '#6366f1';
             
-            // Start the application
-            init();
+            // Reset active count
+            config.activeCount = 0;
+            activeEl.textContent = '0';
+            
+            // Reinitialize network
+            initNetwork();
+            
+            // Update sliders
+            updateSliderValues();
+        }
+        
+        function updateSliderValues() {
+            document.getElementById('layers-value').textContent = config.layers;
+            document.getElementById('neurons-value').textContent = config.neurons;
+            document.getElementById('speed-value').textContent = config.speed;
+        }
+        
+        // Event listeners
+        layersSlider.addEventListener('input', () => {
+            config.layers = parseInt(layersSlider.value);
+            resetNetwork();
         });
+        
+        neuronsSlider.addEventListener('input', () => {
+            config.neurons = parseInt(neuronsSlider.value);
+            resetNetwork();
+        });
+        
+        speedSlider.addEventListener('input', () => {
+            config.speed = parseInt(speedSlider.value);
+            updateSliderValues();
+            
+            // Update interval jika sedang aktif
+            if (config.isActive) {
+                clearInterval(config.interval);
+                config.interval = setInterval(() => {
+                    activateRandomNeuron();
+                }, 1000 / config.speed);
+            }
+        });
+        
+        startBtn.addEventListener('click', startActivation);
+        resetBtn.addEventListener('click', resetNetwork);
+        
+        // Update FPS secara acak untuk simulasi
+        setInterval(() => {
+            const randomFPS = 55 + Math.floor(Math.random() * 10);
+            fpsEl.textContent = randomFPS;
+        }, 2000);
+        
+        // Update inference time secara acak
+        setInterval(() => {
+            const time = 70 + Math.floor(Math.random() * 30);
+            document.getElementById('inference').textContent = `<${time}ms`;
+        }, 1500);
+        
+        // Handle window resize
+        window.addEventListener('resize', drawConnections);
+        
+        // Initial slider update
+        updateSliderValues();
     </script>
 </body>
 </html>
