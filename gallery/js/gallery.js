@@ -1,7 +1,4 @@
-// assets/js/gallery.js
-import { $, $$ } from '../../assets/js/core/dom.js';
-import { randomRange, wait } from '../../assets/js/core/utils.js';
-import { initScanline } from '../../assets/js/effects/scanline.js';
+// gallery.js — Self-contained, bug-fixed, optimized
 import { 
     galleryImages, 
     getGalleryStats, 
@@ -12,298 +9,199 @@ import {
     toggleLike
 } from './gallery-data.js';
 
+// ── Helpers (inlined, no external deps) ────────────────────────────────────
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+// ── Gallery Class ───────────────────────────────────────────────────────────
 class Gallery {
     constructor() {
-        this.images = [];
+        this.images         = [];
         this.filteredImages = [];
-        this.currentFilter = 'all';
-        this.currentSort = 'newest';
-        this.currentLayout = 'grid';
-        this.currentPage = 1;
-        this.imagesPerPage = 12;
-        this.isLoading = false;
-        this.currentFullscreenIndex = 0;
-        this.viewMode = 'info'; // 'info' or 'fullscreen'
-        this.isZoomed = false;
-        this.rotation = 0;
-        
+        this.searchQuery    = '';
+        this.currentFilter  = 'all';
+        this.currentSort    = 'newest';
+        this.currentLayout  = 'grid';
+        this.currentPage    = 1;
+        this.imagesPerPage  = 12;
+        this.isLoading      = false;
+        this.currentFSIndex = 0;
+        this.isZoomed       = false;
+        this.rotation       = 0;
+        this.searchTimeout  = null;
+        this.resizeTimeout  = null;
+
         this.init();
     }
-    
+
     async init() {
-        // Initialize scanline effect
-        this.scanline = initScanline('.scanline', {
-            flickerChance: 0.02,
-            speed: 4
-        });
-        
-        // Load gallery data
-        await this.loadGalleryData();
-        
-        // Initialize UI
-        this.initUI();
-        
-        // Initialize events
-        this.initEvents();
-        
-        // Simulate loading
-        await this.simulateLoading();
-        
-        // Render initial gallery
-        this.renderGallery();
-        
-        console.log('🎨 Gallery initialized');
-    }
-    
-    async loadGalleryData() {
-        // Use data from gallery-data.js
-        this.images = galleryImages;
+        this.images         = galleryImages;
         this.filteredImages = [...this.images];
-        
-        // Update stats
+
         this.updateStats();
-    }
-    
-    initUI() {
-        // Update stats
-        this.updateStats();
-        
-        // Initialize theme filter counts
         this.updateFilterCounts();
-        
-        // Update current count
         this.updateCurrentCount();
+        this.initEvents();
+        await this.simulateLoading();
+        this.renderGallery();
     }
-    
+
+    // ── Events ──────────────────────────────────────────────────────────────
     initEvents() {
-        // Theme filter buttons
-        $$('.theme-filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handleFilterClick(btn));
-        });
-        
-        // Sort buttons
-        $$('.sort-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handleSortClick(btn));
-        });
-        
-        // Layout buttons
-        $$('.layout-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handleLayoutClick(btn));
-        });
-        
-        // Search input
+        $$('.theme-filter-btn').forEach(btn =>
+            btn.addEventListener('click', () => this.handleFilterClick(btn)));
+
+        $$('.sort-btn').forEach(btn =>
+            btn.addEventListener('click', () => this.handleSortClick(btn)));
+
+        $$('.layout-btn').forEach(btn =>
+            btn.addEventListener('click', () => this.handleLayoutClick(btn)));
+
         const searchInput = $('#gallery-search');
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
-            
-            // Add search animation
+            searchInput.addEventListener('input', e => this.handleSearch(e.target.value));
             searchInput.addEventListener('focus', () => {
-                $('.search-terminal').style.borderColor = '#00ff00';
-                $('.search-terminal').style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.3)';
+                const t = $('.search-terminal');
+                if (t) { t.style.borderColor = '#00ff00'; t.style.boxShadow = '0 0 15px rgba(0,255,0,0.25)'; }
             });
-            
             searchInput.addEventListener('blur', () => {
-                $('.search-terminal').style.borderColor = '';
-                $('.search-terminal').style.boxShadow = '';
+                const t = $('.search-terminal');
+                if (t) { t.style.borderColor = ''; t.style.boxShadow = ''; }
             });
         }
-        
-        // Load more button
+
         const loadMoreBtn = $('#load-more');
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', () => this.loadMore());
-        }
-        
-        // Gallery mode toggle
+        if (loadMoreBtn) loadMoreBtn.addEventListener('click', () => this.loadMore());
+
         const modeToggle = $('.gallery-mode-toggle');
-        if (modeToggle) {
-            modeToggle.addEventListener('click', () => this.toggleGalleryMode());
-        }
-        
-        // Info panel close
+        if (modeToggle) modeToggle.addEventListener('click', () => this.toggleGalleryMode());
+
         const panelClose = $('.panel-close');
-        if (panelClose) {
-            panelClose.addEventListener('click', () => this.closeInfoPanel());
-        }
-        
-        // Fullscreen viewer events
+        if (panelClose) panelClose.addEventListener('click', () => this.closeInfoPanel());
+
         this.initFullscreenEvents();
-        
-        // Window resize
-        window.addEventListener('resize', () => this.handleResize());
-        
-        // Window scroll for load more detection
-        window.addEventListener('scroll', () => this.handleScroll());
-        
-        // Escape key for closing panels
-        document.addEventListener('keydown', (e) => {
+
+        window.addEventListener('resize', () => {
+            clearTimeout(this.resizeTimeout);
+            this.resizeTimeout = setTimeout(() => this.renderGallery(), 250);
+        });
+
+        document.addEventListener('keydown', e => {
+            const fsActive = $('#fullscreen-viewer')?.classList.contains('active');
+            const ipActive = $('#info-panel')?.classList.contains('active');
+
             if (e.key === 'Escape') {
-                if ($('#fullscreen-viewer').classList.contains('active')) {
-                    this.closeFullscreen();
-                } else if ($('#info-panel').classList.contains('active')) {
-                    this.closeInfoPanel();
-                }
+                if (fsActive) this.closeFullscreen();
+                else if (ipActive) this.closeInfoPanel();
             }
         });
     }
-    
+
     initFullscreenEvents() {
-        const viewerClose = $('.viewer-close');
-        const viewerPrev = $('.viewer-prev');
-        const viewerNext = $('.viewer-next');
-        const viewerZoom = $('.viewer-zoom');
-        const viewerRotate = $('.viewer-rotate');
-        const viewerDownload = $('.viewer-download');
-        
-        if (viewerClose) viewerClose.addEventListener('click', () => this.closeFullscreen());
-        if (viewerPrev) viewerPrev.addEventListener('click', () => this.prevImage());
-        if (viewerNext) viewerNext.addEventListener('click', () => this.nextImage());
-        if (viewerZoom) viewerZoom.addEventListener('click', () => this.toggleZoom());
-        if (viewerRotate) viewerRotate.addEventListener('click', () => this.rotateImage());
-        if (viewerDownload) viewerDownload.addEventListener('click', () => this.downloadCurrentImage());
-        
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            if (!$('#fullscreen-viewer').classList.contains('active')) return;
-            
-            switch(e.key) {
-                case 'Escape':
-                    this.closeFullscreen();
-                    break;
-                case 'ArrowLeft':
-                    this.prevImage();
-                    break;
-                case 'ArrowRight':
-                    this.nextImage();
-                    break;
-                case ' ':
-                    e.preventDefault();
-                    this.toggleZoom();
-                    break;
-                case 'r':
-                case 'R':
-                    this.rotateImage();
-                    break;
-                case 'f':
-                case 'F':
-                    this.toggleFullscreen();
-                    break;
-                case 'd':
-                case 'D':
-                    this.downloadCurrentImage();
-                    break;
+        const on = (sel, ev, fn) => { const el = $(sel); if (el) el.addEventListener(ev, fn); };
+
+        on('.viewer-close',    'click', () => this.closeFullscreen());
+        on('.viewer-prev',     'click', () => this.prevImage());
+        on('.viewer-next',     'click', () => this.nextImage());
+        on('.viewer-zoom',     'click', () => this.toggleZoom());
+        on('.viewer-rotate',   'click', () => this.rotateImage());
+        on('.viewer-download', 'click', () => this.downloadCurrentImage());
+
+        // Keyboard nav inside viewer
+        document.addEventListener('keydown', e => {
+            if (!$('#fullscreen-viewer')?.classList.contains('active')) return;
+            switch (e.key) {
+                case 'ArrowLeft':  this.prevImage(); break;
+                case 'ArrowRight': this.nextImage(); break;
+                case ' ': e.preventDefault(); this.toggleZoom(); break;
+                case 'r': case 'R': this.rotateImage(); break;
+                case 'd': case 'D': this.downloadCurrentImage(); break;
             }
         });
-        
-        // Swipe gestures for mobile
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        const viewerContent = $('.viewer-content');
-        if (viewerContent) {
-            viewerContent.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-            });
-            
-            viewerContent.addEventListener('touchend', (e) => {
-                const touchEndX = e.changedTouches[0].screenX;
-                const touchEndY = e.changedTouches[0].screenY;
-                const diffX = touchStartX - touchEndX;
-                const diffY = touchStartY - touchEndY;
-                
-                // Horizontal swipe (prev/next)
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (diffX > 50) {
-                        this.nextImage(); // Swipe left
-                    } else if (diffX < -50) {
-                        this.prevImage(); // Swipe right
-                    }
+
+        // Touch swipe
+        const vc = $('.viewer-content');
+        if (vc) {
+            let tx = 0, ty = 0;
+            vc.addEventListener('touchstart', e => {
+                tx = e.changedTouches[0].screenX;
+                ty = e.changedTouches[0].screenY;
+            }, { passive: true });
+            vc.addEventListener('touchend', e => {
+                const dx = tx - e.changedTouches[0].screenX;
+                const dy = ty - e.changedTouches[0].screenY;
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    if (dx >  50) this.nextImage();
+                    if (dx < -50) this.prevImage();
+                } else if (dy > 100) {
+                    this.closeFullscreen();
                 }
-                
-                // Vertical swipe (close)
-                if (diffY > 100) {
-                    this.closeFullscreen(); // Swipe down
-                }
-            });
+            }, { passive: true });
         }
     }
-    
+
+    // ── Loading simulation ──────────────────────────────────────────────────
     async simulateLoading() {
-        const loadingEl = $('#gallery-loading');
+        const loadingEl  = $('#gallery-loading');
         const progressEl = $('#loading-progress');
-        
         if (!loadingEl || !progressEl) return;
-        
-        // Show loading
-        loadingEl.style.display = 'block';
-        
-        // Simulate progress
+
+        loadingEl.style.display = 'flex';
         for (let i = 0; i <= 100; i += 10) {
             progressEl.style.width = `${i}%`;
-            await wait(100 + Math.random() * 200);
+            await wait(80 + Math.random() * 120);
         }
-        
-        // Hide loading
-        await wait(500);
+        await wait(400);
         loadingEl.style.opacity = '0';
         await wait(300);
         loadingEl.style.display = 'none';
+        loadingEl.style.opacity = '1';
     }
-    
+
+    // ── Render ──────────────────────────────────────────────────────────────
     renderGallery() {
         const container = $('#gallery-container');
         if (!container) return;
-        
-        // Clear container with fade effect
+
         container.style.opacity = '0';
+
         setTimeout(() => {
             container.innerHTML = '';
-            
-            // Calculate pagination
-            const startIndex = 0;
-            const endIndex = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
-            const currentImages = this.filteredImages.slice(startIndex, endIndex);
-            
-            // Update current count
+
+            const endIdx  = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
+            const current = this.filteredImages.slice(0, endIdx);
+
             this.updateCurrentCount();
-            
-            // Render images with staggered animation
-            currentImages.forEach((image, index) => {
+
+            current.forEach((image, index) => {
                 const card = this.createGalleryCard(image, index);
                 container.appendChild(card);
-                
-                // Stagger animation
+                // stagger reveal
                 setTimeout(() => {
-                    card.style.opacity = '1';
+                    card.style.opacity   = '1';
                     card.style.transform = 'translateY(0)';
-                }, index * 50);
+                }, index * 40);
             });
-            
-            // Update layout
-            this.updateLayout();
-            
-            // Fade in
-            container.style.opacity = '1';
-        }, 300);
+
+            this.applyLayoutClass(container);
+            this.updateLoadMoreButton();
+
+            container.style.transition = 'opacity 0.3s';
+            container.style.opacity    = '1';
+        }, 200);
     }
-    
+
     createGalleryCard(image, index) {
         const card = document.createElement('div');
-        card.className = 'gallery-card';
-        card.dataset.id = image.id;
-        card.dataset.theme = image.theme;
-        card.dataset.index = index;
-        
-        // Initial state for animation
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'opacity 0.3s, transform 0.3s';
-        
+        card.className    = 'gallery-card';
+        card.dataset.id   = image.id;
+        card.dataset.theme= image.theme;
+        card.style.cssText= 'opacity:0;transform:translateY(20px);transition:opacity .3s,transform .3s';
+
         card.innerHTML = `
             <div class="card-image-container">
-                <img src="${image.src}" alt="${image.title}" class="card-image" 
-                     loading="lazy">
+                <img src="${image.src}" alt="${image.title}" class="card-image" loading="lazy" decoding="async">
                 <div class="card-loading"></div>
             </div>
             <div class="card-overlay">
@@ -314,746 +212,358 @@ class Gallery {
                 <div class="card-stats">
                     <span class="stat">
                         <span class="stat-icon">📅</span>
-                        <span class="stat-value">${image.date}</span>
+                        <span class="stat-date">${image.date}</span>
                     </span>
                 </div>
                 <div class="card-actions">
-                    <button class="card-action info-action" title="View Info">
-                        <span class="action-icon">ⓘ</span>
-                    </button>
-                    <button class="card-action fullscreen-action" title="Fullscreen">
-                        <span class="action-icon">⛶</span>
-                    </button>
-                    <button class="card-action like-action" title="Like">
-                        <span class="action-icon">❤️</span>
-                    </button>
+                    <button class="card-action info-action" title="View Info"><span class="action-icon">ⓘ</span></button>
+                    <button class="card-action fullscreen-action" title="Fullscreen"><span class="action-icon">⛶</span></button>
+                    <button class="card-action like-action" title="Like"><span class="action-icon">❤</span></button>
                 </div>
-            </div>
-        `;
-        
-        // Add click events
-        const cardImage = card.querySelector('.card-image');
-        const infoBtn = card.querySelector('.info-action');
-        const fullscreenBtn = card.querySelector('.fullscreen-action');
-        const likeBtn = card.querySelector('.like-action');
-        
-        // Whole card click for quick view
-        card.addEventListener('click', (e) => {
-            if (!e.target.closest('.card-action')) {
-                this.openImage(image, index);
-            }
+            </div>`;
+
+        const img          = card.querySelector('.card-image');
+        const skeleton     = card.querySelector('.card-loading');
+        const infoBtn      = card.querySelector('.info-action');
+        const fsBtn        = card.querySelector('.fullscreen-action');
+        const likeBtn      = card.querySelector('.like-action');
+
+        img.addEventListener('load',  () => skeleton.style.display = 'none');
+        img.addEventListener('error', () => skeleton.style.display = 'none');
+
+        card.addEventListener('click', e => {
+            if (!e.target.closest('.card-action')) this.openInfoPanel(image);
         });
-        
-        // Info button
-        infoBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.openInfoPanel(image);
-        });
-        
-        // Fullscreen button
-        fullscreenBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.openFullscreen(image, index);
-        });
-        
-        // Like button
-        likeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.handleLike(image, likeBtn);
-        });
-        
-        // Image load event
-        cardImage.addEventListener('load', () => {
-            card.querySelector('.card-loading').style.display = 'none';
-        });
-        
+        infoBtn.addEventListener('click', e => { e.stopPropagation(); this.openInfoPanel(image); });
+        fsBtn.addEventListener('click',   e => { e.stopPropagation(); this.openFullscreen(image, index); });
+        likeBtn.addEventListener('click', e => { e.stopPropagation(); this.handleLike(image, likeBtn); });
+
         return card;
     }
-    
-    openImage(image, index) {
-        // Increment views
-        incrementViews(image.id);
-        
-        // Update the card view count immediately
-        const card = $(`.gallery-card[data-id="${image.id}"] .stat-value`);
-        if (card) {
-            // This would normally come from the updated data
-            // For now, i just increment locally
-            const currentViews = parseInt(card.textContent.replace(/,/g, ''));
-            card.textContent = (currentViews + 1).toLocaleString();
-        }
-        
-        // Open based on current view mode
-        if (this.viewMode === 'fullscreen') {
-            this.openFullscreen(image, index);
-        } else {
-            this.openInfoPanel(image);
-        }
-    }
-    
+
+    // ── Info Panel ──────────────────────────────────────────────────────────
     openInfoPanel(image) {
         const panel = $('#info-panel');
-        const imageEl = $('#info-image');
-        const filenameEl = $('#info-filename');
-        const resolutionEl = $('#info-resolution');
-        const sizeEl = $('#info-size');
-        const formatEl = $('#info-format');
-        const tagsEl = $('#info-tags');
-        const descriptionEl = $('#info-description');
-        const dateEl = $('#info-date');
-        
         if (!panel) return;
-        
-        // Update info
-        imageEl.src = image.src;
-        filenameEl.textContent = image.src.split('/').pop();
-        resolutionEl.textContent = image.resolution;
-        sizeEl.textContent = image.size;
-        formatEl.textContent = image.format;
-        
-        // Update tags
+
+        incrementViews(image.id);
+
+        $('#info-image').src         = image.src;
+        $('#info-filename').textContent  = image.src.split('/').pop();
+        $('#info-resolution').textContent= image.resolution;
+        $('#info-size').textContent      = image.size;
+        $('#info-format').textContent    = image.format;
+        $('#info-description').textContent = image.description;
+        $('#info-date').textContent      = image.date;
+
+        const tagsEl = $('#info-tags');
         tagsEl.innerHTML = '';
         image.tags.forEach(tag => {
-            const tagEl = document.createElement('span');
-            tagEl.className = 'info-tag';
-            tagEl.textContent = `#${tag}`;
-            tagsEl.appendChild(tagEl);
+            const t = document.createElement('span');
+            t.className   = 'info-tag';
+            t.textContent = `#${tag}`;
+            tagsEl.appendChild(t);
         });
-        
-        descriptionEl.textContent = image.description;
-        dateEl.textContent = image.date;
-        
-        // Download button
-        const downloadBtn = $('.info-download');
-        if (downloadBtn) {
-            downloadBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.downloadImage(image);
-            };
-        }
-        
-        // Share button
-        const shareBtn = $('.info-share');
-        if (shareBtn) {
-            shareBtn.onclick = (e) => {
-                e.stopPropagation();
-                this.shareImage(image);
-            };
-        }
-        
-        // Show panel with animation
+
+        const dlBtn = $('.info-download');
+        if (dlBtn) dlBtn.onclick = () => this.downloadImage(image);
+
+        const shBtn = $('.info-share');
+        if (shBtn) shBtn.onclick = () => this.shareImage(image);
+
         panel.classList.add('active');
-        
-        // Add subtle glow effect
-        panel.style.boxShadow = '-20px 0 60px rgba(255, 0, 0, 0.3)';
-        setTimeout(() => {
-            panel.style.boxShadow = '';
-        }, 1000);
     }
-    
+
     closeInfoPanel() {
-        const panel = $('#info-panel');
-        if (panel) {
-            panel.classList.remove('active');
-        }
+        $('#info-panel')?.classList.remove('active');
     }
-    
+
+    // ── Fullscreen Viewer ───────────────────────────────────────────────────
     openFullscreen(image, index) {
         const viewer = $('#fullscreen-viewer');
-        const viewerImage = $('#viewer-image');
-        const viewerTitle = $('#viewer-title');
-        const viewerCounter = $('#viewer-counter');
-        const viewerTags = $('#viewer-tags');
-        const viewerDescription = $('#viewer-description');
-        
         if (!viewer) return;
-        
-        // Increment views
+
         incrementViews(image.id);
-        
-        // Update content
-        viewerImage.src = image.src;
-        viewerTitle.textContent = image.title;
-        viewerCounter.textContent = `${index + 1} / ${this.filteredImages.length}`;
-        
-        // Update tags
-        viewerTags.innerHTML = '';
+
+        $('#viewer-image').src = image.src;
+        $('#viewer-title').textContent   = image.title;
+        $('#viewer-counter').textContent = `${index + 1} / ${this.filteredImages.length}`;
+        $('#viewer-description').textContent = image.description;
+
+        const tagsEl = $('#viewer-tags');
+        tagsEl.innerHTML = '';
         image.tags.forEach(tag => {
-            const tagEl = document.createElement('span');
-            tagEl.className = 'viewer-tag';
-            tagEl.textContent = `#${tag}`;
-            viewerTags.appendChild(tagEl);
+            const t = document.createElement('span');
+            t.className   = 'viewer-tag';
+            t.textContent = `#${tag}`;
+            tagsEl.appendChild(t);
         });
-        
-        viewerDescription.textContent = image.description;
-        
-        // Reset zoom and rotation
+
+        // Reset transforms
         this.isZoomed = false;
         this.rotation = 0;
-        viewerImage.style.transform = 'scale(1) rotate(0deg)';
-        viewerImage.classList.remove('zoomed');
-        
-        // Set current index
-        this.currentFullscreenIndex = index;
-        
-        // Show viewer with animation
+        const vi = $('#viewer-image');
+        vi.style.transform = '';
+        vi.classList.remove('zoomed');
+
+        this.currentFSIndex = index;
         viewer.classList.add('active');
         document.body.style.overflow = 'hidden';
-        
-        // Add entry animation
-        viewer.style.opacity = '0';
-        setTimeout(() => {
-            viewer.style.transition = 'opacity 0.3s';
-            viewer.style.opacity = '1';
-        }, 10);
     }
-    
+
     closeFullscreen() {
         const viewer = $('#fullscreen-viewer');
-        if (viewer) {
-            viewer.style.opacity = '0';
-            setTimeout(() => {
-                viewer.classList.remove('active');
-                document.body.style.overflow = '';
-                viewer.style.opacity = '1';
-            }, 300);
-        }
+        if (!viewer) return;
+        viewer.classList.remove('active');
+        document.body.style.overflow = '';
     }
-    
+
     prevImage() {
-        if (this.currentFullscreenIndex > 0) {
-            this.currentFullscreenIndex--;
-            const image = this.filteredImages[this.currentFullscreenIndex];
-            this.openFullscreen(image, this.currentFullscreenIndex);
-        } else {
-            // Loop to last image
-            this.currentFullscreenIndex = this.filteredImages.length - 1;
-            const image = this.filteredImages[this.currentFullscreenIndex];
-            this.openFullscreen(image, this.currentFullscreenIndex);
-        }
+        const idx = this.currentFSIndex > 0
+            ? this.currentFSIndex - 1
+            : this.filteredImages.length - 1;
+        this.openFullscreen(this.filteredImages[idx], idx);
     }
-    
+
     nextImage() {
-        if (this.currentFullscreenIndex < this.filteredImages.length - 1) {
-            this.currentFullscreenIndex++;
-            const image = this.filteredImages[this.currentFullscreenIndex];
-            this.openFullscreen(image, this.currentFullscreenIndex);
-        } else {
-            // Loop to first image
-            this.currentFullscreenIndex = 0;
-            const image = this.filteredImages[this.currentFullscreenIndex];
-            this.openFullscreen(image, this.currentFullscreenIndex);
-        }
+        const idx = this.currentFSIndex < this.filteredImages.length - 1
+            ? this.currentFSIndex + 1
+            : 0;
+        this.openFullscreen(this.filteredImages[idx], idx);
     }
-    
+
     toggleZoom() {
-        const viewerImage = $('#viewer-image');
-        if (!viewerImage) return;
-        
-        if (this.isZoomed) {
-            viewerImage.classList.remove('zoomed');
-            viewerImage.style.cursor = 'default';
-            this.isZoomed = false;
-            
-            // Add zoom out animation
-            viewerImage.style.transition = 'transform 0.3s';
-            setTimeout(() => {
-                viewerImage.style.transition = '';
-            }, 300);
-        } else {
-            viewerImage.classList.add('zoomed');
-            viewerImage.style.cursor = 'zoom-out';
-            this.isZoomed = true;
-            
-            // Add zoom in animation
-            viewerImage.style.transition = 'transform 0.3s';
-            setTimeout(() => {
-                viewerImage.style.transition = '';
-            }, 300);
-        }
+        const vi = $('#viewer-image');
+        if (!vi) return;
+        this.isZoomed = !this.isZoomed;
+        vi.style.transition = 'transform 0.3s';
+        vi.style.transform  = this.isZoomed
+            ? `scale(2) rotate(${this.rotation}deg)`
+            : `scale(1) rotate(${this.rotation}deg)`;
+        vi.classList.toggle('zoomed', this.isZoomed);
+        setTimeout(() => { vi.style.transition = ''; }, 300);
     }
-    
+
     rotateImage() {
-        const viewerImage = $('#viewer-image');
-        if (!viewerImage) return;
-        
+        const vi = $('#viewer-image');
+        if (!vi) return;
         this.rotation = (this.rotation + 90) % 360;
-        
-        // Apply rotation with animation
-        viewerImage.style.transition = 'transform 0.3s';
-        viewerImage.style.transform = `scale(${this.isZoomed ? 2 : 1}) rotate(${this.rotation}deg)`;
-        
-        setTimeout(() => {
-            viewerImage.style.transition = '';
-        }, 300);
+        vi.style.transition = 'transform 0.3s';
+        vi.style.transform  = `scale(${this.isZoomed ? 2 : 1}) rotate(${this.rotation}deg)`;
+        setTimeout(() => { vi.style.transition = ''; }, 300);
     }
-    
-    toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    }
-    
+
     downloadCurrentImage() {
-        const currentImage = this.filteredImages[this.currentFullscreenIndex];
-        this.downloadImage(currentImage);
+        this.downloadImage(this.filteredImages[this.currentFSIndex]);
     }
-    
+
     downloadImage(image) {
-        // Create a temporary link for download
-        const link = document.createElement('a');
-        link.href = image.src;
-        link.download = `${image.title.toLowerCase().replace(/\s+/g, '_')}.${image.format.toLowerCase()}`;
+        const link = Object.assign(document.createElement('a'), {
+            href:     image.src,
+            download: `${image.title.toLowerCase().replace(/\s+/g, '_')}.${image.format.toLowerCase()}`
+        });
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
-        // Show notification
-        this.showNotification(`Downloading: ${image.title}`);
+        this.showNotification(`↓ Downloading: ${image.title}`);
     }
-    
+
     shareImage(image) {
+        const text = `${image.title}\n${image.description}\n\n${window.location.href}`;
         if (navigator.share) {
-            navigator.share({
-                title: image.title,
-                text: image.description,
-                url: window.location.href,
-            })
-            .then(() => this.showNotification('Image shared successfully!'))
-            .catch((error) => this.showNotification('Error sharing image'));
+            navigator.share({ title: image.title, text: image.description, url: window.location.href })
+                .then(() => this.showNotification('Shared successfully!'))
+                .catch(() => {});
         } else {
-            // Fallback: Copy to clipboard
-            const shareText = `${image.title}\n${image.description}\n\nView at: ${window.location.href}`;
-            navigator.clipboard.writeText(shareText)
-                .then(() => this.showNotification('Link copied to clipboard!'))
-                .catch(() => this.showNotification('Could not share image'));
+            navigator.clipboard.writeText(text)
+                .then(() => this.showNotification('↗ Link copied to clipboard!'))
+                .catch(() => this.showNotification('Could not copy link'));
         }
     }
-    
-    handleLike(image, likeBtn) {
-        // Toggle like in data
-        const newLikes = toggleLike(image.id);
-        
-        // Update UI
-        const likeIcon = likeBtn.querySelector('.action-icon');
-        const likeCount = likeBtn.closest('.gallery-card').querySelector('.like-action + .stat-value');
-        
-        // Visual feedback
-        likeBtn.classList.add('liked');
-        likeIcon.style.transform = 'scale(1.3)';
-        
-        // Update count if available
-        if (likeCount) {
-            likeCount.textContent = newLikes.toLocaleString();
-        }
-        
-        // Reset animation
-        setTimeout(() => {
-            likeBtn.classList.remove('liked');
-            likeIcon.style.transform = '';
-        }, 300);
-        
-        // Show notification
-        this.showNotification('Image liked! ❤️');
+
+    handleLike(image, btn) {
+        toggleLike(image.id);
+        const icon = btn.querySelector('.action-icon');
+        btn.classList.add('liked');
+        icon.style.transform = 'scale(1.4)';
+        setTimeout(() => { btn.classList.remove('liked'); icon.style.transform = ''; }, 350);
+        this.showNotification('❤ Liked!');
     }
-    
+
+    // ── Filters / Sort / Layout ─────────────────────────────────────────────
     handleFilterClick(btn) {
-        // Remove active class from all buttons
         $$('.theme-filter-btn').forEach(b => b.classList.remove('active'));
-        
-        // Add active class to clicked button with animation
         btn.classList.add('active');
-        btn.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            btn.style.transform = '';
-        }, 150);
-        
-        // Update current filter
         this.currentFilter = btn.dataset.theme;
-        
-        // Apply filter
-        this.applyFilter();
-        
-        // Reset pagination
-        this.currentPage = 1;
-        
-        // Update load more button
-        this.updateLoadMoreButton();
-        
-        // Re-render gallery
+        this.currentPage   = 1;
+        this.applyFilters();
         this.renderGallery();
     }
-    
+
     handleSortClick(btn) {
-        // Remove active class from all buttons
         $$('.sort-btn').forEach(b => b.classList.remove('active'));
-        
-        // Add active class to clicked button
         btn.classList.add('active');
-        
-        // Update current sort
         this.currentSort = btn.dataset.sort;
-        
-        // Apply sort
-        this.applySort();
-        
-        // Re-render gallery
+        this.applyFilters();
         this.renderGallery();
     }
-    
+
     handleLayoutClick(btn) {
-        // Remove active class from all buttons
         $$('.layout-btn').forEach(b => b.classList.remove('active'));
-        
-        // Add active class to clicked button
         btn.classList.add('active');
-        
-        // Update current layout
         this.currentLayout = btn.dataset.layout;
-        
-        // Update view mode based on layout
-        if (this.currentLayout === 'fullscreen') {
-            this.viewMode = 'fullscreen';
-        } else {
-            this.viewMode = 'info';
-        }
-        
-        // Apply layout
-        this.updateLayout();
+        this.applyLayoutClass($('#gallery-container'));
+        this.updateModeToggle();
     }
-    
+
     handleSearch(query) {
-        // Show searching indicator
-        const searchTerminal = $('.search-terminal');
-        if (searchTerminal) {
-            searchTerminal.style.borderColor = '#ffff00';
-        }
-        
-        // Debounce search
+        this.searchQuery = query;
         clearTimeout(this.searchTimeout);
         this.searchTimeout = setTimeout(() => {
-            if (!query.trim()) {
-                this.filteredImages = [...this.images];
-            } else {
-                this.filteredImages = searchImages(query);
-            }
-            
-            // Apply current filter
-            this.applyFilter();
-            
-            // Reset pagination
             this.currentPage = 1;
-            
-            // Update load more button
-            this.updateLoadMoreButton();
-            
-            // Re-render gallery
+            this.applyFilters();
             this.renderGallery();
-            
-            // Reset search terminal style
-            if (searchTerminal) {
-                searchTerminal.style.borderColor = query.trim() ? '#00ff00' : '';
-            }
         }, 300);
     }
-    
-    applyFilter() {
-        if (this.currentFilter === 'all') {
-            this.filteredImages = [...this.images];
-        } else {
-            this.filteredImages = getImagesByTheme(this.currentFilter);
+
+    /**
+     * Single source of truth: search → theme filter → sort
+     */
+    applyFilters() {
+        // 1. Start from search results (or all images if no query)
+        let base = this.searchQuery.trim()
+            ? searchImages(this.searchQuery)
+            : [...this.images];
+
+        // 2. Apply theme filter
+        if (this.currentFilter !== 'all') {
+            base = base.filter(img => img.theme === this.currentFilter);
         }
-        
-        // Apply current sort
-        this.applySort();
+
+        // 3. Apply sort
+        this.filteredImages = sortImages(base, this.currentSort);
     }
-    
-    applySort() {
-        this.filteredImages = sortImages(this.filteredImages, this.currentSort);
-    }
-    
-    updateLayout() {
-        const container = $('#gallery-container');
+
+    // ── Layout ──────────────────────────────────────────────────────────────
+    applyLayoutClass(container) {
         if (!container) return;
-        
-        // Remove all layout classes
-        container.classList.remove('grid', 'masonry', 'fullscreen');
-        
-        // Add current layout class
-        container.classList.add(this.currentLayout);
-        
-        // Update mode toggle text
-        this.updateModeToggle();
-        
-        // Add transition for layout change
-        container.style.transition = 'grid-template-columns 0.3s';
-        setTimeout(() => {
-            container.style.transition = '';
-        }, 300);
+        container.classList.remove('layout-grid', 'layout-masonry', 'layout-fullwidth');
+        const map = { grid: 'layout-grid', masonry: 'layout-masonry', fullscreen: 'layout-fullwidth' };
+        container.classList.add(map[this.currentLayout] || 'layout-grid');
     }
-    
+
     updateModeToggle() {
-        const modeToggle = $('.gallery-mode-toggle');
         const modeText = $('.mode-text');
         const modeIcon = $('.mode-icon');
-        
-        if (modeToggle && modeText && modeIcon) {
-            switch(this.currentLayout) {
-                case 'grid':
-                    modeText.textContent = 'GRID VIEW';
-                    modeIcon.textContent = '☰';
-                    modeToggle.style.borderColor = 'rgba(255, 0, 0, 0.3)';
-                    break;
-                case 'masonry':
-                    modeText.textContent = 'MASONRY VIEW';
-                    modeIcon.textContent = '⏹️';
-                    modeToggle.style.borderColor = 'rgba(0, 255, 255, 0.3)';
-                    break;
-                case 'fullscreen':
-                    modeText.textContent = 'FULLSCREEN';
-                    modeIcon.textContent = '⛶';
-                    modeToggle.style.borderColor = 'rgba(255, 255, 0, 0.3)';
-                    break;
-            }
-        }
+        if (!modeText || !modeIcon) return;
+        const map = {
+            grid:       { text: 'GRID VIEW',     icon: '☰'  },
+            masonry:    { text: 'MASONRY VIEW',   icon: '⊞'  },
+            fullscreen: { text: 'FULLWIDTH',      icon: '⛶'  },
+        };
+        const m = map[this.currentLayout] || map.grid;
+        modeText.textContent = m.text;
+        modeIcon.textContent = m.icon;
     }
-    
+
     toggleGalleryMode() {
         const layouts = ['grid', 'masonry', 'fullscreen'];
-        const currentIndex = layouts.indexOf(this.currentLayout);
-        const nextIndex = (currentIndex + 1) % layouts.length;
-        
-        // Update layout
-        this.currentLayout = layouts[nextIndex];
-        
-        // Update UI
-        $$('.layout-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = $(`.layout-btn[data-layout="${this.currentLayout}"]`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
-        }
-        
-        // Apply layout
-        this.updateLayout();
-        
-        // Visual feedback
-        const modeToggle = $('.gallery-mode-toggle');
-        if (modeToggle) {
-            modeToggle.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                modeToggle.style.transform = '';
-            }, 150);
-        }
+        const next    = layouts[(layouts.indexOf(this.currentLayout) + 1) % layouts.length];
+        this.currentLayout = next;
+
+        $$('.layout-btn').forEach(b => b.classList.remove('active'));
+        $(`.layout-btn[data-layout="${next}"]`)?.classList.add('active');
+
+        this.applyLayoutClass($('#gallery-container'));
+        this.updateModeToggle();
     }
-    
+
+    // ── Load More ────────────────────────────────────────────────────────────
     async loadMore() {
         if (this.isLoading) return;
-        
         this.isLoading = true;
-        
-        // Show loading state
-        const loadMoreBtn = $('#load-more');
-        if (loadMoreBtn) {
-            const originalText = loadMoreBtn.querySelector('.btn-text').textContent;
-            const originalIcon = loadMoreBtn.querySelector('.btn-icon').textContent;
-            
-            loadMoreBtn.querySelector('.btn-text').textContent = 'LOADING...';
-            loadMoreBtn.querySelector('.btn-icon').textContent = '⏳';
-            loadMoreBtn.disabled = true;
-            loadMoreBtn.style.opacity = '0.7';
+
+        const btn     = $('#load-more');
+        const btnText = btn?.querySelector('.btn-text');
+        const btnIcon = btn?.querySelector('.btn-icon');
+        if (btn) {
+            btnText.textContent = 'LOADING...';
+            btnIcon.textContent = '⏳';
+            btn.disabled = true;
         }
-        
-        // Simulate API call with random delay for realism
-        const delay = 800 + Math.random() * 700;
-        await wait(delay);
-        
-        // Increase page
+
+        await wait(700 + Math.random() * 500);
         this.currentPage++;
-        
-        // Re-render gallery (will show more items)
         this.renderGallery();
-        
-        // Reset button
-        if (loadMoreBtn) {
-            loadMoreBtn.querySelector('.btn-text').textContent = 'LOAD MORE';
-            loadMoreBtn.querySelector('.btn-icon').textContent = '↻';
-            loadMoreBtn.disabled = false;
-            loadMoreBtn.style.opacity = '1';
-            
-            // Hide button if all images loaded
-            if (this.currentPage * this.imagesPerPage >= this.filteredImages.length) {
-                loadMoreBtn.style.display = 'none';
-                this.showNotification('All images loaded!');
-            } else {
-                // Show loaded count
-                const loadedCount = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
-                this.showNotification(`Loaded ${loadedCount} of ${this.filteredImages.length} images`);
-            }
+
+        if (btn) {
+            btnText.textContent = 'LOAD MORE';
+            btnIcon.textContent = '↻';
+            btn.disabled = false;
+            const loaded = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
+            this.showNotification(`Loaded ${loaded} of ${this.filteredImages.length} images`);
         }
-        
+
         this.isLoading = false;
     }
-    
-    handleResize() {
-        // Debounce resize events
-        clearTimeout(this.resizeTimeout);
-        this.resizeTimeout = setTimeout(() => {
-            // Re-render gallery on resize for responsive adjustments
-            this.renderGallery();
-        }, 250);
-    }
-    
-    handleScroll() {
-        // Infinite scroll implementation (optional)
-        if (this.enableInfiniteScroll) {
-            const scrollPosition = window.innerHeight + window.scrollY;
-            const pageHeight = document.documentElement.offsetHeight;
-            const threshold = 100; // pixels from bottom
-            
-            if (scrollPosition >= pageHeight - threshold && 
-                !this.isLoading && 
-                this.currentPage * this.imagesPerPage < this.filteredImages.length) {
-                this.loadMore();
-            }
-        }
-    }
-    
+
+    // ── Stats & UI updates ──────────────────────────────────────────────────
     updateStats() {
         const stats = getGalleryStats();
-        
-        const imageCountEl = $('#image-count');
-        const themeCountEl = $('#theme-count');
-        const totalSizeEl = $('#total-size');
-        
-        if (imageCountEl) imageCountEl.textContent = stats.totalImages;
-        if (themeCountEl) themeCountEl.textContent = stats.totalThemes;
-        if (totalSizeEl) totalSizeEl.textContent = stats.totalSize;
+        const set   = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+        set('#image-count', stats.totalImages);
+        set('#theme-count', stats.totalThemes);
+        set('#total-size',  stats.totalSize);
     }
-    
+
     updateFilterCounts() {
         const stats = getGalleryStats();
-        
-        // Update filter buttons
         Object.entries(stats.themeCounts).forEach(([theme, count]) => {
-            const filterBtn = $(`.theme-filter-btn[data-theme="${theme}"] .filter-count`);
-            if (filterBtn) {
-                filterBtn.textContent = count;
-            }
+            const el = $(`.theme-filter-btn[data-theme="${theme}"] .filter-count`);
+            if (el) el.textContent = count;
         });
-        
-        // Update "all" filter count
-        const allFilterBtn = $('.theme-filter-btn[data-theme="all"] .filter-count');
-        if (allFilterBtn) {
-            allFilterBtn.textContent = stats.totalImages;
-        }
+        const allEl = $('.theme-filter-btn[data-theme="all"] .filter-count');
+        if (allEl) allEl.textContent = stats.totalImages;
     }
-    
+
     updateCurrentCount() {
-        const currentCount = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
-        const totalCount = this.filteredImages.length;
-        
-        const currentCountEl = $('#current-count');
-        if (currentCountEl) {
-            currentCountEl.textContent = currentCount;
-            
-            // Update footer stat
-            const footerStat = $('.footer-stat:first-child .stat-number');
-            if (footerStat) {
-                footerStat.textContent = currentCount;
-            }
-        }
-        
-        // Update title with count
-        const title = $('.gallery-title');
-        if (title) {
-            title.textContent = `// DIGITAL GALLERY (${currentCount}/${totalCount}) //`;
-        }
+        const shown = Math.min(this.currentPage * this.imagesPerPage, this.filteredImages.length);
+        const total = this.filteredImages.length;
+
+        const el = $('#current-count');
+        if (el) el.textContent = shown;
+
+        const titleEl = $('.gallery-title');
+        if (titleEl) titleEl.textContent = `// DIGITAL GALLERY (${shown}/${total}) //`;
     }
-    
+
     updateLoadMoreButton() {
-        const loadMoreBtn = $('#load-more');
-        if (loadMoreBtn) {
-            if (this.currentPage * this.imagesPerPage >= this.filteredImages.length) {
-                loadMoreBtn.style.display = 'none';
-            } else {
-                loadMoreBtn.style.display = 'flex';
-            }
-        }
+        const btn = $('#load-more');
+        if (!btn) return;
+        const allShown = this.currentPage * this.imagesPerPage >= this.filteredImages.length;
+        btn.style.display = allShown ? 'none' : 'flex';
     }
-    
-    showNotification(message) {
-        // Remove existing notification
-        const existingNotification = $('.gallery-notification');
-        if (existingNotification) {
-            existingNotification.remove();
-        }
-        
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = 'gallery-notification';
-        notification.innerHTML = `
-            <div class="notification-content">
-                <span class="notification-icon">⚠</span>
-                <span class="notification-text">${message}</span>
-            </div>
-        `;
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(10, 10, 10, 0.95);
-            border: 2px solid #00ff00;
-            border-radius: 8px;
-            padding: 15px 20px;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            z-index: 5000;
-            transform: translateX(120%);
-            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
-            max-width: 300px;
-            backdrop-filter: blur(10px);
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Animate in
+
+    // ── Notification ────────────────────────────────────────────────────────
+    showNotification(msg) {
+        const existing = $('.gallery-notification');
+        if (existing) existing.remove();
+
+        const n = document.createElement('div');
+        n.className = 'gallery-notification';
+        n.innerHTML = `<span class="notif-icon">⚡</span><span>${msg}</span>`;
+        document.body.appendChild(n);
+
+        requestAnimationFrame(() => n.classList.add('visible'));
+
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 10);
-        
-        // Animate out and remove
-        setTimeout(() => {
-            notification.style.transform = 'translateX(120%)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
-    
-    destroy() {
-        // Cleanup
-        if (this.scanline) {
-            this.scanline.destroy();
-        }
-        
-        // Clear timeouts
-        clearTimeout(this.searchTimeout);
-        clearTimeout(this.resizeTimeout);
-        
-        // Remove event listeners
-        window.removeEventListener('resize', this.handleResize);
-        window.removeEventListener('scroll', this.handleScroll);
-        document.removeEventListener('keydown', this.handleKeydown);
+            n.classList.remove('visible');
+            setTimeout(() => n.remove(), 300);
+        }, 2800);
     }
 }
 
-// Initialize gallery when DOM is ready
+// ── Boot ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     window.gallery = new Gallery();
 });
